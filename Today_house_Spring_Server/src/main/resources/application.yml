@@ -1,14 +1,20 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: demo
+---
+spring:
+  profiles:
+    active: local
 
-  datasource:
-    platform: mysql
-    url: jdbc:mysql://seokindb.cyw9yafkgtjp.ap-northeast-2.rds.amazonaws.com/TodayHouse?autoReconnect=true
-    username:  seokin
-    password:  applemints77!
-    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
-    # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+

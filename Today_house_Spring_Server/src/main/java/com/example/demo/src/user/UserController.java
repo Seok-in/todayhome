@@ -36,11 +36,7 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-     /**
-     * 회원가입 API
-     * [POST] /users
-     * @return BaseResponse<PostUserRes>
-     */
+    // 1. 회원가입 API
     // Body
     @ResponseBody
     @PostMapping("signup")
@@ -62,11 +58,8 @@ public class UserController {
         }
     }
 
-    /**
-     * 로그인 API
-     * [POST] /users/login
-     * @return BaseResponse<PostLoginRes>
-     */
+
+    // 1.
     @ResponseBody
     @PostMapping("/login")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){

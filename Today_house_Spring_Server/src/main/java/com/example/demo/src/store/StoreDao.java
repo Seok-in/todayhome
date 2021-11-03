@@ -35,7 +35,40 @@ public class StoreDao {
                 ));
     }
 
-    public List<Product> getRecentProductRes(int userIdx){
-        String getRecentProductQuery = "select "
+    public int checkProductScrap(int productIdx, int userIdx){
+        String checkScrapQuery = "select exists(select scrapUrl from UserScrap where productIdx = ? && userIdx = ?;";
+        Object[] checkScrapParams = new Object[]{productIdx,userIdx};
+
+        return this. jdbcTemplate.queryForObject(checkScrapQuery,
+                int.class,
+                checkScrapParams);
+    }
+
+    public Product getProduct(int productIdx, int userIdx){
+        String getProductQuery = "SELECT productImage\n" +
+                "     , companyName\n" +
+                "     , productName\n" +
+                "     , salePercent\n" +
+                "     , (productPrice * (100 - p.salePercent)) as price\n" +
+                "     , rate\n" +
+                "     , reviewNum\n" +
+                "FROM Product p left join (SELECT productIdx, productimage FROM ProductImage where imageFlag = 'Y')\n" +
+                "                                                            as PI on p.productIdx = PI.productIdx\n" +
+                "                left join (SELECT companyIdx, companyName FROM Company) as C on p.productIdx = C.companyIdx\n" +
+                "                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review) as R on p.productIdx = R.productIdx" +
+                "WHERE p.productIdx = ?;";
+        int getProductParams = productIdx;
+        int scrap = checkProductScrap(productIdx,userIdx);
+        return this.jdbcTemplate.queryForObject(getProductQuery,
+                (rs, rowNum) -> new Product(
+                        rs.getString("productImage"),
+                        rs.getString("companyName"),
+                        rs.getString("productName"),
+                        rs.getInt("salePercent"),
+                        rs.getInt("price"),
+                        rs.getFloat("rate"),
+                        rs.getInt("reviewNum"),
+                        scrap),
+                getProductParams);
     }
 }

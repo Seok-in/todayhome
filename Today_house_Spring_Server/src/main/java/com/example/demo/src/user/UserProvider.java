@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
@@ -40,7 +39,6 @@ public class UserProvider {
         }
     }
 
-
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException{
         User user = userDao.getPwd(postLoginReq);
         String password;
@@ -53,26 +51,12 @@ public class UserProvider {
         if(postLoginReq.getUserPw().equals(password)){
             int userIdx = userDao.getPwd(postLoginReq).getUserIdx();
             String jwt = jwtService.createJwt(userIdx);
-            try{
-                userDao.login(userIdx);
-            }
-            catch (Exception exception){
-                throw new BaseException(DATABASE_ERROR);
-            }
             return new PostLoginRes(jwt);
         }
         else{
             throw new BaseException(FAILED_TO_LOGIN);
         }
-    }
 
-    public void logout(int userIdx) throws BaseException{
-        try{
-            userDao.logout(userIdx);
-        }
-        catch (Exception exception){
-            throw new BaseException(DATABASE_ERROR);
-        }
     }
 
 }

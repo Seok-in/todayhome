@@ -59,7 +59,7 @@ public class UserController {
     }
 
 
-    // 1.
+    // 2. 로그인 API
     @ResponseBody
     @PostMapping("/login")
     public BaseResponse<PostLoginRes> login(@RequestBody PostLoginReq postLoginReq){
@@ -73,7 +73,7 @@ public class UserController {
         }
     }
 
-    // 3. LogoutAPI
+    // 3. 로그아웃 API
     @ResponseBody
     @PostMapping("logout")
     public BaseResponse<String> logout(){
@@ -87,5 +87,17 @@ public class UserController {
         }
     }
 
-
+    // 4. 회원탈퇴 API
+    @ResponseBody
+    @PostMapping("signout")
+    public BaseResponse<String> signout(@RequestBody PostSignOutReq postSignOutReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createSignOut(postSignOutReq, userIdx);
+            return new BaseResponse<>("회원탈퇴 되었습니다.");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

@@ -32,6 +32,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_NAME(false,2018,"중복된 닉네임입니다."),
     POST_USERS_SIZE_NAME(false,2019,"닉네임이 너무 깁니다."),
 
+    POST_USERS_REQUIRED_AGREE(false,2020,"약관에 동의해야 합니다."),
 
     /**
      * 3000 : Response 오류

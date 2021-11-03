@@ -58,4 +58,18 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public void createSignOut(PostSignOutReq postSignOutReq, int userIdx) throws BaseException{
+        if (postSignOutReq.getAgreement() == "N"){
+            throw new BaseException(POST_USERS_REQUIRED_AGREE);
+        }
+        try{
+            userDao.signoutUser(postSignOutReq, userIdx);
+            userDao.logout(userIdx);
+        }
+        catch (Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

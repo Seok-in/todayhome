@@ -16,7 +16,7 @@ import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 
 @RestController
-@RequestMapping("/app/users")
+@RequestMapping("/ohouse/users")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -62,7 +62,7 @@ public class UserController {
     // 1.
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> login(@RequestBody PostLoginReq postLoginReq){
         try{
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
@@ -72,4 +72,20 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    // 3. LogoutAPI
+    @ResponseBody
+    @PostMapping("logout")
+    public BaseResponse<String> logout(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userProvider.logout(userIdx);
+            return new BaseResponse<>("로그아웃 되었습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 }

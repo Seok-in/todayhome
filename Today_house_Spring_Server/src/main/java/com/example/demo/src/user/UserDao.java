@@ -27,6 +27,17 @@ public class UserDao {
         String lastInserIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
+    public void login(int userIdx){
+        String loginQuery = "update User set loginStatus = 'Y' where userIdx = ?;";
+        int loginParams = userIdx;
+        this.jdbcTemplate.update(loginQuery,loginParams);
+    }
+
+    public void logout(int userIdx){
+        String logoutQuery = "update User set loginStatus = 'N' where userIdx = ?;";
+        int logoutParams = userIdx;
+        this.jdbcTemplate.update(logoutQuery, logoutParams);
+    }
 
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select userEmail from User where userEmail = ?);";

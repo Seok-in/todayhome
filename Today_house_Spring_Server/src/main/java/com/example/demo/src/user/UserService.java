@@ -68,7 +68,6 @@ public class UserService {
             userDao.logout(userIdx);
         }
         catch (Exception exception){
-            System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }

@@ -12,10 +12,10 @@ import lombok.Setter;
 public class Product {
     private String prodImage;
     private String companyName;
-    private String prodName;
+    private String productName;
     private int discountPercent;
     private int price;
     private float rate;
     private int reviewNum;
-    private int scrap;
+    private String scrap;
 }

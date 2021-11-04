@@ -6,14 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStoreHomeRes {
+public class GetStoreSecondCtgRes {
     private List<GetAdRes> advertisements;
-    private List<GetStoreCategoryRes> storeCategories;
-    private List<Product> recentProducts;
     private List<PopularProduct> popularProducts;
+
 }

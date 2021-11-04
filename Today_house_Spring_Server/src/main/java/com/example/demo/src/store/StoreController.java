@@ -61,4 +61,51 @@ public class StoreController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @GetMapping("/categories/ranks")
+    public BaseResponse<List<PopularProduct>> getAllTimeBest(@RequestParam(required = true, defaultValue = "%") String categoryName){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<PopularProduct> popularProducts = storeProvider.getAllTimeBest(userIdx, categoryName);
+            return new BaseResponse<>(popularProducts);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/categories")
+    public BaseResponse<GetStoreFirstCtgRes> getSToreFirstCtgRes(@RequestParam(required = false) String categoryName){
+        try{
+            if (categoryName == null){
+                return new BaseResponse<>(CATEGORYNAME_EMPTY);
+            }
+            int userIdx = jwtService.getUserIdx();
+            GetStoreFirstCtgRes getStoreFirstCtgRes = storeProvider.getStoreFirstCtgRes(userIdx, categoryName);
+
+            return new BaseResponse<>(getStoreFirstCtgRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/categories/subcategories")
+    public BaseResponse<GetStoreSecondCtgRes> getSToreSecondCtgRes(@RequestParam(required = false) String categoryName){
+        try{
+            if (categoryName == null){
+                return new BaseResponse<>(CATEGORYNAME_EMPTY);
+            }
+            int userIdx = jwtService.getUserIdx();
+            GetStoreSecondCtgRes getStoreSecondCtgRes = storeProvider.getStoreSecondCtgRes(userIdx, categoryName);
+
+            return new BaseResponse<>(getStoreSecondCtgRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

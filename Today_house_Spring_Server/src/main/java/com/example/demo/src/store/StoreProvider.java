@@ -6,6 +6,7 @@ import com.example.demo.src.store.model.GetAdRes;
 import com.example.demo.src.store.model.GetStoreCategoryRes;
 import com.example.demo.src.store.model.GetStoreHomeRes;
 import com.example.demo.src.store.*;
+import com.example.demo.src.store.model.PopularProduct;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,5 +46,16 @@ public class StoreProvider {
             System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public List<PopularProduct> getRealTimeBest(int userIdx) throws BaseException{
+        try{
+            List<PopularProduct> bestProducts = storeDao.getRealTimeBest(userIdx);
+            return bestProducts;
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 }

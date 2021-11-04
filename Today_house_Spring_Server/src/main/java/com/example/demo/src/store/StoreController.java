@@ -11,6 +11,7 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PostUpdate;
 import java.util.List;
 
 
@@ -46,5 +47,18 @@ public class StoreController {
             catch(BaseException exception) {
                 return new BaseResponse<>((exception.getStatus()));
             }
+    }
+
+    @ResponseBody
+    @GetMapping("/ranks")
+    public BaseResponse<List<PopularProduct>> getRealTimeBest(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<PopularProduct> popularProducts = storeProvider.getRealTimeBest(userIdx);
+            return new BaseResponse<>(popularProducts);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 }

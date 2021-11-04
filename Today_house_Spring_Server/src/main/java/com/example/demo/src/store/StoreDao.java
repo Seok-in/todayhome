@@ -112,4 +112,44 @@ public class StoreDao {
                         rs.getInt("visitNum"))
                 , getProductParams);
     }
+
+    public List<PopularProduct> getRealTimeBest(int userIdx){
+        String getProductQuery = "SELECT productImage\n" +
+                "     , companyName\n" +
+                "     , productName\n" +
+                "     , salePercent\n" +
+                "     , (productPrice * (100 - p.salePercent)) as price\n" +
+                "     , rate\n" +
+                "     , reviewNum\n" +
+                "     , visitNum\n" +
+                "     , IFNULL(z.status, 'N') as scrap\n" +
+                "\n" +
+                "FROM Product p left join (SELECT productIdx, productimage FROM ProductImage where imageFlag = 'Y')\n" +
+                "                                                            as PI on p.productIdx = PI.productIdx\n" +
+                "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
+                "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
+                "                                left join (SELECT productIdx, COUNT(userIdx) as visitNum\n" +
+                "                                            FROM UserRecent\n" +
+                "                                            WHERE date(updatedAt) >= date(subdate(now(), INTERVAL 1 DAY))\n" +
+                "                                            GROUP BY productIdx\n" +
+                "                                            ) as u on p.productIdx = u.productIdx\n" +
+                "ORDER BY visitNum DESC, rate DESC;";
+
+        int getBestProductParams = userIdx;
+
+        return this.jdbcTemplate.query(getProductQuery,
+                (rs, rowNum) -> new PopularProduct(
+                        rs.getString("productImage"),
+                        rs.getString("companyName"),
+                        rs.getString("productName"),
+                        rs.getInt("salePercent"),
+                        rs.getInt("price"),
+                        rs.getFloat("rate"),
+                        rs.getInt("reviewNum"),
+                        rs.getString("scrap"),
+                        rs.getInt("visitNum"))
+                , getBestProductParams);
+
+    }
 }

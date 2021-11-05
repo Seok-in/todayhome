@@ -61,7 +61,6 @@ public class StoreProvider {
             return bestProducts;
         }
         catch(Exception exception){
-            System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }

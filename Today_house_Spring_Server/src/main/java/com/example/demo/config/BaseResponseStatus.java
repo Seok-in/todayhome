@@ -25,6 +25,8 @@ public enum BaseResponseStatus {
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
 
+    //categoryName
+    CATEGORYNAME_EMPTY(false, 2011, "카테고리 이름 값을 확인해주세요."),
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
@@ -32,6 +34,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_NAME(false,2018,"중복된 닉네임입니다."),
     POST_USERS_SIZE_NAME(false,2019,"닉네임이 너무 깁니다."),
 
+    POST_USERS_REQUIRED_AGREE(false,2020,"약관에 동의해야 합니다."),
 
     /**
      * 3000 : Response 오류

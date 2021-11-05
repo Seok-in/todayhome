@@ -16,7 +16,7 @@ import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 
 @RestController
-@RequestMapping("/app/users")
+@RequestMapping("/ohouse/users")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -39,7 +39,7 @@ public class UserController {
     // 1. 회원가입 API
     // Body
     @ResponseBody
-    @PostMapping("signup")
+    @PostMapping("/signup")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
         if(postUserReq.getUserEmail() == null){
@@ -59,10 +59,10 @@ public class UserController {
     }
 
 
-    // 1.
+    // 2. 로그인 API
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> login(@RequestBody PostLoginReq postLoginReq){
         try{
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
@@ -70,6 +70,34 @@ public class UserController {
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    // 3. 로그아웃 API
+    @ResponseBody
+    @PostMapping("/logout")
+    public BaseResponse<String> logout(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userProvider.logout(userIdx);
+            return new BaseResponse<>("로그아웃 되었습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 4. 회원탈퇴 API
+    @ResponseBody
+    @PostMapping("/signout")
+    public BaseResponse<String> signout(@RequestBody PostSignOutReq postSignOutReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createSignOut(postSignOutReq, userIdx);
+            return new BaseResponse<>("회원탈퇴 되었습니다.");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
         }
     }
 }

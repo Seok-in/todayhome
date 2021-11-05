@@ -28,6 +28,37 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
+    public void signoutUser(PostSignOutReq postSignOutReq, int userIdx){
+        String createSignOutQuery = "insert into UserSignOut VALUES (?, ?, ?, ?, ?, ?, ?, 'Y', ?);";
+        Object[] createSignOutParams = new Object[]{
+                userIdx,
+                postSignOutReq.getLowUse(),
+                postSignOutReq.getReSignup(),
+                postSignOutReq.getLowResource(),
+                postSignOutReq.getProtection(),
+                postSignOutReq.getLowService(),
+                postSignOutReq.getEtc(),
+                postSignOutReq.getServiceText()
+        };
+        this.jdbcTemplate.update(createSignOutQuery, createSignOutParams);
+
+        String updateSignOutQuery = "update User set Status = 'D' where userIdx = ?;";
+        int updateSignOutParams = userIdx;
+        this.jdbcTemplate.update(updateSignOutQuery, updateSignOutParams);
+
+    }
+    public void login(int userIdx){
+        String loginQuery = "update User set loginStatus = 'Y' where userIdx = ?;";
+        int loginParams = userIdx;
+        this.jdbcTemplate.update(loginQuery,loginParams);
+    }
+
+    public void logout(int userIdx){
+        String logoutQuery = "update User set loginStatus = 'N' where userIdx = ?;";
+        int logoutParams = userIdx;
+        this.jdbcTemplate.update(logoutQuery, logoutParams);
+    }
+
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select userEmail from User where userEmail = ?);";
         String checkEmailParams = email;

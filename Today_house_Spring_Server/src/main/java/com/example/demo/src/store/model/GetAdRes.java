@@ -12,5 +12,4 @@ import lombok.Setter;
 public class GetAdRes {
     private String adImage;
     private String adUrl;
-
 }

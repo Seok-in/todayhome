@@ -4,6 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.store.StoreService;
 import com.example.demo.src.store.StoreProvider;
+import com.example.demo.src.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.src.store.model.*;
@@ -16,6 +17,7 @@ import java.util.List;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
+import static java.lang.Integer.parseInt;
 
 @RestController
 @RequestMapping("/ohouse/store")
@@ -77,7 +79,7 @@ public class StoreController {
 
     @ResponseBody
     @GetMapping("/categories")
-    public BaseResponse<GetStoreFirstCtgRes> getSToreFirstCtgRes(@RequestParam(required = false) String categoryName){
+    public BaseResponse<GetStoreFirstCtgRes> getStoreFirstCtgRes(@RequestParam(required = false) String categoryName){
         try{
             if (categoryName == null){
                 return new BaseResponse<>(CATEGORYNAME_EMPTY);
@@ -103,6 +105,70 @@ public class StoreController {
             GetStoreSecondCtgRes getStoreSecondCtgRes = storeProvider.getStoreSecondCtgRes(userIdx, categoryName);
 
             return new BaseResponse<>(getStoreSecondCtgRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/orders") //토의 및 수정필요
+    public BaseResponse<String> createOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.createOrder(postCreateOrderReq, userIdx);
+            return new BaseResponse<>("주문완료하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/orders") //토의 및 수정필요
+    public BaseResponse<String> createCartOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.createGetCart(postCreateOrderReq, userIdx);
+            return new BaseResponse<>("장바구니에 담았습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/orders") //토의 및 수정필요
+    public BaseResponse<String> createOrderByCart(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.createOrderByCart(userIdx);
+            return new BaseResponse<>("장바구니 구매하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/carts/status")
+    public BaseResponse<String> deleteCarts(@RequestBody String Index, @RequestBody ProductOption productOption){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            if (Index != null){
+                    int productIdx = Integer.parseInt(Index);
+                    storeService.deleteCartByProductIdx(userIdx, productIdx);
+                    return new BaseResponse<>("ProductIdx 으로 삭제 완료");
+            }
+            else if (!productOption.equals(null)){
+                int productIdx = Integer.parseInt(Index);
+                storeService.deleteCartByStatus(userIdx);
+                return new BaseResponse<>("선택된 항목만 삭제 완료");
+            }
+            else{
+                storeService.deleteCartByOptionIdx(userIdx, productOption);
+                return new BaseResponse<>("ProductOption 으로 삭제 완료");
+            }
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

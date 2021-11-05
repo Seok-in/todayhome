@@ -245,4 +245,82 @@ public class StoreDao {
                         rs.getInt("visitNum"))
                 , categoryParams, idxParams);
     }
+
+    public void createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx){
+        String createCartQuery ="insert into Cart (userIdx) VALUES (?);";
+        int createCartParams = userIdx;
+        this.jdbcTemplate.update(createCartQuery, createCartParams);
+
+        String lastInsertQuery = "select last_insert_id();";
+        int cartIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+
+        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx" +
+                " VALUES (?, ?, 'D', ?, ?, ?, ?);";
+        Object[] createOrderParams = {
+                cartIdx,
+                postCreateOrderReq.getProductIdx(),
+                postCreateOrderReq.getFirstOptionIdx(),
+                postCreateOrderReq.getSecondOptionIdx(),
+                postCreateOrderReq.getThirdOptionIdx(),
+                postCreateOrderReq.getProductNum()
+        };
+        this.jdbcTemplate.update(createOrderQuery, createOrderParams);
+    }
+
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx){
+        String createCartQuery ="insert into Cart (userIdx) VALUES (?);";
+        int createCartParams = userIdx;
+        this.jdbcTemplate.update(createCartQuery, createCartParams);
+
+        String lastInsertQuery = "select last_insert_id();";
+        int cartIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+
+        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx" +
+                " VALUES (?, ?, 'C', ?, ?, ?, ?);";
+        Object[] createOrderParams = {
+                cartIdx,
+                postCreateOrderReq.getProductIdx(),
+                postCreateOrderReq.getFirstOptionIdx(),
+                postCreateOrderReq.getSecondOptionIdx(),
+                postCreateOrderReq.getThirdOptionIdx(),
+                postCreateOrderReq.getProductNum()
+        };
+        this.jdbcTemplate.update(createOrderQuery, createOrderParams);
+    }
+
+    public void createOrderByCart(int userIdx){
+        int params2 = getCartIdx(userIdx);
+        String createOrderQuery ="update GetCart set cartFlag = 'D' where cartIdx = ? && status = 'Y';";
+        this.jdbcTemplate.update(createOrderQuery, params2);
+    }
+
+    public int getCartIdx(int userIdx){
+        String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +
+                "where userIdx =? && status = 'Y';";
+        int params = userIdx;
+        return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
+    }
+
+    public void deleteCartByStatus(int userIdx){
+        String createOrderQuery ="update GetCart set Status = 'D' where cartIdx = ? && status = 'Y';";
+        int params2 = getCartIdx(userIdx);
+        this.jdbcTemplate.update(createOrderQuery, params2);
+    }
+    public void deleteCartByProductIdx(int userIdx, int productIdx){
+        String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && productIdx = ?;";
+        int params2 = getCartIdx(userIdx);
+        int params3 = productIdx;
+        this.jdbcTemplate.update(deleteQuery, params2, params3);
+    }
+    public void deleteCartByOptionIdx(int userIdx, ProductOption productOption){
+        String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && firstOptionIdx = ? " +
+                                "&& secondOptionIdx = ? && thirdOptionIdx = ?;";
+        Object[] params = new Object[]{
+                getCartIdx(userIdx),
+                productOption.getFirstOption(),
+                productOption.getSecondOption(),
+                productOption.getThirdOption()
+        };
+        this.jdbcTemplate.update(deleteQuery, params);
+    }
 }

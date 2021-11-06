@@ -303,20 +303,20 @@ public class StoreDao {
     }
 
     public void deleteCartByStatus(int cartIdx){
-        String createOrderQuery ="update GetCart set Status = 'D' where cartIdx = ? && status = 'Y';";
+        String createOrderQuery ="update GetCart set status = 'D' where cartIdx = ? && status = 'Y';";
         int params2 = cartIdx;
         this.jdbcTemplate.update(createOrderQuery, params2);
     }
 
     public void deleteCartByProductIdx(int cartIdx, int productIdx){
-        String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && productIdx = ?;";
+        String deleteQuery = "update GetCart set status = 'D' where cartIdx = ? && productIdx = ?;";
         int params2 = cartIdx;
         int params3 = productIdx;
         this.jdbcTemplate.update(deleteQuery, params2, params3);
     }
 
     public void deleteCartByOptionIdx(int cartIdx, ProductOption productOption){
-        String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && firstOptionIdx = ? " +
+        String deleteQuery = "update GetCart set status = 'D' where cartIdx = ? && firstOptionIdx = ? " +
                                 "&& secondOptionIdx = ? && thirdOptionIdx = ?;";
         Object[] params = new Object[]{
                 cartIdx,
@@ -328,16 +328,28 @@ public class StoreDao {
     }
 
     public void checkCartProduct(int cartIdx, int productIdx){
-        String checkQuery = "update GetCart set Status = 'Y' where cartIdx = ? && productIdx = ? && status = 'N';";
+        String checkQuery = "update GetCart set status = 'Y' where cartIdx = ? && productIdx = ? && status = 'N';";
         int params = cartIdx;
         int params2 = productIdx;
         this.jdbcTemplate.update(checkQuery, params, params2);
     }
 
     public void nonCheckCartProduct(int cartIdx, int productIdx){
-        String nonCheckQuery = "update GetCart set Status = 'N' where cartIdx = ? && productIdx = ? && status = 'Y';";
+        String nonCheckQuery = "update GetCart set status = 'N' where cartIdx = ? && productIdx = ? && status = 'Y';";
         int params = cartIdx;
         int params2 = productIdx;
         this.jdbcTemplate.update(nonCheckQuery, params, params2);
+    }
+
+    public void allCheckCartProduct(int cartIdx){
+        String allCheckQuery = "update GetCart set status = 'Y' where cartIdx = ? && status = 'N';";
+        int params = cartIdx;
+        this.jdbcTemplate.update(allCheckQuery, params);
+    }
+
+    public void allNonCheckCartProduct(int cartIdx){
+        String allCheckQuery = "update GetCart set status = 'N' where cartIdx = ? && status = 'Y';";
+        int params = cartIdx;
+        this.jdbcTemplate.update(allCheckQuery, params);
     }
 }

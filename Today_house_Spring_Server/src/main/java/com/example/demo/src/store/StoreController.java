@@ -203,4 +203,30 @@ public class StoreController {
         }
     }
 
+    @ResponseBody
+    @PatchMapping("/cart/all-checks")
+    public BaseResponse<String> allCheckCartProduct(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.allCheckCartProduct(userIdx);
+            return new BaseResponse<>("품목 전체 체크");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/all-non-checks")
+    public BaseResponse<String> allNonCheckCartProduct(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.allNonCheckCartProduct(userIdx);
+            return new BaseResponse<>("품목 전체 체크 해제");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

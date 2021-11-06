@@ -128,4 +128,26 @@ public class StoreService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void allCheckCartProduct(int userIdx) throws BaseException{
+        try{
+            int cartIdx = storeDao.getCartIdx(userIdx);
+            storeDao.allCheckCartProduct(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void allNonCheckCartProduct(int userIdx) throws BaseException{
+        try{
+            int cartIdx = storeDao.getCartIdx(userIdx);
+            storeDao.allNonCheckCartProduct(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

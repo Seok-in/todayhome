@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.PostUpdate;
 import java.util.List;
+import java.util.Objects;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -112,7 +113,7 @@ public class StoreController {
     }
 
     @ResponseBody
-    @PostMapping("/orders") //토의 및 수정필요
+    @PostMapping("/order") //토의 및 수정필요
     public BaseResponse<String> createOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -125,7 +126,7 @@ public class StoreController {
     }
 
     @ResponseBody
-    @PostMapping("/orders") //토의 및 수정필요
+    @PostMapping("/cart") //토의 및 수정필요
     public BaseResponse<String> createCartOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -138,7 +139,7 @@ public class StoreController {
     }
 
     @ResponseBody
-    @PostMapping("/orders") //토의 및 수정필요
+    @PostMapping("/cart/orders") //토의 및 수정필요
     public BaseResponse<String> createOrderByCart(){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -151,21 +152,22 @@ public class StoreController {
     }
 
     @ResponseBody
-    @PatchMapping("/carts/status")
-    public BaseResponse<String> deleteCarts(@RequestBody String Index, @RequestBody ProductOption productOption){
+    @PatchMapping("/cart/status")
+    public BaseResponse<String> deleteCarts(@RequestBody(required = false) PatchCartStatusReq patchCartStatusReq){
         try{
             int userIdx = jwtService.getUserIdx();
-            if (Index != null){
-                    int productIdx = Integer.parseInt(Index);
-                    storeService.deleteCartByProductIdx(userIdx, productIdx);
-                    return new BaseResponse<>("ProductIdx 으로 삭제 완료");
-            }
-            else if (!productOption.equals(null)){
-                int productIdx = Integer.parseInt(Index);
+            if (Objects.isNull(patchCartStatusReq)){
                 storeService.deleteCartByStatus(userIdx);
                 return new BaseResponse<>("선택된 항목만 삭제 완료");
             }
+            else if (patchCartStatusReq.getProductIdx() != null){
+                    String index = patchCartStatusReq.getProductIdx();
+                    int productIdx = Integer.parseInt(index);
+                    storeService.deleteCartByProductIdx(userIdx, productIdx);
+                    return new BaseResponse<>("ProductIdx 으로 삭제 완료");
+            }
             else{
+                ProductOption productOption = patchCartStatusReq.getProductOption();
                 storeService.deleteCartByOptionIdx(userIdx, productOption);
                 return new BaseResponse<>("ProductOption 으로 삭제 완료");
             }
@@ -174,4 +176,31 @@ public class StoreController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @PatchMapping("/cart/check")
+    public BaseResponse<String> checkCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.checkCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            return new BaseResponse<>("품목 체크");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/non-check")
+    public BaseResponse<String> nonCheckCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.nonCheckCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            return new BaseResponse<>("품목 체크 해제");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

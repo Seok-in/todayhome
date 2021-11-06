@@ -9,10 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostCreateOrderReq {
+public class PatchCheckCartReq {
     private int productIdx;
-    private int firstOptionIdx;
-    private int secondOptionIdx;
-    private int thirdOptionIdx;
-    private int productNum;
 }

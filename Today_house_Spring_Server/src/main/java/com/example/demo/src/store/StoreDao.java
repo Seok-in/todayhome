@@ -4,6 +4,7 @@ import com.example.demo.src.store.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -246,15 +247,16 @@ public class StoreDao {
                 , categoryParams, idxParams);
     }
 
-    public void createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx){
+    public int createCart(int userIdx){
         String createCartQuery ="insert into Cart (userIdx) VALUES (?);";
         int createCartParams = userIdx;
         this.jdbcTemplate.update(createCartQuery, createCartParams);
-
         String lastInsertQuery = "select last_insert_id();";
-        int cartIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+        return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+    }
 
-        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx" +
+    public void createOrder(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'D', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
@@ -266,16 +268,15 @@ public class StoreDao {
         };
         this.jdbcTemplate.update(createOrderQuery, createOrderParams);
     }
-
-    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx){
-        String createCartQuery ="insert into Cart (userIdx) VALUES (?);";
-        int createCartParams = userIdx;
-        this.jdbcTemplate.update(createCartQuery, createCartParams);
-
-        String lastInsertQuery = "select last_insert_id();";
-        int cartIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
-
-        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx" +
+    public int checkUserCart(int userIdx){
+        String checkQuery = "SELECT exists(select gc.cartIdx from GetCart gc\n" +
+                "                left join (SELECT userIdx, cartIdx FROM Cart where userIdx = ?) as c on gc.cartIdx = c.cartIdx\n" +
+                "                where status = 'Y' or  status = 'N')";
+        int params = userIdx;
+        return this.jdbcTemplate.queryForObject(checkQuery, int.class, params);
+    }
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+        String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'C', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
@@ -288,8 +289,8 @@ public class StoreDao {
         this.jdbcTemplate.update(createOrderQuery, createOrderParams);
     }
 
-    public void createOrderByCart(int userIdx){
-        int params2 = getCartIdx(userIdx);
+    public void createOrderByCart(int cartIdx){
+        int params2 = cartIdx;
         String createOrderQuery ="update GetCart set cartFlag = 'D' where cartIdx = ? && status = 'Y';";
         this.jdbcTemplate.update(createOrderQuery, params2);
     }
@@ -301,26 +302,42 @@ public class StoreDao {
         return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
     }
 
-    public void deleteCartByStatus(int userIdx){
+    public void deleteCartByStatus(int cartIdx){
         String createOrderQuery ="update GetCart set Status = 'D' where cartIdx = ? && status = 'Y';";
-        int params2 = getCartIdx(userIdx);
+        int params2 = cartIdx;
         this.jdbcTemplate.update(createOrderQuery, params2);
     }
-    public void deleteCartByProductIdx(int userIdx, int productIdx){
+
+    public void deleteCartByProductIdx(int cartIdx, int productIdx){
         String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && productIdx = ?;";
-        int params2 = getCartIdx(userIdx);
+        int params2 = cartIdx;
         int params3 = productIdx;
         this.jdbcTemplate.update(deleteQuery, params2, params3);
     }
-    public void deleteCartByOptionIdx(int userIdx, ProductOption productOption){
+
+    public void deleteCartByOptionIdx(int cartIdx, ProductOption productOption){
         String deleteQuery = "update GetCart set Status = 'D' where cartIdx = ? && firstOptionIdx = ? " +
                                 "&& secondOptionIdx = ? && thirdOptionIdx = ?;";
         Object[] params = new Object[]{
-                getCartIdx(userIdx),
+                cartIdx,
                 productOption.getFirstOption(),
                 productOption.getSecondOption(),
                 productOption.getThirdOption()
         };
         this.jdbcTemplate.update(deleteQuery, params);
+    }
+
+    public void checkCartProduct(int cartIdx, int productIdx){
+        String checkQuery = "update GetCart set Status = 'Y' where cartIdx = ? && productIdx = ? && status = 'N';";
+        int params = cartIdx;
+        int params2 = productIdx;
+        this.jdbcTemplate.update(checkQuery, params, params2);
+    }
+
+    public void nonCheckCartProduct(int cartIdx, int productIdx){
+        String nonCheckQuery = "update GetCart set Status = 'N' where cartIdx = ? && productIdx = ? && status = 'Y';";
+        int params = cartIdx;
+        int params2 = productIdx;
+        this.jdbcTemplate.update(nonCheckQuery, params, params2);
     }
 }

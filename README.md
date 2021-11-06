@@ -91,6 +91,18 @@
   - Dev : Popo : https://seokin-test.shop
   - Prod : Bingsu : https://risingcamp.shop
 
+### 2021-11-06
+- API 추가 및 구현
+  - 70 ~ 73 번 : 장바구니 체크/체크해제/전체체크/전체체크 해제 (중복되는 기능!)
+  - 56 번 : 스토어 단일상품 조회 API
+  - 57 번 : 스토어 단일상품 장바구니 담기 API
+  - 59 번 : 장바구니 구매 API
+    - 장바구니 구매 시 Res 형식을 만들어줘야할 거 같아서 수정 요망.
+  - 60 번 : 장바구니 삭제 API
+    - 선택플래그로 삭제
+    - OptionIdx 로 삭제
+    - ProductIdx 로 삭제
+
 ## 빙수 개발일지
 
 

@@ -1,0 +1,14 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: demo
+
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://bingsudb.cmjbj7d1h2du.ap-northeast-2.rds.amazonaws.com/BINGSUdb?autoReconnect=true&verifyServerCertificate=false&useSSL=false  # 변경해주세요
+    username:  master # 변경해주세요
+    password:  Kp191213 # 변경해주세요
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
+    # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전

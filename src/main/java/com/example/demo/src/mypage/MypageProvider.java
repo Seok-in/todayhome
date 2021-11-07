@@ -96,4 +96,30 @@ public class MypageProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 포인트 조회
+     */
+    public List<Point> getPoints(int myIdx) throws BaseException{
+        try{
+            List<Point> pointList = mypageDao.getPoints(myIdx);
+            return pointList;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 사용 가능한 전체 포인트 조회
+     */
+    public int getUsablePoints(int myIdx) throws BaseException{
+        try{
+            int usablePoints = mypageDao.getUsablePoints(myIdx);
+            return usablePoints;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

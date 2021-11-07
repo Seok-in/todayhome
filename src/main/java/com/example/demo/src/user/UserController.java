@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Base64.Decoder;
 import com.google.gson.Gson;
+import org.springframework.http.MediaType;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -76,7 +77,7 @@ public class UserController {
      * @return BaseResponse<PostLoginRes>
      */
     @ResponseBody
-    @PostMapping("/login")
+    @PostMapping(value = "/login"/*, consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE*/)
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
         try{
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!

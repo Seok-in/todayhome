@@ -163,4 +163,37 @@ public class MypageDao {
         return result;
     }
 
+    /**
+     개별 Point 조회
+     */
+    public List<Point> getPoints(int myIdx){
+        int myIdxParams = myIdx;
+        String getPointQuery = "SELECT Point.pointName, Point.pointText, UP.point, UP.expiredAt, UP.createdAt\n" +
+                "FROM UserPoint AS UP\n" +
+                "INNER JOIN Point ON UP.pointIdx = Point.pointIdx\n" +
+                "WHERE UP.userIdx = ? and UP.expiredAt > current_timestamp;";
+        return this.jdbcTemplate.query(getPointQuery,
+                (rs, rowNum) -> new Point(
+                        rs.getString("pointName"),
+                        rs.getString("pointText"),
+                        rs.getInt("point"),
+                        rs.getString("expiredAt"),
+                        rs.getString("createdAt")),
+                myIdxParams
+        );
+    }
+
+    /**
+     전체 Point 조회
+     */
+    public int getUsablePoints(int myIdx){
+        int myIdxParams = myIdx;
+        String getUsablePointsQuery = "SELECT IFNULL(SUM(UP.point),0)\n" +
+                "FROM UserPoint AS UP\n" +
+                "WHERE UP.userIdx = ? and UP.expiredAt > current_timestamp";
+        return this.jdbcTemplate.queryForObject(getUsablePointsQuery,
+                int.class,
+                myIdxParams);
+    }
+
 }

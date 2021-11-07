@@ -74,7 +74,7 @@ public class MypageController {
      * Coupon 조회 API
      */
     @ResponseBody
-    @GetMapping("/coupons")
+    @GetMapping("/my-shopping/coupons")
     public BaseResponse<List<GetCoupons>> getCoupons () {
         try{
             int myIdx = jwtService.getUserIdx();
@@ -91,7 +91,7 @@ public class MypageController {
      * Coupon 받기 API
      */
     @ResponseBody
-    @PostMapping("/coupons")
+    @PostMapping("/my-shopping/coupons")
     public BaseResponse<String> PostPcouponsReq(@RequestBody PostPcouponsReq postPcouponsReq) {
         try{
             int myIdx = jwtService.getUserIdx();
@@ -111,7 +111,7 @@ public class MypageController {
      * Coupon 발급 API 2 (Coupon code)
      */
     @ResponseBody
-    @PostMapping("/coupons/new")
+    @PostMapping("/my-shopping/coupons/new")
     public BaseResponse<String> postCouponCode(@RequestParam(value="code", required=false, defaultValue="") String code /*@RequestBody PostCodeReq postCodeReq*/) {
         try{
             int myIdx = jwtService.getUserIdx();
@@ -130,4 +130,25 @@ public class MypageController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 포인트 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/my-shopping/points")
+    public BaseResponse<GetPoints> getPoints () {
+        try{
+            int myIdx = jwtService.getUserIdx();
+            List<Point> pointList = mypageProvider.getPoints(myIdx);
+            int usablePoints = mypageProvider.getUsablePoints(myIdx);
+            GetPoints getPoints = new GetPoints(usablePoints, pointList);
+            return new BaseResponse<>(getPoints);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 }

@@ -3,6 +3,7 @@ package com.example.demo.src.store;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.store.*;
 import com.example.demo.src.store.model.PostCreateOrderReq;
+import com.example.demo.src.store.model.PostCreateOrderRes;
 import com.example.demo.src.store.model.ProductOption;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class StoreService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void createOrderByCart(int userIdx) throws BaseException{
+    public PostCreateOrderRes createOrderByCart(int userIdx) throws BaseException{
         try{
             int cartIdx = storeDao.getCartIdx(userIdx);
             storeDao.createOrderByCart(cartIdx);

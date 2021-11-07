@@ -140,7 +140,7 @@ public class StoreController {
 
     @ResponseBody
     @PostMapping("/cart/orders") //토의 및 수정필요
-    public BaseResponse<String> createOrderByCart(){
+    public BaseResponse<PostCreateOrderRes> createOrderByCart(){
         try{
             int userIdx = jwtService.getUserIdx();
             storeService.createOrderByCart(userIdx);

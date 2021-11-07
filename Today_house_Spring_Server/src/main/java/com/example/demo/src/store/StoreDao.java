@@ -295,6 +295,15 @@ public class StoreDao {
         this.jdbcTemplate.update(createOrderQuery, params2);
     }
 
+    public (int cartIdx){
+        String createOrderQuery ="";
+
+    }
+
+    public OrderProduct getOrderProduct(int cartIdx){
+
+    }
+
     public int getCartIdx(int userIdx){
         String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +
                 "where userIdx =? && status = 'Y';";

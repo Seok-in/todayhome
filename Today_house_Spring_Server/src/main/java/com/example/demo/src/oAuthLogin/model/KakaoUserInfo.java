@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.oAuthLogin.model;
 
 import lombok.Data;
 @Data

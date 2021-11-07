@@ -303,14 +303,14 @@ public class StoreDao {
                 "      , firstOptionName\n" +
                 "      , secondOptionName\n" +
                 "      , thirdOptionName\n" +
-                "      , deliveryWay as delivery\n" +
+                "      , paymentWay as delivery\n" +
                 "      , deliveryFee\n" +
                 "      , num\n" +
                 "      , (salePrice + firstPrice + secondPrice + thirdPrice) * num as price\n" +
                 "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && status = 'Y' && cartFlag = 'D')\n" +
                 "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on P.companyIdx = C.companyIdx) as P2\n" +
-                "                                left join (SELECT productIdx, deliveryFee, deliveryWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
+                "                                left join (SELECT productIdx, deliveryFee, paymentWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
                 "              left join (SELECT optionIdx as firstOptionIdx, name as firstOptionName, optionPrice as firstPrice FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.firstOptionIdx\n" +
                 "              left join (SELECT secondOptionIdx, name as secondOptionName, optionPrice as secondPrice FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
                 "              left join (SELECT thirdOptionIdx, name as thirdOptionName, optionPrice as thirdPrice FROM ProductThirdOption) as PTO on GC.thirdOptionIdx = PTO.thirdOptionIdx;";
@@ -328,6 +328,9 @@ public class StoreDao {
                         rs.getInt("price"))
                 , params);
     }
+
+    //public List<OrderProduct> getCartProducts(int cartIdx){
+    //}
 
     public int getCartIdx(int userIdx){
         String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +

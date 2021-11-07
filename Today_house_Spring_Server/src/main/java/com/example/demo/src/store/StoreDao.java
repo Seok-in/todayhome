@@ -283,10 +283,10 @@ public class StoreDao {
         Object[] createOrderParams = {
                 cartIdx,
                 postCreateOrderReq.getProductIdx(),
+                postCreateOrderReq.getProductNum(),
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
-                postCreateOrderReq.getThirdOptionIdx(),
-                postCreateOrderReq.getProductNum()
+                postCreateOrderReq.getThirdOptionIdx()
         };
         this.jdbcTemplate.update(createOrderQuery, createOrderParams);
     }
@@ -334,7 +334,7 @@ public class StoreDao {
 
     public int getCartIdx(int userIdx){
         String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +
-                "where userIdx =? && status = 'Y';";
+                "where userIdx =? && status = 'Y' or status='N';";
         int params = userIdx;
         return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
     }

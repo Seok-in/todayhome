@@ -82,4 +82,14 @@ public class UserDao {
                 );
     }
 
+    public UserInfo getUserInfo(int userIdx){
+        String getUserInfoQuery = "select userRealName, userCall, userRecentEmail FROM User Where userIdx = ?;";
+        int params =userIdx;
+        return this.jdbcTemplate.queryForObject(getUserInfoQuery,
+                (rs, rowNum) -> new UserInfo(
+                        rs.getString("userRealName"),
+                        rs.getString("userCall"),
+                        rs.getString("userRecentEmail")
+                ), params);
+    }
 }

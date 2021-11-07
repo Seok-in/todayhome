@@ -114,11 +114,11 @@ public class StoreController {
 
     @ResponseBody
     @PostMapping("/order") //토의 및 수정필요
-    public BaseResponse<String> createOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
+    public BaseResponse<PostCreateOrderRes> createOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
         try{
             int userIdx = jwtService.getUserIdx();
-            storeService.createOrder(postCreateOrderReq, userIdx);
-            return new BaseResponse<>("주문완료하였습니다.");
+            PostCreateOrderRes postCreateOrderRes = storeService.createOrder(postCreateOrderReq, userIdx);
+            return new BaseResponse<>(postCreateOrderRes);
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -143,8 +143,8 @@ public class StoreController {
     public BaseResponse<PostCreateOrderRes> createOrderByCart(){
         try{
             int userIdx = jwtService.getUserIdx();
-            storeService.createOrderByCart(userIdx);
-            return new BaseResponse<>("장바구니 구매하였습니다.");
+            PostCreateOrderRes postCreateOrderRes = storeService.createOrderByCart(userIdx);
+            return new BaseResponse<>(postCreateOrderRes);
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

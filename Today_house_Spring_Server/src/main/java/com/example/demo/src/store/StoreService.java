@@ -2,6 +2,7 @@ package com.example.demo.src.store;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.store.*;
+import com.example.demo.src.user.UserDao;
 import com.example.demo.src.store.model.PostCreateOrderReq;
 import com.example.demo.src.store.model.PostCreateOrderRes;
 import com.example.demo.src.store.model.ProductOption;
@@ -24,20 +25,31 @@ public class StoreService {
     private final StoreDao storeDao;
     private final StoreProvider storeProvider;
     private final JwtService jwtService;
+    private final UserDao userDao;
 
 
     @Autowired
-    public StoreService(StoreDao storeDao, StoreProvider storeProvider, JwtService jwtService) {
+    public StoreService(StoreDao storeDao, StoreProvider storeProvider, JwtService jwtService, UserDao userDao) {
         this.storeDao = storeDao;
         this.storeProvider = storeProvider;
         this.jwtService = jwtService;
+        this.userDao = userDao;
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException{
+    public PostCreateOrderRes createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException{
         try {
+            PostCreateOrderRes postCreateOrderRes = new PostCreateOrderRes();
+
             int cartIdx = storeDao.createCart(userIdx);
             storeDao.createOrder(postCreateOrderReq, cartIdx);
+
+            postCreateOrderRes.setOrderProduct(storeDao.getOrderProducts(cartIdx));
+            postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
+            postCreateOrderRes.setUserName(userDao.getUserInfo(userIdx).getUserRealName());
+            postCreateOrderRes.setUserEmail(userDao.getUserInfo(userIdx).getUserRecentEmail());
+
+            return postCreateOrderRes;
         }
         catch(Exception exception){
             System.err.println(exception.toString());
@@ -66,8 +78,15 @@ public class StoreService {
     @Transactional(rollbackFor = {Exception.class})
     public PostCreateOrderRes createOrderByCart(int userIdx) throws BaseException{
         try{
+            PostCreateOrderRes postCreateOrderRes = new PostCreateOrderRes();
             int cartIdx = storeDao.getCartIdx(userIdx);
             storeDao.createOrderByCart(cartIdx);
+            postCreateOrderRes.setOrderProduct(storeDao.getOrderProducts(cartIdx));
+            postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
+            postCreateOrderRes.setUserName(userDao.getUserInfo(userIdx).getUserRealName());
+            postCreateOrderRes.setUserEmail(userDao.getUserInfo(userIdx).getUserRecentEmail());
+
+            return postCreateOrderRes;
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);

@@ -81,7 +81,10 @@ public class UserDao {
                 getPwdParams
                 );
     }
-
+    public int getUserIdx(String email) {
+        String getUserIdxQuery = "select userIdx from User where userEmail =?;";
+        return this.jdbcTemplate.queryForObject(getUserIdxQuery,int.class, email);
+    }
     public UserInfo getUserInfo(int userIdx){
         String getUserInfoQuery = "select userRealName, userCall, userRecentEmail FROM User Where userIdx = ?;";
         int params =userIdx;
@@ -92,4 +95,5 @@ public class UserDao {
                         rs.getString("userRecentEmail")
                 ), params);
     }
+
 }

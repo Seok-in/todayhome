@@ -100,4 +100,30 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    // 6. KAKAO 로그인
+    @ResponseBody
+    @PostMapping("/kakao")
+    public BaseResponse<PostLoginRes> kakaoLogin(@RequestBody KakaoLoginReq kakaoLoginReq){
+        try{
+            PostLoginRes postLoginRes = userProvider.kakaoLogin(kakaoLoginReq.getAccessToken());
+            return new BaseResponse<>(postLoginRes);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 6-1. KAKAO 회원가입
+    @ResponseBody
+    @PostMapping("/kakao/signup")
+    public BaseResponse<PostLoginRes> kakaoSignup(@RequestBody KakaoUserNameReq kakaoUserNameReq){
+        try{
+            PostLoginRes postLoginRes = userService.createKakaoUser(kakaoUserNameReq);
+            return new BaseResponse<>(postLoginRes);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

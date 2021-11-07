@@ -21,15 +21,17 @@ import static com.example.demo.config.BaseResponseStatus.*;
 public class UserProvider {
 
     private final UserDao userDao;
+    private final UserService userService;
     private final JwtService jwtService;
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public UserProvider(UserDao userDao, JwtService jwtService) {
+    public UserProvider(UserDao userDao, JwtService jwtService, UserService userService) {
         this.userDao = userDao;
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     public int checkEmail(String email) throws BaseException{
@@ -75,4 +77,16 @@ public class UserProvider {
         }
     }
 
+    public PostLoginRes kakaoLogin(String accessToken) throws BaseException{
+        KakaoUserInfo kakaoUserInfo = userService.getKakaoUserInfo(accessToken);
+        String email = kakaoUserInfo.getKakao_account().getEmail();
+        if (userDao.checkEmail(email)==1){
+            int userIdx = userDao.getUserIdx(email);
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostLoginRes(jwt);
+        }
+        else{
+            throw new BaseException(NEED_TO_SIGNUP);
+        }
+    }
 }

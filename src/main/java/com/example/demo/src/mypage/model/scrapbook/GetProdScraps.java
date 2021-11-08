@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
-/**
-노하우, 집들이 스크랩북
- */
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetContentScrap {
+public class GetProdScraps {
     private String imagePath;
-    private String title;
-    private String userName;
+    private String companyName;
+    private String productName;
+    private int salePercent;
+    private int productPrice;
+    private float rate;
+    private int reviewNum;
 }

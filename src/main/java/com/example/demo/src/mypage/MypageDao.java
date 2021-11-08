@@ -200,9 +200,8 @@ public class MypageDao {
     /**
      전체 스크랩북 조회
      */
-    public List<GetAllScraps> getAllScraps(int myIdx){
-        int myIdxParams = myIdx;
-        Object[] getAllScrapsParams = new Object[]{myIdx, myIdx, myIdx};
+    public List<GetAllScraps> getAllScraps(int userIdx){
+        Object[] getAllScrapsParams = new Object[]{userIdx, userIdx, userIdx};
         String getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag from House\n" +
                 "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
                 "where UserScrap.userIdx = ?\n" +
@@ -219,6 +218,73 @@ public class MypageDao {
                         rs.getString("coverImage"),
                         rs.getString("flag")),
                 getAllScrapsParams
+        );
+    }
+
+    /**
+     집들이 & 노하우 스크랩북 조회
+     */
+    public List<GetContentScraps> getContentScraps(int userIdx, String filter){
+        int myIdxParams = userIdx;
+        String getContentScrapsQuery = "";
+        if(filter.equals("house"))
+            getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
+                    "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
+                    "INNER JOIN User ON User.userIdx = House.userIdx\n" +
+                    "where UserScrap.userIdx = ?";
+        else
+            getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
+                    "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
+                    "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
+                    "where UserScrap.userIdx = ?";
+        return this.jdbcTemplate.query(getContentScrapsQuery,
+                (rs, rowNum) -> new GetContentScraps(
+                        rs.getString("coverImage"),
+                        rs.getString("title"),
+                        rs.getString("userName")),
+                myIdxParams
+        );
+    }
+
+    /**
+     사진 스크랩북 조회
+     */
+    public List<GetPicScraps> getPicScraps(int userIdx){
+        int myIdxParams = userIdx;
+        String getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
+                "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx\n" +
+                "WHERE UserScrap.userIdx = ?\n" +
+                "GROUP BY PC.pictureIdx";
+
+        return this.jdbcTemplate.query(getPicScrapsQuery,
+                (rs, rowNum) -> new GetPicScraps(
+                        rs.getString("pictureImage")),
+                myIdxParams
+        );
+    }
+
+    /**
+     상품 스크랩북 조회
+     */
+    public List<GetProdScraps> getProdScraps(int userIdx){
+        int myIdxParams = userIdx;
+        String getProdScrapsQuery = "SELECT PI.productImage, Company.companyName, P.productName, P.salesPercent, P.productPrice , IFNULL(R.rate,0) rate, IFNULL(R.cnt,0) cnt FROM Product P\n" +
+                "INNER JOIN UserScrap ON UserScrap.productIdx = P.productIdx\n" +
+                "INNER JOIN ProductImage PI ON UserScrap.productIdx = PI.productIdx AND PI.imageFlag = 'Y'\n" +
+                "INNER JOIN Company ON P.companyIdx = Company.companyIdx\n" +
+                "LEFT OUTER JOIN (SELECT productIdx,round(sum(rate)/IFNULL(count(Review.reivewIdx),1),1) rate, count(Review.reivewIdx) AS cnt FROM Review GROUP BY productIdx) R ON R.productIdx = P.productIdx\n" +
+                "where UserScrap.userIdx = ?;";
+
+        return this.jdbcTemplate.query(getProdScrapsQuery,
+                (rs, rowNum) -> new GetProdScraps(
+                        rs.getString("productImage"),
+                        rs.getString("companyName"),
+                        rs.getString("productName"),
+                        rs.getInt("salesPercent"),
+                        rs.getInt("productPrice"),
+                        rs.getFloat("rate"),
+                        rs.getInt("cnt")),
+                myIdxParams
         );
     }
 

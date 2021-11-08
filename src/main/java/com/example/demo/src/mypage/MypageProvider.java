@@ -127,10 +127,49 @@ public class MypageProvider {
     /**
      * 전체 스크랩북 조회
      */
-    public List<GetAllScraps> getAllScraps(int myIdx) throws BaseException{
+    public List<GetAllScraps> getAllScraps(int userIdx) throws BaseException{
         try{
-            List<GetAllScraps> getAllScraps = mypageDao.getAllScraps(myIdx);
+            List<GetAllScraps> getAllScraps = mypageDao.getAllScraps(userIdx);
             return getAllScraps;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 노하우 & 집들이 스크랩북 조회
+     */
+    public List<GetContentScraps> getContentScraps(int userIdx, String filter) throws BaseException{
+        try{
+            List<GetContentScraps> getContentScraps = mypageDao.getContentScraps(userIdx,filter);
+            return getContentScraps;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 사진 스크랩북 조회
+     */
+    public List<GetPicScraps> getPicScraps(int userIdx) throws BaseException{
+        try{
+            List<GetPicScraps> getPicScraps = mypageDao.getPicScraps(userIdx);
+            return getPicScraps;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 상품 스크랩북 조회
+     */
+    public List<GetProdScraps> getProdScraps(int userIdx) throws BaseException{
+        try{
+            List<GetProdScraps> getProdScraps = mypageDao.getProdScraps(userIdx);
+            return getProdScraps;
         }
         catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

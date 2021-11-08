@@ -155,11 +155,11 @@ public class MypageController {
      * 모든 스크랩북 조회 API
      */
     @ResponseBody
-    @GetMapping("/scrapbook")
-    public BaseResponse<List<GetAllScraps>> getAllScraps () {
+    @GetMapping("/{userIdx}/scrapbook/all")
+    public BaseResponse<List<GetAllScraps>> getAllScraps (@PathVariable("userIdx") int userIdx) {
         try{
-            int myIdx = jwtService.getUserIdx();
-            List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(myIdx);
+            //int myIdx = jwtService.getUserIdx();
+            List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(userIdx);
             return new BaseResponse<>(getAllScraps);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
@@ -167,6 +167,62 @@ public class MypageController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 사진 스크랩북 조회 API
+     */
+
+    @ResponseBody
+    @GetMapping("/{userIdx}/scrapbook/picture")
+    public BaseResponse<List<GetPicScraps>> getPicScraps (@PathVariable("userIdx") int userIdx) {
+        try{
+            //int myIdx = jwtService.getUserIdx();
+            List<GetPicScraps> getPicScraps = mypageProvider.getPicScraps(userIdx);
+            return new BaseResponse<>(getPicScraps);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 상품 스크랩북 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/scrapbook/product")
+    public BaseResponse<List<GetProdScraps>> getProdScraps (@PathVariable("userIdx") int userIdx) {
+        try{
+            //int myIdx = jwtService.getUserIdx();
+            List<GetProdScraps> getProdScraps = mypageProvider.getProdScraps(userIdx);
+            return new BaseResponse<>(getProdScraps);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 노하우&집들이 스크랩북 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/scrapbook/{contents}")
+    public BaseResponse<List<GetContentScraps>> getContentScraps (@PathVariable("userIdx") int userIdx, @PathVariable("contents") String filter) {
+        try{
+            //int myIdx = jwtService.getUserIdx();
+            if(!(filter.equals("house")||filter.equals("knowhow")))
+                return new BaseResponse<>(DATABASE_ERROR);
+            List<GetContentScraps> getContentScraps = mypageProvider.getContentScraps(userIdx, filter);
+            return new BaseResponse<>(getContentScraps);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 
 
 }

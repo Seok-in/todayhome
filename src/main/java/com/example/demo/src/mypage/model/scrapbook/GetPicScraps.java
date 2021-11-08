@@ -9,12 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetProdScrap {
+public class GetPicScraps {
     private String imagePath;
-    private String companyName;
-    private String productName;
-    private int salePercent;
-    private int productPrice;
-    private float rate;
-    private int reviewNum;
 }

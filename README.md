@@ -115,6 +115,15 @@
   - Contents idx를 만들어주고 Contents와 Product를 N:M으로 연결해주는 테이블 생성
     - contents 생성시 안에 있는 Product들을 접근할 수 있는 API를 만들어줘야 함.
 
+### 2021-11-08
+- API 추가 구현
+  - 23, 24번 : 유저 상품 문의 작성/ 삭제 API
+  - 33, 34번 : 유저 주문/배송조회 / 유저 상세주문 조회 API
+  - 55번 : 스토어 단일 상품 배송/교환/환불 정보 조회 API
+  - 58번 : 장바구니 조회 API
+- ERD 수정
+  - QuestionOption Table에 Option을 여러가지 추가(First, Second, Third)
+  - PictureContent Table에 대표사진으로 지정할 수 있는 Flag 추가
 ## 빙수 개발일지
 
 

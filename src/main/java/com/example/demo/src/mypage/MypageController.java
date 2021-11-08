@@ -1,4 +1,4 @@
-package com.example.demo.src.model;
+package com.example.demo.src.mypage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +144,22 @@ public class MypageController {
             int usablePoints = mypageProvider.getUsablePoints(myIdx);
             GetPoints getPoints = new GetPoints(usablePoints, pointList);
             return new BaseResponse<>(getPoints);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 스크랩북 상단 UserName 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/scrapbook")
+    public BaseResponse<String> getUserName (@PathVariable("userIdx") int userIdx) {
+        try{
+            String getUserName = mypageProvider.getUserName(userIdx);
+            return new BaseResponse<>(getUserName);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
             exception.printStackTrace();

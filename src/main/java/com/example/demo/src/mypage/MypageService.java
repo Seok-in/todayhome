@@ -1,4 +1,4 @@
-package com.example.demo.src.model;
+package com.example.demo.src.mypage;
 
 
 

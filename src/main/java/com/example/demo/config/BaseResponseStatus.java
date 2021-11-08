@@ -61,9 +61,12 @@ public enum BaseResponseStatus {
     RECEIVE_FAIL_COUPON(false,5000,"쿠폰 발급받기 실패"),
     ALREADY_RECEIVED_COUPON(false, 5001, "이미 발급된 쿠폰입니다"),
     EMPTY_COUPON_CODE(false, 5002, "쿠폰 코드를 입력해주세요"),
-    INVALID_COUPON_CODE(false, 5003, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요");
+    INVALID_COUPON_CODE(false, 5003, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),
     // 6000 : 필요시 만들어서 쓰세요
-
+    INVALID_INTRO(false, 6000, "올바르지 않은 인트로입니다"),
+    INVALID_CONTENTS(false, 6001, "올바르지 않은 중간 컨텐츠입니다"),
+    INVALID_SOCIAL_INFO(false, 6002, "올바르지 않은 Social Info입니다"),
+    INVALID_COMMENTS(false, 6003, "올바르지 않은 Comments입니다");
 
     private final boolean isSuccess;
     private final int code;

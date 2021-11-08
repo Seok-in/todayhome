@@ -1,71 +1,97 @@
-com/example/demo/src/user/model/PostUserReq.java
- com.example.demo.src.user.model.PostUserReq
 com/example/demo/config/Constant.java
  com.example.demo.config.Constant
 com/example/demo/src/mypage/MypageController.java
- com.example.demo.src.model.MypageController
+ com.example.demo.src.mypage.MypageController
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
-com/example/demo/src/mypage/model/GetSusNum.java
- com.example.demo.src.mypage.model.GetSusNum
-com/example/demo/src/user/model/PostLoginRes.java
- com.example.demo.src.user.model.PostLoginRes
+com/example/demo/src/contents/ContentsService.java
+ com.example.demo.src.contents.ContentsService
 com/example/demo/src/mypage/model/User.java
  com.example.demo.src.mypage.model.User
-com/example/demo/src/user/UserDao.java
- com.example.demo.src.user.UserDao
 com/example/demo/src/mypage/model/GetCoupons.java
  com.example.demo.src.mypage.model.GetCoupons
-com/example/demo/utils/AES128.java
- com.example.demo.utils.AES128
 com/example/demo/config/BaseResponseStatus.java
  com.example.demo.config.BaseResponseStatus
-com/example/demo/src/user/model/PatchUserReq.java
- com.example.demo.src.user.model.PatchUserReq
-com/example/demo/src/WebSecurityConfig.java
- com.example.demo.src.WebSecurityConfig
 com/example/demo/src/mypage/model/GetFollowers.java
  com.example.demo.src.mypage.model.GetFollowers
-com/example/demo/src/test/TestController.java
- com.example.demo.src.test.TestController
-com/example/demo/src/mypage/model/GetProdScrap.java
- com.example.demo.src.mypage.model.GetProdScrap
-com/example/demo/src/user/model/PostLoginReq.java
- com.example.demo.src.user.model.PostLoginReq
+com/example/demo/src/contents/model/GetRecomments.java
+ com.example.demo.src.contents.model.GetRecomments
+com/example/demo/src/contents/model/GetAllComments.java
+ com.example.demo.src.contents.model.GetAllComments
 com/example/demo/src/mypage/model/scrapbook/GetAllScraps.java
  com.example.demo.src.mypage.model.scrapbook.GetAllScraps
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
 com/example/demo/src/user/model/PostUserRes.java
  com.example.demo.src.user.model.PostUserRes
-com/example/demo/src/user/UserController.java
- com.example.demo.src.user.UserController
 com/example/demo/src/mypage/MypageProvider.java
- com.example.demo.src.model.MypageProvider
-com/example/demo/src/mypage/model/PostVideos.java
- com.example.demo.src.mypage.model.PostVideos
+ com.example.demo.src.mypage.MypageProvider
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
 com/example/demo/src/mypage/model/GetPoints.java
  com.example.demo.src.mypage.model.GetPoints
-com/example/demo/src/mypage/MypageService.java
- com.example.demo.src.model.MypageService
+com/example/demo/src/contents/model/house/GetTempHouseContents.java
+ com.example.demo.src.contents.model.house.GetTempHouseContents
 com/example/demo/src/mypage/model/PostCodeReq.java
  com.example.demo.src.mypage.model.PostCodeReq
-com/example/demo/src/user/model/User.java
- com.example.demo.src.user.model.User
+com/example/demo/src/contents/ContentsDao.java
+ com.example.demo.src.contents.ContentsDao
 com/example/demo/src/user/UserService.java
  com.example.demo.src.user.UserService
+com/example/demo/src/contents/model/house/GetHouseContents.java
+ com.example.demo.src.contents.model.house.GetHouseContents
+com/example/demo/src/mypage/model/Point.java
+ com.example.demo.src.mypage.model.Point
+com/example/demo/config/BaseException.java
+ com.example.demo.config.BaseException
+com/example/demo/src/contents/model/GetComments.java
+ com.example.demo.src.contents.model.GetComments
+com/example/demo/src/mypage/model/scrapbook/GetProdScraps.java
+ com.example.demo.src.mypage.model.scrapbook.GetProdScraps
+com/example/demo/src/contents/model/GetSocialInfo.java
+ com.example.demo.src.contents.model.GetSocialInfo
+com/example/demo/src/contents/model/house/GetHouseIntro.java
+ com.example.demo.src.contents.model.house.GetHouseIntro
+com/example/demo/src/user/model/PostUserReq.java
+ com.example.demo.src.user.model.PostUserReq
+com/example/demo/src/contents/model/SocialInfoFormat.java
+ com.example.demo.src.contents.model.SocialInfoFormat
+com/example/demo/src/contents/model/house/GetAllHouseContents.java
+ com.example.demo.src.contents.model.house.GetAllHouseContents
+com/example/demo/src/user/model/PostLoginRes.java
+ com.example.demo.src.user.model.PostLoginRes
+com/example/demo/src/user/UserDao.java
+ com.example.demo.src.user.UserDao
+com/example/demo/src/mypage/model/scrapbook/GetUserName.java
+ com.example.demo.src.mypage.model.scrapbook.GetUserName
+com/example/demo/utils/AES128.java
+ com.example.demo.utils.AES128
+com/example/demo/src/user/model/PatchUserReq.java
+ com.example.demo.src.user.model.PatchUserReq
+com/example/demo/src/WebSecurityConfig.java
+ com.example.demo.src.WebSecurityConfig
+com/example/demo/src/test/TestController.java
+ com.example.demo.src.test.TestController
+com/example/demo/src/mypage/model/GetProdScrap.java
+ com.example.demo.src.mypage.model.GetProdScrap
+com/example/demo/src/user/model/PostLoginReq.java
+ com.example.demo.src.user.model.PostLoginReq
+com/example/demo/src/user/UserController.java
+ com.example.demo.src.user.UserController
+com/example/demo/src/mypage/model/PostVideos.java
+ com.example.demo.src.mypage.model.PostVideos
+com/example/demo/src/mypage/MypageService.java
+ com.example.demo.src.mypage.MypageService
+com/example/demo/src/user/model/User.java
+ com.example.demo.src.user.model.User
+com/example/demo/src/contents/ContentsController.java
+ com.example.demo.src.contents.ContentsController
 com/example/demo/src/mypage/model/PostPcouponsReq.java
  com.example.demo.src.mypage.model.PostPcouponsReq
 com/example/demo/src/mypage/model/scrapbook/GetContentScraps.java
  com.example.demo.src.mypage.model.scrapbook.GetContentScraps
-com/example/demo/src/mypage/model/Point.java
- com.example.demo.src.mypage.model.Point
 com/example/demo/src/user/model/GetUserRes.java
  com.example.demo.src.user.model.GetUserRes
-com/example/demo/config/BaseException.java
- com.example.demo.config.BaseException
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/utils/JwtService.java
@@ -73,8 +99,8 @@ com/example/demo/utils/JwtService.java
 com/example/demo/src/user/UserProvider.java
  com.example.demo.src.user.UserProvider
 com/example/demo/src/mypage/MypageDao.java
- com.example.demo.src.model.MypageDao
+ com.example.demo.src.mypage.MypageDao
+com/example/demo/src/contents/ContentsProvider.java
+ com.example.demo.src.contents.ContentsProvider
 com/example/demo/src/mypage/model/scrapbook/GetPicScraps.java
  com.example.demo.src.mypage.model.scrapbook.GetPicScraps
-com/example/demo/src/mypage/model/scrapbook/GetProdScraps.java
- com.example.demo.src.mypage.model.scrapbook.GetProdScraps

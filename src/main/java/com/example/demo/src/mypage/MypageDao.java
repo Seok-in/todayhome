@@ -1,4 +1,4 @@
-package com.example.demo.src.model;
+package com.example.demo.src.mypage;
 
 
 import com.example.demo.src.mypage.model.*;
@@ -194,6 +194,18 @@ public class MypageDao {
                 "WHERE UP.userIdx = ? and UP.expiredAt > current_timestamp";
         return this.jdbcTemplate.queryForObject(getUsablePointsQuery,
                 int.class,
+                myIdxParams);
+    }
+
+    /**
+    스크랩북 상단 UserName 조회
+     */
+    public String getUserName(int userIdx){
+        int myIdxParams = userIdx;
+        String getUserNameQuery = "SELECT U.userName FROM User U\n" +
+                "WHERE U.userIdx = ?";
+        return this.jdbcTemplate.queryForObject(getUserNameQuery,
+                String.class,
                 myIdxParams);
     }
 

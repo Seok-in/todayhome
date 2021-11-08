@@ -1,4 +1,4 @@
-package com.example.demo.src.model;
+package com.example.demo.src.mypage;
 
 
 import com.example.demo.config.BaseException;
@@ -118,6 +118,19 @@ public class MypageProvider {
         try{
             int usablePoints = mypageDao.getUsablePoints(myIdx);
             return usablePoints;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 스크랩북 상단 userName 스크랩북 조회
+     */
+    public String getUserName(int userIdx) throws BaseException{
+        try{
+            String getUserName = mypageDao.getUserName(userIdx);
+            return getUserName;
         }
         catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

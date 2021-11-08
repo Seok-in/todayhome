@@ -2,6 +2,8 @@ package com.example.demo.src.user;
 
 import com.example.demo.src.oAuthLogin.model.KakaoLoginReq;
 import com.example.demo.src.oAuthLogin.model.KakaoUserNameReq;
+import com.example.demo.src.store.model.GetQuestionRes;
+import com.example.demo.src.store.model.PostProductQuestReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -11,6 +13,8 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
@@ -95,6 +99,64 @@ public class UserController {
             int userIdx = jwtService.getUserIdx();
             userService.createSignOut(postSignOutReq, userIdx);
             return new BaseResponse<>("회원탈퇴 되었습니다.");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    @ResponseBody
+    @PostMapping("/{productIdx}/question")
+    public BaseResponse<String> createQuestion(@PathVariable("productIdx") int productIdx, @RequestBody PostProductQuestReq postProductQuestReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createQuestion(postProductQuestReq, userIdx, productIdx);
+            return new BaseResponse<>("문의 작성 완료");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/question/{questionIdx}")
+    public BaseResponse<String> deleteQuestion(@PathVariable("questionIdx") int questionIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.deleteQuestion(questionIdx, userIdx);
+            return new BaseResponse<>("문의 삭제 완료");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/questions")
+    public BaseResponse<List<GetQuestionRes>> getQuestions(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<GetQuestionRes> getQuestionRes = userProvider.getQuestionResByUser(userIdx);
+            return new BaseResponse<>(getQuestionRes);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/recency")
+    public BaseResponse<GetUserRecentRes> getUserRecentRes(@RequestParam(required = false) String flag){
+        try{
+            if (flag == null) {
+                int userIdx = jwtService.getUserIdx();
+                GetUserRecentRes getUserRecentRes = userProvider.getUserRecentRes(userIdx);
+                return new BaseResponse<>(getUserRecentRes);
+            }
+            else{
+                int userIdx = jwtService.getUserIdx();
+                GetUserRecentRes getUserRecentRes = userProvider.getUserRecentRes(userIdx, flag);
+                return new BaseResponse<>(getUserRecentRes);
+            }
         }
         catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

@@ -306,9 +306,10 @@ public class StoreDao {
                 "      , paymentWay as delivery\n" +
                 "      , deliveryFee\n" +
                 "      , num\n" +
+                "      , saleValue\n"+
                 "      , (salePrice + firstPrice + secondPrice + thirdPrice) * num as price\n" +
                 "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && status = 'Y' && cartFlag = 'D')\n" +
-                "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
+                "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * Product.salePercent/100) as saleValue, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on P.companyIdx = C.companyIdx) as P2\n" +
                 "                                left join (SELECT productIdx, deliveryFee, paymentWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
                 "              left join (SELECT optionIdx as firstOptionIdx, name as firstOptionName, optionPrice as firstPrice FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.firstOptionIdx\n" +
@@ -323,14 +324,46 @@ public class StoreDao {
                         rs.getString("secondOptionName"),
                         rs.getString("thirdOptionName"),
                         rs.getString("delivery"),
+                        rs.getInt("saleValue"),
                         rs.getInt("deliveryFee"),
                         rs.getInt("num"),
                         rs.getInt("price"))
                 , params);
     }
 
-    //public List<OrderProduct> getCartProducts(int cartIdx){
-    //}
+    public List<OrderProduct> getCartProducts(int cartIdx){
+        String createOrderQuery ="SELECT productName\n" +
+                "      , companyName\n" +
+                "      , firstOptionName\n" +
+                "      , secondOptionName\n" +
+                "      , thirdOptionName\n" +
+                "      , paymentWay as delivery\n" +
+                "      , deliveryFee\n" +
+                "      , num\n" +
+                "      , saleValue\n"+
+                "      , (salePrice + firstPrice + secondPrice + thirdPrice) * num as price\n" +
+                "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && (status = 'Y' or status = 'N') && cartFlag = 'D')\n" +
+                "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * Product.salePercent/100) as saleValue, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
+                "                                left join (SELECT companyIdx, companyName FROM Company) as C on P.companyIdx = C.companyIdx) as P2\n" +
+                "                                left join (SELECT productIdx, deliveryFee, paymentWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
+                "              left join (SELECT optionIdx as firstOptionIdx, name as firstOptionName, optionPrice as firstPrice FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.firstOptionIdx\n" +
+                "              left join (SELECT secondOptionIdx, name as secondOptionName, optionPrice as secondPrice FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
+                "              left join (SELECT thirdOptionIdx, name as thirdOptionName, optionPrice as thirdPrice FROM ProductThirdOption) as PTO on GC.thirdOptionIdx = PTO.thirdOptionIdx;";
+        int params = cartIdx;
+        return this.jdbcTemplate.query(createOrderQuery,
+                (rs, rowNum) -> new OrderProduct(
+                        rs.getString("productName"),
+                        rs.getString("companyName"),
+                        rs.getString("firstOptionName"),
+                        rs.getString("secondOptionName"),
+                        rs.getString("thirdOptionName"),
+                        rs.getString("delivery"),
+                        rs.getInt("saleValue"),
+                        rs.getInt("deliveryFee"),
+                        rs.getInt("num"),
+                        rs.getInt("price"))
+                , params);
+    }
 
     public int getCartIdx(int userIdx){
         String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +
@@ -388,5 +421,77 @@ public class StoreDao {
         String allCheckQuery = "update GetCart set status = 'N' where cartIdx = ? && status = 'Y';";
         int params = cartIdx;
         this.jdbcTemplate.update(allCheckQuery, params);
+    }
+
+
+
+    public List<GetQuestionRes> getQuestionRes(int productIdx){
+        String getQuery ="SELECT questionCtgFlag\n" +
+                "     , questionText\n" +
+                "     , userName\n" +
+                "     , firstOptionName\n" +
+                "     , secondOptionName\n" +
+                "     , thirdOptionName\n" +
+                "     , createdAt\n" +
+                "     , secretFlag\n" +
+                "     , status\n" +
+                "     , answerText\n" +
+                "     , name\n" +
+                "     , answerCreatedAt\n" +
+                "FROM Question q left join (SELECT userName, userIdx FROM User) as u on q.userIdx = u.userIdx\n" +
+                "                left join (\n" +
+                "                    (SELECT questionIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx FROM QuestionOption) as a\n" +
+                "                    left join (SELECT optionIdx, name as firstOptionName FROM ProductFirstOption) as PFO on a.firstOptionIdx = PFO.optionIdx\n" +
+                "                    left join (SELECT secondOptionIdx, name as secondOptionName FROM ProductSecondOption) as PCO on a.secondOptionIdx = PCO.secondOptionIdx\n" +
+                "                    left join (SELECT thirdOptionIdx, name as thirdOptionName FROM ProductThirdOption) as PTO on a.thirdOptionIdx = PTO.thirdOptionIdx) on a.questionIdx = q.questionIdx\n" +
+                "                left join (SELECT questionIdx, answerText, name, createdAt as answerCreatedAt FROM Answer) as rs on rs.questionIdx=q.questionIdx\n" +
+                "WHERE productIdx =? && status != 'N';";
+        int params = productIdx;
+        return this.jdbcTemplate.query(getQuery,
+                (rs, rowNum) -> new GetQuestionRes(
+                        rs.getString("questionCtgFlag"),
+                        rs.getString("userName"),
+                        rs.getString("createdAt"),
+                        rs.getString("questionText"),
+                        rs.getString("status"),
+                        rs.getString("answerText"),
+                        rs.getString("name"),
+                        rs.getString("answerCreatedAt"),
+                        rs.getString("firstOptionName"),
+                        rs.getString("secondOptionName"),
+                        rs.getString("thirdOptionName"),
+                        rs.getString("secretFlag")
+                ), params);
+    }
+
+
+
+    public GetDeliveryInfoRes getDeliveryInfoRes(int productIdx){
+        String getDeliveryQuery = "SELECT deliveryWay\n" +
+                "     , deliveryFee\n" +
+                "     , paymentWay\n" +
+                "     , mountainFee\n" +
+                "     , disabledArea\n" +
+                "     , numDeliveryFlag\n" +
+                "     , etcDelivery\n" +
+                "     , exchangeFee\n" +
+                "     , refundFee\n" +
+                "     , address\n" +
+                "FROM DeliveryFee left join Exchange E on DeliveryFee.productIdx = E.productIdx\n" +
+                "WHERE E.productIdx = ?;";
+        int params = productIdx;
+        return this.jdbcTemplate.queryForObject(getDeliveryQuery,
+                (rs,rowNum) -> new GetDeliveryInfoRes(
+                        rs.getString("deliveryWay"),
+                        rs.getInt("deliveryFee"),
+                        rs.getString("paymentWay"),
+                        rs.getInt("mountainFee"),
+                        rs.getString("disabledArea"),
+                        rs.getString("numDeliveryFlag"),
+                        rs.getString("etcDelivery"),
+                        rs.getInt("exchangeFee"),
+                        rs.getInt("refundFee"),
+                        rs.getString("address")
+                ), params);
     }
 }

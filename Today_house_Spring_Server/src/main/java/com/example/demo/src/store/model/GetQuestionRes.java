@@ -9,15 +9,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderProduct {
-    private String productName;
+public class GetQuestionRes {
+    private String questionCtgFlag;
+    private String userName;
+    private String createdAt;
+    private String text;
+    private String status;
+    private String answerText;
     private String companyName;
+    private String answerCreatedAt;
     private String firstOptionName;
     private String secondOptionName;
     private String thirdOptionName;
-    private String delivery;
-    private int salePrice;
-    private int deliveryFee;
-    private int num;
-    private int price;
+    private String secretFlag;
 }

@@ -6,6 +6,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.oAuthLogin.model.KakaoUserInfo;
 import com.example.demo.src.oAuthLogin.model.KakaoUserNameReq;
+import com.example.demo.src.store.model.PostProductQuestReq;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -77,9 +79,23 @@ public class UserService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public void createQuestion(PostProductQuestReq postProductQuestReq, int userIdx, int productIdx) throws BaseException{
+        try{
+            userDao.createQuestion(postProductQuestReq, userIdx, productIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
-
-
-
-
+    @Transactional(rollbackFor = {Exception.class})
+    public void deleteQuestion(int questionIdx, int userIdx) throws BaseException{
+        try{
+            userDao.deleteQuestion(questionIdx, userIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

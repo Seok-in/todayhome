@@ -139,6 +139,18 @@ public class StoreController {
     }
 
     @ResponseBody
+    @GetMapping("/cart")
+    public BaseResponse<GetCartInfoRes> getCartInfo() {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetCartInfoRes getCartInfoRes = storeProvider.getCartInfoRes(userIdx);
+            return new BaseResponse<>(getCartInfoRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
     @PostMapping("/cart/orders") //토의 및 수정필요
     public BaseResponse<PostCreateOrderRes> createOrderByCart(){
         try{
@@ -229,4 +241,30 @@ public class StoreController {
         }
     }
 
+
+    @ResponseBody
+    @GetMapping("/{productIdx}/questions")
+    public BaseResponse<List<GetQuestionRes>> getQuestionRes(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<GetQuestionRes> result = storeProvider.getQuestionRes(productIdx);
+            return new BaseResponse<>(result);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/{productIdx}/delivery-info")
+    public BaseResponse<GetDeliveryInfoRes> getDeliveryInfo(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            GetDeliveryInfoRes getDeliveryInfoRes = storeProvider.getDeliveryInfoRes(productIdx);
+            return new BaseResponse<>(getDeliveryInfoRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

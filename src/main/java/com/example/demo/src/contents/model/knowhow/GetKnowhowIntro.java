@@ -14,5 +14,6 @@ public class GetKnowhowIntro {
     private String createdAt;
     private String userName;
     private String userIntro;
+    private String knowhowCategory;
     private String followedByUser;
 }

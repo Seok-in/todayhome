@@ -67,12 +67,13 @@ public class ContentsDao {
         int contentIdxParams = contentIdx;
         Object[] getKnowhowIntroParams = new Object[]{userIdx, contentIdx};
 
-        String getKnowhowIntroQuery = "SELECT K.coverImage, K.title, DATE(K.createdAt) createdAt, U.userName, U.userIntro, IFNULL(followers2.status, 'N') AS followedByUser\n" +
+        String getKnowhowIntroQuery = "SELECT K.coverImage, K.title, DATE(K.createdAt) createdAt, U.userName, U.userIntro, KHC.categoryName, IFNULL(followers2.status, 'N') AS followedByUser\n" +
                 "FROM Knowhow K\n" +
                 "INNER JOIN User U ON K.userIdx = U.userIdx\n" +
+                "INNER JOIN KnowHowCategory KHC on K.knowhowCategory = KHC.knowHowCtgIdx\n" +
                 "LEFT JOIN (SELECT F.status, F.userIdx FROM UserFollow F\n" +
                 "                WHERE F.followuserIdx = ?) followers2 ON followers2.userIdx = K.userIdx\n" +
-                "WHERE K.knowhowIdx = ?;";
+                "WHERE K.knowhowIdx = ?";
 
         return this.jdbcTemplate.query(getKnowhowIntroQuery,
                 (rs, rowNum) -> new GetKnowhowIntro(
@@ -81,6 +82,7 @@ public class ContentsDao {
                         rs.getString("createdAt"),
                         rs.getString("userName"),
                         rs.getString("userIntro"),
+                        rs.getString("categoryName"),
                         rs.getString("followedByUser")),
                 getKnowhowIntroParams
         );

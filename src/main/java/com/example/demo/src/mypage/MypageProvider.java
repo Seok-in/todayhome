@@ -4,6 +4,7 @@ package com.example.demo.src.model;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.mypage.model.*;
+import com.example.demo.src.mypage.model.scrapbook.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -122,4 +123,18 @@ public class MypageProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 전체 스크랩북 조회
+     */
+    public List<GetAllScraps> getAllScraps(int myIdx) throws BaseException{
+        try{
+            List<GetAllScraps> getAllScraps = mypageDao.getAllScraps(myIdx);
+            return getAllScraps;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

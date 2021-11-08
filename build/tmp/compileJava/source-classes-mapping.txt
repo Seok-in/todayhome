@@ -2,8 +2,10 @@ com/example/demo/src/user/model/PostUserReq.java
  com.example.demo.src.user.model.PostUserReq
 com/example/demo/config/Constant.java
  com.example.demo.config.Constant
-com/example/demo/src/mypage/MypageService.java
- com.example.demo.src.model.MypageService
+com/example/demo/src/mypage/model/scrapbook/GetPicScrap.java
+ com.example.demo.src.mypage.model.scrapbook.GetPicScrap
+com/example/demo/src/mypage/MypageController.java
+ com.example.demo.src.model.MypageController
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
 com/example/demo/src/mypage/model/GetSusNum.java
@@ -12,6 +14,8 @@ com/example/demo/src/user/model/PostLoginRes.java
  com.example.demo.src.user.model.PostLoginRes
 com/example/demo/src/mypage/model/User.java
  com.example.demo.src.mypage.model.User
+com/example/demo/src/mypage/model/scrapbook/GetProdScrap.java
+ com.example.demo.src.mypage.model.scrapbook.GetProdScrap
 com/example/demo/src/user/UserDao.java
  com.example.demo.src.user.UserDao
 com/example/demo/src/mypage/model/GetCoupons.java
@@ -28,24 +32,30 @@ com/example/demo/src/mypage/model/GetFollowers.java
  com.example.demo.src.mypage.model.GetFollowers
 com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
+com/example/demo/src/mypage/model/GetProdScrap.java
+ com.example.demo.src.mypage.model.GetProdScrap
 com/example/demo/src/user/model/PostLoginReq.java
  com.example.demo.src.user.model.PostLoginReq
+com/example/demo/src/mypage/model/scrapbook/GetAllScraps.java
+ com.example.demo.src.mypage.model.scrapbook.GetAllScraps
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
+com/example/demo/src/mypage/model/scrapbook/GetContentScrap.java
+ com.example.demo.src.mypage.model.scrapbook.GetContentScrap
 com/example/demo/src/user/model/PostUserRes.java
  com.example.demo.src.user.model.PostUserRes
 com/example/demo/src/user/UserController.java
  com.example.demo.src.user.UserController
-com/example/demo/src/user/UserProvider.java
- com.example.demo.src.user.UserProvider
+com/example/demo/src/mypage/MypageProvider.java
+ com.example.demo.src.model.MypageProvider
 com/example/demo/src/mypage/model/PostVideos.java
  com.example.demo.src.mypage.model.PostVideos
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
 com/example/demo/src/mypage/model/GetPoints.java
  com.example.demo.src.mypage.model.GetPoints
-com/example/demo/utils/JwtService.java
- com.example.demo.utils.JwtService
+com/example/demo/src/mypage/MypageService.java
+ com.example.demo.src.model.MypageService
 com/example/demo/src/mypage/model/PostCodeReq.java
  com.example.demo.src.mypage.model.PostCodeReq
 com/example/demo/src/user/model/User.java
@@ -62,9 +72,9 @@ com/example/demo/config/BaseException.java
  com.example.demo.config.BaseException
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
-com/example/demo/src/mypage/MypageController.java
- com.example.demo.src.model.MypageController
-com/example/demo/src/mypage/MypageProvider.java
- com.example.demo.src.model.MypageProvider
+com/example/demo/utils/JwtService.java
+ com.example.demo.utils.JwtService
+com/example/demo/src/user/UserProvider.java
+ com.example.demo.src.user.UserProvider
 com/example/demo/src/mypage/MypageDao.java
  com.example.demo.src.model.MypageDao

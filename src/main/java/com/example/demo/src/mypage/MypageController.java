@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.mypage.model.*;
+import com.example.demo.src.mypage.model.scrapbook.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -143,6 +144,23 @@ public class MypageController {
             int usablePoints = mypageProvider.getUsablePoints(myIdx);
             GetPoints getPoints = new GetPoints(usablePoints, pointList);
             return new BaseResponse<>(getPoints);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 모든 스크랩북 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/scrapbook")
+    public BaseResponse<List<GetAllScraps>> getAllScraps () {
+        try{
+            int myIdx = jwtService.getUserIdx();
+            List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(myIdx);
+            return new BaseResponse<>(getAllScraps);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
             exception.printStackTrace();

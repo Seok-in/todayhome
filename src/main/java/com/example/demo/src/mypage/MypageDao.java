@@ -2,6 +2,7 @@ package com.example.demo.src.model;
 
 
 import com.example.demo.src.mypage.model.*;
+import com.example.demo.src.mypage.model.scrapbook.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,19 +27,19 @@ public class MypageDao {
         int userIdxParams = userIdx;
         int logonIdxParams = logonIdx;
         Object[] getSimilarContentsParams = new Object[]{logonIdxParams, userIdxParams, logonIdxParams};
-        String getNewQuery = "SELECT U.user_name AS follower_name, U.bio, U.profile_image, IFNULL(followers2.status, 'N') AS followed_by_user, IF(U.user_id = ?,'Y','N') AS logon_user\n" +
+        String getNewQuery = "SELECT U.userName AS followerName, U.userIntro, U.userImage, IFNULL(followers2.status, 'N') AS followed_by_user, IF(U.userIdx = ?,'Y','N') AS logon_user\n" +
                 "FROM User as U\n" +
-                "    INNER JOIN (SELECT F.follower_id\n" +
+                "    INNER JOIN (SELECT F.followuserIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.user_id = ?)  followers ON U.user_id = followers.follower_id\n" +
-                "    LEFT OUTER JOIN (SELECT F.status, F.user_id\n" +
+                "                WHERE F.userIdx = ?)  followers ON U.userIdx = followers.followuserIdx\n" +
+                "    LEFT OUTER JOIN (SELECT F.status, F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.follower_id = ?) followers2 ON follower_id = followers2.user_id";
+                "                WHERE F.followuserIdx = ?) followers2 ON followuserIdx = followers2.userIdx";
         return this.jdbcTemplate.query(getNewQuery,
                 (rs, rowNum) -> new GetFollowers(
-                        rs.getString("follower_name"),
-                        rs.getString("bio"),
-                        rs.getString("profile_image"),
+                        rs.getString("followerName"),
+                        rs.getString("userIntro"),
+                        rs.getString("userImage"),
                         rs.getString("followed_by_user"),
                         rs.getString("logon_user")),
                 getSimilarContentsParams
@@ -52,19 +53,19 @@ public class MypageDao {
         int userIdxParams = userIdx;
         int logonIdxParams = logonIdx;
         Object[] getSimilarContentsParams = new Object[]{logonIdxParams, userIdxParams, logonIdxParams};
-        String getNewQuery = "SELECT U.user_name AS following_name, U.bio, U.profile_image, IFNULL(followers2.status, 'N') AS followed_by_user, IF(U.user_id = ?,'Y','N') AS logon_user\n" +
+        String getNewQuery = "SELECT U.userName AS following_name, U.userIntro, U.userImage, IFNULL(followers2.status, 'N') AS followed_by_user, IF(U.userIdx = ?,'Y','N') AS logon_user\n" +
                 "FROM User as U\n" +
-                "    INNER JOIN (SELECT F.user_id\n" +
+                "    INNER JOIN (SELECT F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.follower_id = ?)  followers ON U.user_id = followers.user_id\n" +
-                "    LEFT OUTER JOIN (SELECT F.status, F.user_id\n" +
+                "                WHERE F.followuserIdx = ?)  followers ON U.userIdx = followers.userIdx\n" +
+                "    LEFT OUTER JOIN (SELECT F.status, F.userIxd\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.follower_id = ?) followers2 ON followers.user_id = followers2.user_id";
+                "                WHERE F.followuserIdx = ?) followers2 ON followers.userIdx = followers2.userIdx";
         return this.jdbcTemplate.query(getNewQuery,
                 (rs, rowNum) -> new GetFollowers(
                         rs.getString("following_name"),
-                        rs.getString("bio"),
-                        rs.getString("profile_image"),
+                        rs.getString("userIntro"),
+                        rs.getString("userImage"),
                         rs.getString("followed_by_user"),
                         rs.getString("logon_user")),
                 getSimilarContentsParams
@@ -76,9 +77,9 @@ public class MypageDao {
      */
     public List<GetCoupons> getCoupons(int myIdx){
         int myIdxParams = myIdx;
-        String getNewQuery = "SELECT C.coupon_name, C.discount_percent, C.discount_price, C.enable_price, C.expired_at, C.detailed_explanation, IF(C.coupon_idx = UC2.coupon_idx, 'Y', 'N') received\n" +
+        String getNewQuery = "SELECT C.coupon_name, C.discount_percent, C.discount_price, C.enable_price, C.expired_at, C.detailed_explanation, IF(C.couponIdx = UC2.couponIdx, 'Y', 'N') received\n" +
                 "FROM Coupon as C\n" +
-                "    LEFT OUTER JOIN (SELECT UC.coupon_idx, UC.updated_at FROM User_coupon UC WHERE UC.user_id = ?) AS UC2 ON C.coupon_idx = UC2.coupon_idx\n" +
+                "    LEFT OUTER JOIN (SELECT UC.couponIdx, UC.updated_at FROM User_coupon UC WHERE UC.userIdx = ?) AS UC2 ON C.couponIdx = UC2.couponIdx\n" +
                 "WHERE C.expired_at > current_timestamp\n" +
                 "ORDER BY received desc,\n" +
                 "         (CASE WHEN SUBSTRING(coupon_name,1,1) RLIKE '[a-zA-Z]' THEN 1\n" +
@@ -103,8 +104,8 @@ public class MypageDao {
         int myIdxParams = myIdx;
         Object[] getPcouponsParams = new Object[]{PcouponsReqParams,myIdx};
         String checkCouponsQuery = "SELECT EXISTS(SELECT * FROM User_coupon UC\n" +
-                "              inner join Coupon as C on C.coupon_name = ? and C.coupon_idx = UC.coupon_idx\n" +
-                "              WHERE UC.user_id = ? and C.expired_at > current_timestamp) received;";
+                "              inner join Coupon as C on C.coupon_name = ? and C.couponIdx = UC.couponIdx\n" +
+                "              WHERE UC.userIdx = ? and C.expired_at > current_timestamp) received;";
         return this.jdbcTemplate.queryForObject(checkCouponsQuery,
                 int.class,
                 getPcouponsParams);
@@ -117,7 +118,7 @@ public class MypageDao {
        int PcouponsReqParams = postPcouponsReq.getCouponId();
        int myIdxParams = myIdx;
        Object[] getPcouponsParams = new Object[]{myIdx, PcouponsReqParams};
-       String postPcouponsQuery = "INSERT INTO User_coupon(user_id, coupon_idx) VALUES(?,?);";
+       String postPcouponsQuery = "INSERT INTO User_coupon(userIdx, couponIdx) VALUES(?,?);";
        return this.jdbcTemplate.update(postPcouponsQuery, getPcouponsParams);
    }
 
@@ -127,9 +128,9 @@ public class MypageDao {
     public String checkUsed(/*PostCodeReq postCodeReq*/String code){
         String CouponCodeParams = /*postCodeReq.getCouponCode()*/code;
         String checkCouponCodeQuery = "SELECT IFNULL((SELECT C.status FROM Coupon AS C\n" +
-                "WHERE C.coupon_code = ? AND C.open = 'N'),'X') AS codeExists;";
+                "WHERE C.couponCode = ? AND C.open = 'N'),'X') AS codeExists;";
         String checkCouponCodeQuery2 = "SELECT C.status FROM Coupon AS C\n" +
-                "WHERE C.coupon_code = ?  AND C.open = 'N';";
+                "WHERE C.couponCode = ?  AND C.open = 'N';";
         String used = this.jdbcTemplate.queryForObject(checkCouponCodeQuery,
                 String.class,
                 CouponCodeParams);
@@ -149,13 +150,13 @@ public class MypageDao {
         String CouponCodeParams = /*postCodeReq.getCouponCode()*/code;
         int myIdxParams = myIdx;
         // coupon id 가져오기
-        String getCouponIdxQuery = "SELECT C.coupon_idx FROM Coupon AS C WHERE C.coupon_code = ?;";
+        String getCouponIdxQuery = "SELECT C.couponIdx FROM Coupon AS C WHERE C.couponCode = ?;";
         int CouponIdxParams = this.jdbcTemplate.queryForObject(getCouponIdxQuery,int.class,CouponCodeParams);
         Object[] postCouponCodeParams = new Object[]{myIdx, CouponIdxParams};
         // coupon status 상태 수정
-        String postCouponCodeQuery = "UPDATE Coupon C SET C.status = 'N' WHERE C.coupon_code = ?;";
+        String postCouponCodeQuery = "UPDATE Coupon C SET C.status = 'N' WHERE C.couponCode = ?;";
         // user_coupon에 새로운 값 update
-        String postCouponCodeQuery2 = "INSERT INTO User_coupon(user_id, coupon_idx) VALUES(?,?);";
+        String postCouponCodeQuery2 = "INSERT INTO User_coupon(userIdx, couponIdx) VALUES(?,?);";
 
         result = jdbcTemplate.update(postCouponCodeQuery, CouponCodeParams);
         if(result!=0)
@@ -194,6 +195,31 @@ public class MypageDao {
         return this.jdbcTemplate.queryForObject(getUsablePointsQuery,
                 int.class,
                 myIdxParams);
+    }
+
+    /**
+     전체 스크랩북 조회
+     */
+    public List<GetAllScraps> getAllScraps(int myIdx){
+        int myIdxParams = myIdx;
+        Object[] getAllScrapsParams = new Object[]{myIdx, myIdx, myIdx};
+        String getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag from House\n" +
+                "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
+                "where UserScrap.userIdx = ?\n" +
+                "union all\n" +
+                "select Knowhow.coverImage,  UserScrap.flag from Knowhow\n" +
+                "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
+                "where UserScrap.userIdx = ?\n" +
+                "union all\n" +
+                "select PC.pictureImage,  UserScrap.flag FROM PictureContent as PC\n" +
+                "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx and PC.contentIdx = 1\n" +
+                "where UserScrap.userIdx = ?";
+        return this.jdbcTemplate.query(getAllScrapsQuery,
+                (rs, rowNum) -> new GetAllScraps(
+                        rs.getString("coverImage"),
+                        rs.getString("flag")),
+                getAllScrapsParams
+        );
     }
 
 }

@@ -369,7 +369,7 @@ public class ContentsDao {
             newLikeContentsQuery = "INSERT INTO UserLike (userIdx, houseIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateLikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         }
         else if(filter.equals("knowhow")){
@@ -380,7 +380,7 @@ public class ContentsDao {
             newLikeContentsQuery = "INSERT INTO UserLike (userIdx, knowhowIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateLikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
         }
         else{
@@ -391,7 +391,7 @@ public class ContentsDao {
             newLikeContentsQuery = "INSERT INTO UserLike (userIdx, pictureIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateLikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND pictureIdx = ?";
         }
 
@@ -412,15 +412,15 @@ public class ContentsDao {
         String unlikeContentsQuery = "";
         if(filter.equals("house"))
             unlikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         else if(filter.equals("knowhow"))
             unlikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
         else
             unlikeContentsQuery = "UPDATE UserLike\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND pictureIdx = ?";
 
         Object[] unlikeContentsParams = new Object[]{logonIdx, contentIdx};
@@ -445,7 +445,7 @@ public class ContentsDao {
             newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, houseIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateScrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         }
         else if(filter.equals("knowhow")){
@@ -456,7 +456,7 @@ public class ContentsDao {
             newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, knowhowIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateScrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
         }
         else if(filter.equals("picture")){
@@ -467,7 +467,7 @@ public class ContentsDao {
             newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, pictureIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateScrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND pictureIdx = ?";
         }
         else{
@@ -478,7 +478,7 @@ public class ContentsDao {
             newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, productIdx, flag)\n" +
                     "VALUES (?,?,?)";
             updateScrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'Y'\n" +
+                    "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND productIdx = ?";
         }
 
@@ -499,23 +499,89 @@ public class ContentsDao {
         String unscrapContentsQuery = "";
         if(filter.equals("house"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         else if(filter.equals("knowhow"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
         else if(filter.equals("picture"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND pictureIdx = ?";
         else
             unscrapContentsQuery = "UPDATE UserScrap\n" +
-                    "SET status = 'N'\n" +
+                    "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND productIdx = ?";
 
         Object[] unscrapContentsParams = new Object[]{logonIdx, contentIdx};
         return this.jdbcTemplate.update(unscrapContentsQuery, unscrapContentsParams);
+    }
+
+    /**
+     댓글 작성 API
+     */
+    public int writeComment(String filter, int logonIdx, int contentIdx, PostComment postComment){
+        String writeCommentQuery = "";
+        String flag = "";
+        String commentParam = postComment.getComment();
+
+        if(filter.equals("house")){
+            flag = "H";
+            writeCommentQuery  = "INSERT INTO Comment(userIdx, houseIdx, cText, flag)\n" +
+                    "VALUES (?,?,?,?)";
+        }
+        else if(filter.equals("knowhow")){
+            flag = "K";
+            writeCommentQuery  = "INSERT INTO Comment(userIdx, knowhowIdx, cText, flag)\n" +
+                    "VALUES (?,?,?,?)";
+        }
+        else{
+            flag = "P";
+            writeCommentQuery  = "INSERT INTO Comment(userIdx, pictureIdx, cText, flag)\n" +
+                    "VALUES (?,?,?,?)";
+        }
+
+        Object[] writeCommentParams = new Object[]{logonIdx, contentIdx, commentParam, flag};
+        this.jdbcTemplate.update(writeCommentQuery, writeCommentParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
+    }
+
+    /**
+     댓글 삭제 API
+     */
+    public int removeComment(int commentIdx){
+        String removeCommentQuery = "UPDATE Comment\n" +
+                "SET status = 'N', updatedAt = current_timestamp\n" +
+                "WHERE commentIdx = ?";
+
+        return this.jdbcTemplate.update(removeCommentQuery, commentIdx);
+    }
+
+    /**
+     답글 작성 API
+     */
+    public int writeRecomment(int logonIdx, int commentIdx, PostComment postRecomment){
+        String writeRecommentQuery = "INSERT INTO Recomment (rcText,userIdx,commentIdx)\n" +
+                "VALUES (?,?,?)";
+        String recommentParam = postRecomment.getComment();
+        Object[] writeRecommentParams = new Object[]{recommentParam,logonIdx, commentIdx};
+        this.jdbcTemplate.update(writeRecommentQuery, writeRecommentParams);
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
+    }
+
+    /**
+     답글 삭제 API
+     */
+    public int removeRecomment(int recommentIdx){
+        String removeCommentQuery = "UPDATE Recomment\n" +
+                "SET status = 'N', updatedAt = current_timestamp\n" +
+                "WHERE recommentIdx = ?";
+
+        return this.jdbcTemplate.update(removeCommentQuery, recommentIdx);
     }
 
 }

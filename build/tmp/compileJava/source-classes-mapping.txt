@@ -8,6 +8,8 @@ com/example/demo/src/contents/ContentsService.java
  com.example.demo.src.contents.ContentsService
 com/example/demo/src/mypage/model/User.java
  com.example.demo.src.mypage.model.User
+com/example/demo/src/contents/model/PostComment.java
+ com.example.demo.src.contents.model.PostComment
 com/example/demo/src/mypage/model/GetCoupons.java
  com.example.demo.src.mypage.model.GetCoupons
 com/example/demo/config/BaseResponseStatus.java
@@ -30,6 +32,8 @@ com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
 com/example/demo/src/mypage/model/GetPoints.java
  com.example.demo.src.mypage.model.GetPoints
+com/example/demo/src/contents/model/PostCommentRes.java
+ com.example.demo.src.contents.model.PostCommentRes
 com/example/demo/src/contents/model/knowhow/GetKnowhowContents.java
  com.example.demo.src.contents.model.knowhow.GetKnowhowContents
 com/example/demo/src/contents/model/house/GetTempHouseContents.java

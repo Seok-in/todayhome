@@ -31,6 +31,9 @@ public enum BaseResponseStatus {
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
     POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
 
+    // [POST] comments
+    POST_USERS_EMPTY_COMMENT(false, 2018, "댓글을 입력해주세요."),
+    REMOVE_USERS_EMPTY_COMMENT(false, 2019, "존재하지 않는 댓글입니다"),
 
 
     /**
@@ -54,6 +57,9 @@ public enum BaseResponseStatus {
     // [POST]
     FAILED_TO_SCRAP(false, 3019, "스크랩을 실패하였습니다"),
     FAILED_TO_UNSCRAP(false, 3020, "스크랩 취소에 실패하였습니다"),
+
+    FAILED_TO_WRITE_COMMENT(false, 3021, "댓글 작성을 실패하였습니다"),
+    FAILED_TO_REMOVE_COMMENT(false, 3022, "댓글 삭제를 실패하였습니다"),
 
 
 

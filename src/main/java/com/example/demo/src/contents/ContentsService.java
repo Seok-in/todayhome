@@ -86,5 +86,55 @@ public class ContentsService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     게시글 댓글 작성 API
+     */
+    public PostCommentRes writeComment(String filter, int logonIdx, int contentIdx, PostComment postComment) throws BaseException{
+        try {
+            int commentIdx = contentsDao.writeComment(filter, logonIdx, contentIdx, postComment);
+            return new PostCommentRes(commentIdx);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     게시글 댓글 삭제 API
+     */
+    public void removeComment(int commentIdx) throws BaseException{
+        try {
+            int result = contentsDao.removeComment(commentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_REMOVE_COMMENT);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     답글 작성 API
+     */
+    public PostCommentRes writeRecomment(int logonIdx, int commentIdx, PostComment postRecomment) throws BaseException{
+        try {
+            int recommentIdx = contentsDao.writeRecomment(logonIdx,commentIdx,postRecomment);
+            return new PostCommentRes(recommentIdx);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     답글 삭제 API
+     */
+    public void removeRecomment(int recommentIdx) throws BaseException{
+        try {
+            int result = contentsDao.removeRecomment(recommentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_REMOVE_COMMENT);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
     
 }

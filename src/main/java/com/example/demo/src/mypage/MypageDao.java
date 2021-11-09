@@ -1,6 +1,7 @@
 package com.example.demo.src.mypage;
 
-
+import com.example.demo.config.BaseException;
+import static com.example.demo.config.BaseResponseStatus.*;
 import com.example.demo.src.mypage.model.*;
 import com.example.demo.src.mypage.model.scrapbook.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.ArrayList;
 
 @Repository
 public class MypageDao {
@@ -210,21 +212,44 @@ public class MypageDao {
     }
 
     /**
-     전체 스크랩북 조회
+     전체 스크랩북 & 좋아요 조회
      */
-    public List<GetAllScraps> getAllScraps(int userIdx){
+    public List<GetAllScraps> getAllScraps(int userIdx, String filter) throws BaseException {
         Object[] getAllScrapsParams = new Object[]{userIdx, userIdx, userIdx};
-        String getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag from House\n" +
-                "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
-                "where UserScrap.userIdx = ?\n" +
-                "union all\n" +
-                "select Knowhow.coverImage,  UserScrap.flag from Knowhow\n" +
-                "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
-                "where UserScrap.userIdx = ?\n" +
-                "union all\n" +
-                "select PC.pictureImage,  UserScrap.flag FROM PictureContent as PC\n" +
-                "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx and PC.contentIdx = 1\n" +
-                "where UserScrap.userIdx = ?";
+        String getAllScrapsQuery = "";
+        if (filter.equals("scrapbook"))
+            getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag from House\n" +
+                    "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
+                    "where UserScrap.userIdx = ?\n" +
+                    "union all\n" +
+                    "select Knowhow.coverImage,  UserScrap.flag from Knowhow\n" +
+                    "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
+                    "where UserScrap.userIdx = ?\n" +
+                    "union all\n" +
+                    "select PC.pictureImage,  UserScrap.flag FROM PictureContent as PC\n" +
+                    "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx and PC.Flag = 'Y'\n" +
+                    "where UserScrap.userIdx = ?";
+        else if (filter.equals("praises"))
+            getAllScrapsQuery = "SELECT H.coverImage,UL.flag\n" +
+                    "FROM House AS H\n" +
+                    "INNER JOIN UserLike UL ON H.houseIdx = UL.houseIdx\n" +
+                    "WHERE UL.userIdx = ?\n" +
+                    "UNION ALL\n" +
+                    "SELECT K.coverImage,UL.flag\n" +
+                    "FROM Knowhow AS K\n" +
+                    "INNER JOIN UserLike UL ON K.knowhowIdx = UL.knowhowIdx\n" +
+                    "WHERE UL.userIdx = ?\n" +
+                    "UNION ALL\n" +
+                    "SELECT PC.pictureImage, UL.flag\n" +
+                    "FROM PictureContent as PC\n" +
+                    "INNER JOIN UserLike UL ON UL.pictureIdx = PC.pictureIdx and PC.Flag = 'Y'\n" +
+                    "WHERE UL.userIdx = ?";
+        else {
+            List<GetAllScraps> result = new ArrayList<GetAllScraps>();
+            result.add(new GetAllScraps("invalidAccess","N"));
+            return result;
+            //throw new BaseException(INVALID_USER_ACCESS);
+        }
         return this.jdbcTemplate.query(getAllScrapsQuery,
                 (rs, rowNum) -> new GetAllScraps(
                         rs.getString("coverImage"),
@@ -236,19 +261,33 @@ public class MypageDao {
     /**
      집들이 & 노하우 스크랩북 조회
      */
-    public List<GetContentScraps> getContentScraps(int userIdx, String filter){
+    public List<GetContentScraps> getContentScraps(int userIdx, String filter, String contents){
         int myIdxParams = userIdx;
         String getContentScrapsQuery = "";
-        if(filter.equals("house"))
-            getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
-                    "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
-                    "INNER JOIN User ON User.userIdx = House.userIdx\n" +
-                    "where UserScrap.userIdx = ?";
-        else
-            getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
-                    "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
-                    "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
-                    "where UserScrap.userIdx = ?";
+        if(filter.equals("scrapbook")) {
+            if (contents.equals("house"))
+                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
+                        "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx AND UserScrap.status ='Y'\n" +
+                        "INNER JOIN User ON User.userIdx = House.userIdx\n" +
+                        "where UserScrap.userIdx = ?";
+            else
+                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
+                        "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx AND UserScrap.status ='Y'\n" +
+                        "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
+                        "where UserScrap.userIdx = ?";
+        }
+        else{
+            if (contents.equals("house"))
+                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
+                        "INNER JOIN UserLike ON UserLike.houseIdx = House.houseIdx and UserLike.status ='Y'\n" +
+                        "INNER JOIN User ON User.userIdx = House.userIdx\n" +
+                        "WHERE UserLike.userIdx = ?";
+            else
+                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
+                        "INNER JOIN UserLike ON UserLike.knowhowIdx = Knowhow.knowhowIdx AND UserLike.status = 'Y'\n" +
+                        "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
+                        "where UserLike.userIdx = ?";
+        }
         return this.jdbcTemplate.query(getContentScrapsQuery,
                 (rs, rowNum) -> new GetContentScraps(
                         rs.getString("coverImage"),
@@ -259,14 +298,21 @@ public class MypageDao {
     }
 
     /**
-     사진 스크랩북 조회
+     사진 스크랩북 & 좋아요 조회
      */
-    public List<GetPicScraps> getPicScraps(int userIdx){
+    public List<GetPicScraps> getPicScraps(int userIdx, String filter){
         int myIdxParams = userIdx;
-        String getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
-                "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx\n" +
-                "WHERE UserScrap.userIdx = ?\n" +
-                "GROUP BY PC.pictureIdx";
+        String getPicScrapsQuery = "";
+        if(filter.equals("scrapbook"))
+            getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
+                    "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx\n" +
+                    "WHERE UserScrap.userIdx = ?\n" +
+                    "GROUP BY PC.pictureIdx";
+        else
+            getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
+                    "INNER JOIN UserLike ON UserLike.pictureIdx = PC.pictureIdx\n" +
+                    "WHERE UserLike.userIdx = ?\n" +
+                    "GROUP BY PC.pictureIdx";
 
         return this.jdbcTemplate.query(getPicScrapsQuery,
                 (rs, rowNum) -> new GetPicScraps(

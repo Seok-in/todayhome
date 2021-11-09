@@ -155,7 +155,7 @@ public class MypageController {
      * 스크랩북 상단 UserName 조회 API
      */
     @ResponseBody
-    @GetMapping("/{userIdx}/scrapbook")
+    @GetMapping("/{userIdx}/scrapbook/userName")
     public BaseResponse<String> getUserName (@PathVariable("userIdx") int userIdx) {
         try{
             String getUserName = mypageProvider.getUserName(userIdx);
@@ -168,14 +168,14 @@ public class MypageController {
     }
 
     /**
-     * 모든 스크랩북 조회 API
+     * 모든 스크랩북 & 좋아요 조회 API
      */
     @ResponseBody
-    @GetMapping("/{userIdx}/scrapbook/all")
-    public BaseResponse<List<GetAllScraps>> getAllScraps (@PathVariable("userIdx") int userIdx) {
+    @GetMapping("/{userIdx}/{filter}")
+    public BaseResponse<List<GetAllScraps>> getAllScraps (@PathVariable("userIdx") int userIdx,@PathVariable("filter") String filter) {
         try{
             //int myIdx = jwtService.getUserIdx();
-            List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(userIdx);
+            List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(userIdx, filter);
             return new BaseResponse<>(getAllScraps);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
@@ -185,15 +185,17 @@ public class MypageController {
     }
 
     /**
-     * 사진 스크랩북 조회 API
+     * 사진 스크랩북 & 좋아요 조회 API
      */
 
     @ResponseBody
-    @GetMapping("/{userIdx}/scrapbook/picture")
-    public BaseResponse<List<GetPicScraps>> getPicScraps (@PathVariable("userIdx") int userIdx) {
+    @GetMapping("/{userIdx}/{filter}/picture")
+    public BaseResponse<List<GetPicScraps>> getPicScraps (@PathVariable("userIdx") int userIdx,@PathVariable("filter") String filter) {
         try{
             //int myIdx = jwtService.getUserIdx();
-            List<GetPicScraps> getPicScraps = mypageProvider.getPicScraps(userIdx);
+            if(!(filter.equals("scrapbook")||filter.equals("praises")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            List<GetPicScraps> getPicScraps = mypageProvider.getPicScraps(userIdx, filter);
             return new BaseResponse<>(getPicScraps);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
@@ -219,17 +221,21 @@ public class MypageController {
         }
     }
 
+
     /**
-     * 노하우&집들이 스크랩북 조회 API
+     * 노하우&집들이 스크랩북 & 좋아요 조회 API
      */
     @ResponseBody
-    @GetMapping("/{userIdx}/scrapbook/{contents}")
-    public BaseResponse<List<GetContentScraps>> getContentScraps (@PathVariable("userIdx") int userIdx, @PathVariable("contents") String filter) {
+    @GetMapping("/{userIdx}/{filter}/{contents}")
+    public BaseResponse<List<GetContentScraps>> getContentScraps (@PathVariable("userIdx") int userIdx, @PathVariable("filter") String filter, @PathVariable("contents") String contents) {
         try{
             //int myIdx = jwtService.getUserIdx();
-            if(!(filter.equals("house")||filter.equals("knowhow")))
-                return new BaseResponse<>(DATABASE_ERROR);
-            List<GetContentScraps> getContentScraps = mypageProvider.getContentScraps(userIdx, filter);
+            //String filter = "scrapbook";
+            if(!(filter.equals("scrapbook")||filter.equals("praises")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            if(!(contents.equals("house")||contents.equals("knowhow")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            List<GetContentScraps> getContentScraps = mypageProvider.getContentScraps(userIdx, filter, contents);
             return new BaseResponse<>(getContentScraps);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
@@ -237,7 +243,6 @@ public class MypageController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
 
 
 

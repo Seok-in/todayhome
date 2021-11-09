@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -138,24 +139,31 @@ public class MypageProvider {
     }
 
     /**
-     * 전체 스크랩북 조회
+     * 전체 스크랩북 & 좋아요 조회
      */
-    public List<GetAllScraps> getAllScraps(int userIdx) throws BaseException{
-        try{
-            List<GetAllScraps> getAllScraps = mypageDao.getAllScraps(userIdx);
-            return getAllScraps;
+    public List<GetAllScraps> getAllScraps(int userIdx, String filter) throws BaseException{
+        List<GetAllScraps> getAllScraps = new ArrayList<GetAllScraps>();
+        try {
+            getAllScraps = mypageDao.getAllScraps(userIdx, filter);
         }
-        catch (Exception exception) {
+        catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
+        if (getAllScraps.get(0).getImagePath().equals("invalidAccess"))
+            throw new BaseException(INVALID_USER_ACCESS);
+        else
+            return getAllScraps;
+        //catch (Exception exception) {
+        //    throw new BaseException(DATABASE_ERROR);
+        //}
     }
 
     /**
      * 노하우 & 집들이 스크랩북 조회
      */
-    public List<GetContentScraps> getContentScraps(int userIdx, String filter) throws BaseException{
+    public List<GetContentScraps> getContentScraps(int userIdx, String filter, String contents) throws BaseException{
         try{
-            List<GetContentScraps> getContentScraps = mypageDao.getContentScraps(userIdx,filter);
+            List<GetContentScraps> getContentScraps = mypageDao.getContentScraps(userIdx,filter,contents);
             return getContentScraps;
         }
         catch (Exception exception) {
@@ -164,11 +172,11 @@ public class MypageProvider {
     }
 
     /**
-     * 사진 스크랩북 조회
+     * 사진 스크랩북  & 좋아요 조회
      */
-    public List<GetPicScraps> getPicScraps(int userIdx) throws BaseException{
+    public List<GetPicScraps> getPicScraps(int userIdx, String filter) throws BaseException{
         try{
-            List<GetPicScraps> getPicScraps = mypageDao.getPicScraps(userIdx);
+            List<GetPicScraps> getPicScraps = mypageDao.getPicScraps(userIdx, filter);
             return getPicScraps;
         }
         catch (Exception exception) {

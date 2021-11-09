@@ -34,5 +34,57 @@ public class ContentsService {
         this.jwtService = jwtService;
 
     }
+    // 존재하지 않거나 status 'N'인 컨텐츠는 처음부터 좋아요, 스크랩 불가능 -> validation 처리 필요 x
+    /**
+     게시글 Like API
+     */
+    public void likeContents(String filter, int logonIdx, int contentIdx) throws BaseException{
+        try {
+            int result = contentsDao.likeContents(filter, logonIdx, contentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_LIKE);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     게시글 Like 취소 API
+     */
+    public void unlikeContents(String filter, int logonIdx, int contentIdx) throws BaseException{
+        try {
+            int result = contentsDao.unlikeContents(filter, logonIdx, contentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_UNLIKE);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     게시글 Scrap API
+     */
+    public void scrapContents(String filter, int logonIdx, int contentIdx) throws BaseException{
+        try {
+            int result = contentsDao.scrapContents(filter, logonIdx, contentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_SCRAP);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     게시글 Scrap 취소 API
+     */
+    public void unscrapContents(String filter, int logonIdx, int contentIdx) throws BaseException{
+        try {
+            int result = contentsDao.unscrapContents(filter, logonIdx, contentIdx);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_UNSCRAP);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
     
 }

@@ -351,4 +351,171 @@ public class ContentsDao {
         );
     }
 
+    /**
+     Like API
+     */
+    public int likeContents(String filter, int logonIdx, int contentIdx){
+        String checkLikeHistoryQuery = "";
+        String newLikeContentsQuery = "";
+        String updateLikeContentsQuery = "";
+        String flag = "";
+        Object[] likeContentsParams = new Object[]{logonIdx, contentIdx};
+
+        if(filter.equals("house")){
+            flag = "H";
+            checkLikeHistoryQuery = "SELECT EXISTS(SELECT UL.status\n" +
+                    "FROM UserLike AS UL\n" +
+                    "WHERE UL.userIdx = ? AND UL.houseIdx = ?) likeHistory";
+            newLikeContentsQuery = "INSERT INTO UserLike (userIdx, houseIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateLikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND houseIdx = ?";
+        }
+        else if(filter.equals("knowhow")){
+            flag = "K";
+            checkLikeHistoryQuery = "SELECT EXISTS(SELECT UL.status\n" +
+                    "FROM UserLike AS UL\n" +
+                    "WHERE UL.userIdx = ? AND UL.knowhowIdx = ?) likeHistory";
+            newLikeContentsQuery = "INSERT INTO UserLike (userIdx, knowhowIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateLikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND knowhowIdx = ?";
+        }
+        else{
+            flag = "P";
+            checkLikeHistoryQuery = "SELECT EXISTS(SELECT UL.status\n" +
+                    "FROM UserLike AS UL\n" +
+                    "WHERE UL.userIdx = ? AND UL.pictureIdx = ?) likeHistory";
+            newLikeContentsQuery = "INSERT INTO UserLike (userIdx, pictureIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateLikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND pictureIdx = ?";
+        }
+
+        Object[] insertLikeParams = new Object[]{logonIdx, contentIdx, flag};
+
+        int likeHistory = this.jdbcTemplate.queryForObject(checkLikeHistoryQuery,int.class,likeContentsParams);
+
+        if(likeHistory == 0)
+            return this.jdbcTemplate.update(newLikeContentsQuery, insertLikeParams);
+        else
+            return this.jdbcTemplate.update(updateLikeContentsQuery, likeContentsParams);
+    }
+
+    /**
+     Like 취소 API
+     */
+    public int unlikeContents(String filter, int logonIdx, int contentIdx){
+        String unlikeContentsQuery = "";
+        if(filter.equals("house"))
+            unlikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND houseIdx = ?";
+        else if(filter.equals("knowhow"))
+            unlikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND knowhowIdx = ?";
+        else
+            unlikeContentsQuery = "UPDATE UserLike\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND pictureIdx = ?";
+
+        Object[] unlikeContentsParams = new Object[]{logonIdx, contentIdx};
+        return this.jdbcTemplate.update(unlikeContentsQuery, unlikeContentsParams);
+    }
+
+    /**
+    Scrap API
+     */
+    public int scrapContents(String filter, int logonIdx, int contentIdx){
+        String checkScrapHistoryQuery = "";
+        String newScrapContentsQuery = "";
+        String updateScrapContentsQuery = "";
+        String flag = "";
+        Object[] scrapContentsParams = new Object[]{logonIdx, contentIdx};
+
+        if(filter.equals("house")){
+            flag = "H";
+            checkScrapHistoryQuery= "SELECT EXISTS(SELECT US.status\n" +
+                    "FROM UserScrap AS US\n" +
+                    "WHERE US.userIdx = ? AND US.houseIdx = ?) scrapHistory";
+            newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, houseIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateScrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND houseIdx = ?";
+        }
+        else if(filter.equals("knowhow")){
+            flag = "K";
+            checkScrapHistoryQuery = "SELECT EXISTS(SELECT US.status\n" +
+                    "FROM UserScrap AS US\n" +
+                    "WHERE US.userIdx = ? AND US.knowhowIdx = ?) scrapHistory";
+            newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, knowhowIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateScrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND knowhowIdx = ?";
+        }
+        else if(filter.equals("picture")){
+            flag = "P";
+            checkScrapHistoryQuery = "SELECT EXISTS(SELECT US.status\n" +
+                    "FROM UserScrap AS US\n" +
+                    "WHERE US.userIdx = ? AND US.pictureIdx = ?) scrapHistory";
+            newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, pictureIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateScrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND pictureIdx = ?";
+        }
+        else{
+            flag = "C";
+            checkScrapHistoryQuery = "SELECT EXISTS(SELECT US.status\n" +
+                    "FROM UserScrap AS US\n" +
+                    "WHERE US.userIdx = ? AND US.productIdx = ?) scrapHistory";
+            newScrapContentsQuery  = "INSERT INTO UserScrap (userIdx, productIdx, flag)\n" +
+                    "VALUES (?,?,?)";
+            updateScrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'Y'\n" +
+                    "WHERE userIdx = ? AND productIdx = ?";
+        }
+
+        Object[] insertScrapParams = new Object[]{logonIdx, contentIdx, flag};
+
+        int scrapHistory = this.jdbcTemplate.queryForObject(checkScrapHistoryQuery,int.class,scrapContentsParams);
+
+        if(scrapHistory == 0)
+            return this.jdbcTemplate.update(newScrapContentsQuery, insertScrapParams);
+        else
+            return this.jdbcTemplate.update(updateScrapContentsQuery, scrapContentsParams);
+    }
+
+    /**
+     Scrap 취소 API
+     */
+    public int unscrapContents(String filter, int logonIdx, int contentIdx){
+        String unscrapContentsQuery = "";
+        if(filter.equals("house"))
+            unscrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND houseIdx = ?";
+        else if(filter.equals("knowhow"))
+            unscrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND knowhowIdx = ?";
+        else if(filter.equals("picture"))
+            unscrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND pictureIdx = ?";
+        else
+            unscrapContentsQuery = "UPDATE UserScrap\n" +
+                    "SET status = 'N'\n" +
+                    "WHERE userIdx = ? AND productIdx = ?";
+
+        Object[] unscrapContentsParams = new Object[]{logonIdx, contentIdx};
+        return this.jdbcTemplate.update(unscrapContentsQuery, unscrapContentsParams);
+    }
+
 }

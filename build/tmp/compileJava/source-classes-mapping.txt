@@ -92,8 +92,8 @@ com/example/demo/src/mypage/MypageService.java
  com.example.demo.src.mypage.MypageService
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
-com/example/demo/src/contents/ContentsController.java
- com.example.demo.src.contents.ContentsController
+com/example/demo/src/mypage/model/scrapbook/GetPicScraps.java
+ com.example.demo.src.mypage.model.scrapbook.GetPicScraps
 com/example/demo/src/mypage/model/PostPcouponsReq.java
  com.example.demo.src.mypage.model.PostPcouponsReq
 com/example/demo/src/mypage/model/scrapbook/GetContentScraps.java
@@ -110,5 +110,5 @@ com/example/demo/src/mypage/MypageDao.java
  com.example.demo.src.mypage.MypageDao
 com/example/demo/src/contents/ContentsProvider.java
  com.example.demo.src.contents.ContentsProvider
-com/example/demo/src/mypage/model/scrapbook/GetPicScraps.java
- com.example.demo.src.mypage.model.scrapbook.GetPicScraps
+com/example/demo/src/contents/ContentsController.java
+ com.example.demo.src.contents.ContentsController

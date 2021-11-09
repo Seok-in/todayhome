@@ -306,12 +306,12 @@ public class MypageDao {
         if(filter.equals("scrapbook"))
             getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
                     "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx\n" +
-                    "WHERE UserScrap.userIdx = ?\n" +
+                    "WHERE UserScrap.userIdx = ? AND UserScrap.status = 'Y'\n" +
                     "GROUP BY PC.pictureIdx";
         else
             getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
                     "INNER JOIN UserLike ON UserLike.pictureIdx = PC.pictureIdx\n" +
-                    "WHERE UserLike.userIdx = ?\n" +
+                    "WHERE UserLike.userIdx = ? AND UserLike.status = 'Y'\n" +
                     "GROUP BY PC.pictureIdx";
 
         return this.jdbcTemplate.query(getPicScrapsQuery,

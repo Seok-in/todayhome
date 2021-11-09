@@ -47,6 +47,14 @@ public enum BaseResponseStatus {
     FAILED_TO_FOLLOW(false, 3015, "팔로우에 실패하였습니다"),
     FAILED_TO_UNFOLLOW(false, 3016, "팔로우 취소에 실패하였습니다"),
 
+    // [POST]
+    FAILED_TO_LIKE(false, 3017, "좋아요 항목 추가가 실패하였습니다"),
+    FAILED_TO_UNLIKE(false, 3018, "좋아요 취소에 실패하였습니다"),
+
+    // [POST]
+    FAILED_TO_SCRAP(false, 3019, "스크랩을 실패하였습니다"),
+    FAILED_TO_UNSCRAP(false, 3020, "스크랩 취소에 실패하였습니다"),
+
 
 
     /**

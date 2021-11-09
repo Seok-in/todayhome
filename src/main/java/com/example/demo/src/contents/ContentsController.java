@@ -85,6 +85,79 @@ public class ContentsController {
         }
     }
 
+    /**
+     게시글 좋아요 API
+     */
+    @ResponseBody
+    @PostMapping("/{filter}/{contentIdx}/praise")
+    public BaseResponse<String> likeContents (@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx) {
+        try{
+            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            int logonIdx = jwtService.getUserIdx();
+            contentsService.likeContents(filter, logonIdx,contentIdx);
+            String result = "";
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 게시글 좋아요 취소
+     */
+    @ResponseBody
+    @PatchMapping(value = "/{filter}/{contentIdx}/unpraise")
+    public BaseResponse<String> unlikeContents(@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx ){
+        try{
+            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            int logonIdx = jwtService.getUserIdx();
+            contentsService.unlikeContents(filter,logonIdx,contentIdx);
+            String result = "" ;
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     게시글 스크랩 API
+     */
+    @ResponseBody
+    @PostMapping("/{filter}/{contentIdx}/scrap")
+    public BaseResponse<String> scrapContents (@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx) {
+        try{
+            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")||filter.equals("product")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            int logonIdx = jwtService.getUserIdx();
+            contentsService.scrapContents(filter, logonIdx,contentIdx);
+            String result = "";
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 게시글 스크랩 취소
+     */
+    @ResponseBody
+    @PatchMapping(value = "/{filter}/{contentIdx}/unscrap")
+    public BaseResponse<String> unscrapContents(@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx ){
+        try{
+            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")||filter.equals("product")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
+            int logonIdx = jwtService.getUserIdx();
+            contentsService.unscrapContents(filter,logonIdx,contentIdx);
+            String result = "" ;
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
 
 
 

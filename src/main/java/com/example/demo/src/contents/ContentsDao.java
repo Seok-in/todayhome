@@ -299,7 +299,7 @@ public class ContentsDao {
                 "                       IF(timestampdiff(minute, C.createdAt,current_timestamp) > 0,CONCAT(timestampdiff(minute, C.createdAt,current_timestamp),'분'),\n" +
                 "                           IF(timestampdiff(second, C.createdAt,current_timestamp) > 0,CONCAT(timestampdiff(SECOND, C.createdAt,current_timestamp),'초'),'N')))))) AS pastTime\n" +
                 "FROM Comment C\n" +
-                "INNER JOIN User U on U.userIdx = C.userIdx\n" +
+                "INNER JOIN User U on U.userIdx = C.userIdx AND C.status = 'Y'\n" +
                 "LEFT OUTER JOIN (SELECT CL.userIdx, CL.commentIdx, count(CL.commentIdx) cnt, CL.likeFlag FROM CommentLike CL GROUP BY CL.commentIdx) CL2 ON CL2.commentIdx = C.commentIdx AND CL2.likeFlag = 'Y'\n" +
                 "LEFT OUTER JOIN (SELECT IFNULL(CL.commentIdx,0) commentIdx, CL.likeFlag FROM CommentLike CL WHERE CL.userIdx = ? and CL.likeFlag = 'Y') CL3 ON CL3.commentIdx = C.commentIdx\n" +
                 "WHERE C.houseIdx = ?\n" +
@@ -333,7 +333,7 @@ public class ContentsDao {
                 "                       IF(timestampdiff(minute, C.createdAt,current_timestamp) > 0,CONCAT(timestampdiff(minute, C.createdAt,current_timestamp),'분'),\n" +
                 "                           IF(timestampdiff(second, C.createdAt,current_timestamp) > 0,CONCAT(timestampdiff(SECOND, C.createdAt,current_timestamp),'초'),'N')))))) AS pastTime\n" +
                 "FROM Comment C\n" +
-                "INNER JOIN User U on U.userIdx = C.userIdx\n" +
+                "INNER JOIN User U on U.userIdx = C.userIdx AND C.status = 'Y'\n" +
                 "LEFT OUTER JOIN (SELECT CL.userIdx, CL.commentIdx, count(CL.commentIdx) cnt, CL.likeFlag FROM CommentLike CL GROUP BY CL.commentIdx) CL2 ON CL2.commentIdx = C.commentIdx AND CL2.likeFlag = 'Y'\n" +
                 "LEFT OUTER JOIN (SELECT IFNULL(CL.commentIdx,0) commentIdx, CL.likeFlag FROM CommentLike CL WHERE CL.userIdx = ? and CL.likeFlag = 'Y') CL3 ON CL3.commentIdx = C.commentIdx\n" +
                 "WHERE C.knowhowIdx = ?\n" +

@@ -16,5 +16,6 @@ public class PostCreateOrderRes {
     private String userEmail;
     private String userCall;
     private List<OrderProduct> orderProduct;
-
+    private int userPoint;
+    private List<Coupon> coupons;
 }

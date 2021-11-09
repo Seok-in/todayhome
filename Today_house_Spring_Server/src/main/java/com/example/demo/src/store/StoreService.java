@@ -2,12 +2,10 @@ package com.example.demo.src.store;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.store.*;
-import com.example.demo.src.store.model.PostProductQuestReq;
+import com.example.demo.src.store.model.*;
 import com.example.demo.src.user.UserDao;
-import com.example.demo.src.store.model.PostCreateOrderReq;
-import com.example.demo.src.store.model.PostCreateOrderRes;
-import com.example.demo.src.store.model.ProductOption;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +170,38 @@ public class StoreService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderProducts(PostOrderReq postOrderReq, int userIdx) throws BaseException {
 
+        try{
+            int cartIdx = storeDao.getCartIdx(userIdx);
+            storeDao.changeOrderStatus(cartIdx);
+            storeDao.orderProducts(postOrderReq, userIdx, cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderDirectCancel(int userIdx) throws BaseException{
+        try{
+            int cartIdx = storeDao.getDirectCartIdx(userIdx);
+            storeDao.deleteDirect(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderCartCancel(int userIdx) throws BaseException{
+        try{
+            int cartIdx= storeDao.getCartIdx(userIdx);
+            storeDao.changeOrderStatus(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

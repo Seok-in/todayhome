@@ -267,4 +267,45 @@ public class StoreController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @PostMapping("/order/completion")
+    public BaseResponse<String> makeOrder(PostOrderReq postOrderReq) {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderProducts(postOrderReq, userIdx);
+            return new BaseResponse<>("주문성공하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //직접구매시의 취소
+    @ResponseBody
+    @PatchMapping("/order/cancel")
+    public BaseResponse<String> cancelOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderDirectCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //장바구니 구매시의 취소
+    @ResponseBody
+    @PatchMapping("/cart/cancel")
+    public BaseResponse<String> cancelCartOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderCartCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

@@ -342,7 +342,7 @@ public class StoreDao {
                 "      , num\n" +
                 "      , saleValue\n"+
                 "      , (salePrice + firstPrice + secondPrice + thirdPrice) * num as price\n" +
-                "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && (status = 'Y' or status = 'N') && cartFlag = 'D')\n" +
+                "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && status = 'Y' && cartFlag = 'D')\n" +
                 "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * Product.salePercent/100) as saleValue, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on P.companyIdx = C.companyIdx) as P2\n" +
                 "                                left join (SELECT productIdx, deliveryFee, paymentWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
@@ -493,5 +493,50 @@ public class StoreDao {
                         rs.getInt("refundFee"),
                         rs.getString("address")
                 ), params);
+    }
+    public void changeOrderStatus(int cartIdx){
+        String changeQuery = "update GetCart set Status = 'C' WHERE cartIdx = ? && status = 'Y' && cartFlag ='D';";
+        int params =cartIdx;
+        this.jdbcTemplate.update(changeQuery, params);
+    }
+
+    public void orderProducts(PostOrderReq postOrderReq, int userIdx, int cartIdx) {
+        String makeOrderQuery = "insert into OrderNow(userIdx, cartIdx, userCall, receiverName, " +
+                "receiverCall, address, detailAddress, request, couponIdx, point, payment, price, deliveryPrice )" +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        Object[] params = new Object[]{
+                userIdx,
+                cartIdx,
+                postOrderReq.getUserInfo().getUserCall(),
+                postOrderReq.getReceiverName(),
+                postOrderReq.getReceiverCall(),
+                postOrderReq.getAddress(),
+                postOrderReq.getDetailAddress(),
+                postOrderReq.getRequest(),
+                postOrderReq.getCouponIdx(),
+                postOrderReq.getPoint(),
+                postOrderReq.getPayment(),
+                postOrderReq.getPrice(),
+                postOrderReq.getDeliveryPrice()
+        };
+        this.jdbcTemplate.update(makeOrderQuery, params);
+    }
+
+    public void orderCancel(int cartIdx){
+        String changeQuery = "update GetCart cartFlag ='C' where status = 'Y' && cartIdx=?;";
+        int params = cartIdx;
+        this.jdbcTemplate.update(changeQuery, params);
+    }
+    public int getDirectCartIdx(int userIdx){
+        String getCartIdxQuery ="SELECT DISTINCT GetCart.cartIdx FROM GetCart left join Cart C on C.cartIdx = GetCart.cartIdx " +
+                "where userIdx =? && status = 'Y' && cartFlag='D';";
+        int params = userIdx;
+        return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
+    }
+
+    public void deleteDirect(int cartIdx){
+        String changeQuery = "update GetCart status ='D' where status ='Y' && cartIdx =?;";
+        int params = cartIdx;
+        this.jdbcTemplate.update(changeQuery, params);
     }
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 public class GetRecentCountRes {
     private int allNum;
     private int productNum;
+    private int pictureNum;
     private int houseNum;
     private int knowHowNum;
 }

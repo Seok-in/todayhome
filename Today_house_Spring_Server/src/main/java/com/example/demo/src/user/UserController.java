@@ -104,6 +104,8 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    // 23. 상품 문의 작성
     @ResponseBody
     @PostMapping("/{productIdx}/question")
     public BaseResponse<String> createQuestion(@PathVariable("productIdx") int productIdx, @RequestBody PostProductQuestReq postProductQuestReq){
@@ -143,6 +145,7 @@ public class UserController {
         }
     }
 
+    // 12. 유저 최근 본 목록 조회 API
     @ResponseBody
     @GetMapping("/recency")
     public BaseResponse<GetUserRecentRes> getUserRecentRes(@RequestParam(required = false) String flag){

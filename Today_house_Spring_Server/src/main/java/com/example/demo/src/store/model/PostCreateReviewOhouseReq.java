@@ -11,9 +11,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStoreProductRes {
-    private List<String> productImages;
-    private GetStoreProduct storeProduct;
-    private List<GetAdRes> advertisement;
-    private Rate rateNum;
+public class PostCreateReviewOhouseReq {
+    private List<String> reviewImages;
+    private String reviewText;
+    private int priceRate;
+    private int designRate;
+    private int deliveryRate;
+    private int healthRate;
 }

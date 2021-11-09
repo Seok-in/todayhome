@@ -13,8 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.EMPTY_RESULT_DATA;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class StoreService {
@@ -84,6 +83,8 @@ public class StoreService {
             postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
             postCreateOrderRes.setUserName(userDao.getUserInfo(userIdx).getUserRealName());
             postCreateOrderRes.setUserEmail(userDao.getUserInfo(userIdx).getUserRecentEmail());
+            // postCreateOrderRes.setCoupons();
+            postCreateOrderRes.setUserPoint(userDao.getUserPoint(userIdx));
 
             return postCreateOrderRes;
         }
@@ -199,6 +200,58 @@ public class StoreService {
         try{
             int cartIdx= storeDao.getCartIdx(userIdx);
             storeDao.changeOrderStatus(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void createReviewByOther(int userIdx, PostCreateReviewReq postCreateReviewReq) throws BaseException{
+        try{
+            storeDao.createReviewByOther(userIdx, postCreateReviewReq);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void createReviewByToday(int userIdx, int productIdx, int orderIndex, PostCreateReviewOhouseReq postCreateReviewOhouseReq) throws BaseException{
+        try{
+            storeDao.createReviewByCart(userIdx, productIdx, orderIndex, postCreateReviewOhouseReq);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void modifyReviewByOther(int reviewIdx, PatchReviewReq patchReviewReq) throws BaseException{
+        try{
+            if(reviewIdx == storeDao.getUserIdx(reviewIdx)){
+                storeDao.modifyReviewImages(reviewIdx, patchReviewReq.getReviewImages());
+                storeDao.modifyReviewData(reviewIdx, patchReviewReq);
+            }
+            else{
+                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
+            }
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void modifyReviewByToday(int reviewIdx, PatchHouseReviewReq patchHouseReviewReq) throws BaseException{
+        try{
+            if(reviewIdx == storeDao.getUserIdx(reviewIdx)){
+                storeDao.modifyReviewImages(reviewIdx, patchHouseReviewReq.getReviewImages());
+                storeDao.modifyOHouseReviewData(reviewIdx, patchHouseReviewReq);
+            }
+            else{
+                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
+            }
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);

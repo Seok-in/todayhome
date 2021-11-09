@@ -2,13 +2,14 @@ package com.example.demo.src.store;
 
 import com.example.demo.src.store.model.*;
 import org.hibernate.criterion.Order;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class StoreDao {
@@ -538,5 +539,234 @@ public class StoreDao {
         String changeQuery = "update GetCart status ='D' where status ='Y' && cartIdx =?;";
         int params = cartIdx;
         this.jdbcTemplate.update(changeQuery, params);
+    }
+    public List<UserReview> getUserReviews(int userIdx,int productIdx){
+        String getReviewQuery ="SELECT userName\n" +
+                "\n" +
+                "     , firstOptionName\n" +
+                "     , secondOptionName\n" +
+                "     , thirdOptionName\n" +
+                "     , reviewFlag\n" +
+                "     , updatedAt\n" +
+                "     , helpfulFlag\n" +
+                "     , helpfulNum\n" +
+                "     , reviewText\n" +
+                "     , ((priceRate + designRate + deliveryRate + healthRate)/4) as rate\n" +
+                "     , priceRate\n" +
+                "     , designRate\n" +
+                "     , deliveryRate\n" +
+                "     , healthRate\n" +
+                "\n" +
+                "FROM Review R left join (SELECT userName, userIdx FROM User) as US on R.userIdx = US.userIdx\n" +
+                "              left join ((SELECT  orderIndex, O.cartIdx, firstOptionName, secondOptionName, thirdOptionName FROM ((SELECT orderIndex, cartIdx FROM OrderNow) as O\n" +
+                "                            left join ((SELECT cartIdx, productIdx, firstOptionName, secondOptionName, thirdOptionName FROM (SELECT cartIdx, productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx FROM GetCart) as GC\n" +
+                "                            left join (SELECT optionIdx, name as firstOptionName FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.optionIdx\n" +
+                "                            left join (SELECT secondOptionIdx, name as secondOptionName FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
+                "                            left join (SELECT thirdOptionIdx, name as thirdOptionName FROM ProductThirdOption) as PTO on GC.thirdOptionIdx = PTO.thirdOptionIdx)) as K on O.cartIdx = K.cartIdx) GROUP BY orderIndex)\n" +
+                "                                        ) as T on T.orderIndex = R.orderIndex\n" +
+                "              left join DetailRate DR on R.reviewIdx = DR.reviewIdx\n" +
+                "              left join (SELECT COUNT(reviewIdx) as helpfulNum, reviewIdx FROM ReviewHelpful WHERE status = 'Y' GROUP BY reviewIdx) as C on C.reviewIdx =R.reviewIdx\n" +
+                "              left join (SELECT reviewIdx, status as helpfulFlag FROM ReviewHelpful WHERE userIdx =?) as RH on RH.reviewIdx = R.reviewIdx\n" +
+                "WHERE productIdx = ?;";
+        int params1 = userIdx;
+        int params2 = productIdx;
+        return this.jdbcTemplate.query(getReviewQuery,
+                (rs, rowNum) -> new UserReview(
+                        rs.getString("userName"),
+                        rs.getString("firstOptionName"),
+                        rs.getString("secondOptionName"),
+                        rs.getString("thirdOptionName"),
+                        rs.getString("reviewFlag"),
+                        rs.getString("updatedAt"),
+                        rs.getString("helpfulFlag"),
+                        rs.getInt("helpfulNum"),
+                        rs.getString("reviewText"),
+                        rs.getFloat("rate"),
+                        rs.getInt("priceRate"),
+                        rs.getInt("designRate"),
+                        rs.getInt("deliveryRate"),
+                        rs.getInt("healthRate")
+                ), params1, params2);
+    }
+
+    public Rate getRate(int productIdx){
+        String getQuery ="SELECT COUNT(case when rate = 5 then 1 END) as fiveRate\n" +
+                "     , COUNT(case when rate < 5 && rate >= 4 then 1 END) as fourRate\n" +
+                "     , COUNT(case when rate < 4 && rate >= 3 then 1 END) as threeRate\n" +
+                "     , COUNT(case when rate < 3 && rate >= 2 then 1 END) as twoRate\n" +
+                "     , COUNT(case when rate < 2 then 1 END) as oneRate\n" +
+                "FROM Review\n" +
+                "WHERE productIdx = ?;";
+        int params = productIdx;
+        return this.jdbcTemplate.queryForObject(getQuery,
+                (rs,rowNum) -> new Rate(
+                        rs.getInt("fiveRate"),
+                        rs.getInt("fourRate"),
+                        rs.getInt("threeRate"),
+                        rs.getInt("twoRate"),
+                        rs.getInt("oneRate")
+                ), params);
+    }
+    public float createRate(int reviewIdx, int priceRate, int designRate, int deliveryRate, int healthRate){
+        String createQuery = "insert into DetailRate VALUES(?, ?, ?, ?, ?);";
+        Object[] params = new Object[]{reviewIdx, priceRate, designRate, deliveryRate, healthRate};
+        this.jdbcTemplate.update(createQuery, params);
+        float rate = (priceRate+designRate+deliveryRate+healthRate)/4;
+        return rate;
+    }
+    public void createReviewByCart(int userIdx, int productIdx, int orderIndex, PostCreateReviewOhouseReq postCreateReviewOhouseReq){
+        String createQuery = "insert into Review(productIdx, userIdx, orderIndex, reviewText, reviewFlag) VALUES(?, ?, ?, ?, 'T');";
+        Object[] params = new Object[]{
+                productIdx,
+                userIdx,
+                orderIndex,
+                postCreateReviewOhouseReq.getReviewText()
+        };
+        this.jdbcTemplate.update(createQuery, params);
+
+        String lastInsertQuery = "select last_insert_id();";
+        int reviewIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+
+        createReviewImages(reviewIdx, postCreateReviewOhouseReq.getReviewImages());
+        float rate = createRate(reviewIdx, postCreateReviewOhouseReq.getPriceRate(), postCreateReviewOhouseReq.getDesignRate(),
+                postCreateReviewOhouseReq.getDeliveryRate(), postCreateReviewOhouseReq.getHealthRate());
+        String updateRateQuery = "update Review set rate = ? where reviewIdx =?;";
+        this.jdbcTemplate.update(updateRateQuery, rate);
+
+    }
+
+    public void createReviewByOther(int userIdx, PostCreateReviewReq postCreateReviewReq ){
+        String createQuery = "insert into Review(productIdx, userIdx, rate, reviewText, reviewFlag) VALUES(?, ?, ?, ?, 'O');";
+        Object[] params = new Object[]{
+                postCreateReviewReq.getProductIdx(),
+                userIdx,
+                postCreateReviewReq.getRate(),
+                postCreateReviewReq.getReviewText()
+        };
+        this.jdbcTemplate.update(createQuery, params);
+
+        String lastInsertQuery = "select last_insert_id();";
+        int reviewIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+
+        createReviewImages(reviewIdx, postCreateReviewReq.getReviewImages());
+    }
+
+    public void createReviewImages(int reviewIdx, List<String> reviewImages){
+        int size = reviewImages.size();
+        String createImgQuery = "insert into ReviewImage(reviewIdx, reviewImage) VALUES(?, ?);";
+        int params1 = reviewIdx;
+        for (int i=0; i<size; i++) {
+            String params2 = reviewImages.get(i);
+            this.jdbcTemplate.update(createImgQuery, params1, params2);
+        }
+    }
+    public List<String> getReviewImages(int reviewIdx){
+        String getReviewImagesQuery = "SELECT reviewImage FROM ReviewImage WHERE status='Y' && reviewIdx =?;";
+        int params = reviewIdx;
+        return this.jdbcTemplate.query(getReviewImagesQuery,
+                (rs, rowNum) -> new String(rs.getString("reviewImage")), params);
+    }
+    public void modifyReviewImages(int reviewIdx, List<String> reviewImages) {
+
+        List<String> oldReviewImages = getReviewImages(reviewIdx);
+        List<String> deleteReviewImages = new ArrayList<>();
+
+        // 동일한 리뷰이미지 객체에서 삭제
+        for (int i = 0; i < reviewImages.size(); i++) {
+            for (int j = 0; j < oldReviewImages.size(); j++) {
+                if (reviewImages.get(i) == oldReviewImages.get(j)) {
+                    reviewImages.remove(i);
+                    deleteReviewImages.add(oldReviewImages.get(j));
+                }
+            }
+        }
+        // 안쓰는 리뷰이미지 삭제
+        int params1 = reviewIdx;
+        String updateImageQuery = "update ReviewImage set status='N' where reviewImage = ? && reviewIdx = ?;";
+        for (int i = 0; i < deleteReviewImages.size(); i++) {
+
+            String params2 = deleteReviewImages.get(i);
+            this.jdbcTemplate.update(updateImageQuery, params2, params1);
+        }
+        // 추가된 리뷰이미지 추가
+        createReviewImages(reviewIdx, reviewImages);
+    }
+    public void modifyReviewData(int reviewIdx, PatchReviewReq patchReviewReq){
+        String updateReviewQuery = "update Review set rate =? ,reviewText = ? WHERE reviewIdx =?;";
+        Object[] params = new Object[]{
+                patchReviewReq.getRate(),
+                patchReviewReq.getReviewText(),
+                reviewIdx
+        };
+        this.jdbcTemplate.update(updateReviewQuery, params);
+    }
+    public void modifyOHouseReviewData(int reviewIdx, PatchHouseReviewReq patchHouseReviewReq){
+        String updateRateQuery = "udpate DetailRate set priceRate = ?, designRate = ?, deliveryRate = ? , healthRate =? where reviewIdx = ?;";
+        Object[] params1 = new Object[]{
+                patchHouseReviewReq.getPriceRate(),
+                patchHouseReviewReq.getDesignRate(),
+                patchHouseReviewReq.getDeliveryRate(),
+                patchHouseReviewReq.getHealthRate(),
+                reviewIdx
+        };
+        this.jdbcTemplate.update(updateRateQuery, params1);
+
+        String updateReviewQuery = "update Review set rate = ?, reviewText = ? WHERE reviewIdx =?;";
+        float rate =(patchHouseReviewReq.getPriceRate() +
+                patchHouseReviewReq.getDesignRate() +
+                patchHouseReviewReq.getDeliveryRate() +
+                patchHouseReviewReq.getHealthRate())/4;
+        String params2 = patchHouseReviewReq.getReviewText();
+        int params3 = reviewIdx;
+        this.jdbcTemplate.update(updateReviewQuery, rate, params2, params3);
+    }
+    public int getUserIdx(int reviewIdx){
+        String getQuery = "SELECT userIdx FROM Review WHERE reviewIdx =?;";
+        int param = reviewIdx;
+        return this.jdbcTemplate.queryForObject(getQuery, int.class, param);
+    }
+
+    public List<String> getProductImages(int productIdx){
+        String getProductImagesQuery = "SELECT productImage From ProductImage WHERE productIdx = ?;";
+        int param = productIdx;
+        return this.jdbcTemplate.query(getProductImagesQuery,
+                (rs, rowNum) -> new String(
+                        rs.getString("productImage")
+                ), param);
+    }
+
+    public GetStoreProduct getStoreProduct(int productIdx){
+        String getStoreProductQuery ="SELECT companyName\n" +
+                "      , productName\n" +
+                "      , salePercent as discountPercent\n" +
+                "      , productPrice as originPrice\n" +
+                "      , productPrice * (100-salePercent)/100 as salePrice\n" +
+                "      , productInfo\n" +
+                "      , paymentWay\n" +
+                "      , deliveryFee\n" +
+                "      , mountainFee\n" +
+                "      , reviewNum\n" +
+                "      , questionNum\n" +
+                "      , rate\n" +
+                "FROM Product P left join (SELECT companyIdx, companyName FROM Company) as C ON P.companyIdx = C.companyIdx\n" +
+                "                        left join (SELECT productIdx, paymentWay, deliveryFee, mountainFee FROM DeliveryFee) as D ON D.productIdx =P.productIdx\n" +
+                "                        left join (SELECT COUNT(reviewIdx) as reviewNum, AVG(rate) as rate, productIdx FROM Review WHERE productIdx =? && status ='Y') as R ON P.productIdx = R.productIdx\n" +
+                "                        left join (SELECT COUNT(questionIdx) as questionNum, productIdx FROM Question WHERE productIdx =? && status ='Y') as Q ON P.productIdx = Q.productIdx;";
+        int param = productIdx;
+        return this.jdbcTemplate.queryForObject(getStoreProductQuery,
+                (rs, rowNum) -> new GetStoreProduct(
+                        rs.getString("companyName"),
+                        rs.getString("productName"),
+                        rs.getInt("salePercent"),
+                        rs.getInt("originPrice"),
+                        rs.getInt("salePrice"),
+                        rs.getString("productInfo"),
+                        rs.getString("paymentWay"),
+                        rs.getInt("deliveryFee"),
+                        rs.getInt("mountainFee"),
+                        rs.getInt("reviewNum"),
+                        rs.getInt("questionNum"),
+                        rs.getInt("rate")
+                ), param, param);
     }
 }

@@ -216,14 +216,20 @@ public class UserDao {
         int params = userIdx;
         return this.jdbcTemplate.queryForObject(getQuery,
                 (rs, rowNum) -> new GetRecentCountRes(
+                        rs.getInt("allNum"),
                         rs.getInt("productNum"),
                         rs.getInt("pictureNum"),
                         rs.getInt("houseNum"),
                         rs.getInt("knowHowNum")
                 ), params);
     }
-
-    public List<UserOrder> userOrders(int userIdx, int months, String flag){
-        String getQuery =""
+    public int getUserPoint(int userIdx){
+        String getQuery = "SELECT SUM(point) as point FROM UserPoint WHERE userIdx =? && expiredAt >= date(NOW());";
+        int param = userIdx;
+        return this.jdbcTemplate.queryForObject(getQuery, int.class, param);
     }
+
+    /*public List<UserOrder> userOrders(int userIdx, int months, String flag){
+        String getQuery =""
+    }*/
 }

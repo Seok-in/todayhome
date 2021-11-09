@@ -137,4 +137,30 @@ public class StoreProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public GetProductReviewRes getProductReviewRes(int productIdx, int userIdx) throws BaseException{
+        try{
+            GetProductReviewRes getProductReviewRes = new GetProductReviewRes();
+            getProductReviewRes.setRate(storeDao.getRate(productIdx));
+            getProductReviewRes.setUserReviews(storeDao.getUserReviews(userIdx, productIdx));
+            return getProductReviewRes;
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetStoreProductRes getStoreProductRes(int productIdx) throws BaseException{
+        try{
+            GetStoreProductRes getStoreProductRes = new GetStoreProductRes();
+            getStoreProductRes.setStoreProduct(storeDao.getStoreProduct(productIdx));
+            getStoreProductRes.setProductImages(storeDao.getProductImages(productIdx));
+            getStoreProductRes.setAdvertisement(storeDao.getAdRes());
+            getStoreProductRes.setRateNum(storeDao.getRate(productIdx));
+            return getStoreProductRes;
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

@@ -58,6 +58,32 @@ public class UserService {
         }
     }
 
+    /**
+     Follow API
+     */
+    public void userFollow(int userId, int followerId) throws BaseException{
+        try {
+            int result = userDao.userFollow(userId, followerId);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_FOLLOW);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     Unfollow API
+     */
+    public void userUnfollow(int userId, int followerId) throws BaseException{
+        try {
+            int result = userDao.userUnfollow(userId, followerId);
+            if (result == 0)
+                throw new BaseException(FAILED_TO_UNFOLLOW);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /*public void modifyUserName(PatchUserReq patchUserReq) throws BaseException {
         try{
             int result = userDao.modifyUserName(patchUserReq);

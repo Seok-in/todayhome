@@ -33,10 +33,10 @@ public class MypageDao {
                 "FROM User as U\n" +
                 "    INNER JOIN (SELECT F.followuserIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.userIdx = ?)  followers ON U.userIdx = followers.followuserIdx\n" +
+                "                WHERE F.userIdx = ? AND F.status = 'Y')  followers ON U.userIdx = followers.followuserIdx\n" +
                 "    LEFT OUTER JOIN (SELECT F.status, F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.followuserIdx = ?) followers2 ON followuserIdx = followers2.userIdx";
+                "                WHERE F.followuserIdx = ? AND F.status = 'Y') followers2 ON followuserIdx = followers2.userIdx";
         return this.jdbcTemplate.query(getNewQuery,
                 (rs, rowNum) -> new GetFollowers(
                         rs.getString("followerName"),
@@ -59,10 +59,10 @@ public class MypageDao {
                 "FROM User as U\n" +
                 "    INNER JOIN (SELECT F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.followuserIdx = ?)  followers ON U.userIdx = followers.userIdx\n" +
+                "                WHERE F.followuserIdx = ? AND F.status = 'Y')  followers ON U.userIdx = followers.userIdx\n" +
                 "    LEFT OUTER JOIN (SELECT F.status, F.userIxd\n" +
                 "                FROM UserFollow as F\n" +
-                "                WHERE F.followuserIdx = ?) followers2 ON followers.userIdx = followers2.userIdx";
+                "                WHERE F.followuserIdx = ? AND F.status = 'Y') followers2 ON followers.userIdx = followers2.userIdx";
         return this.jdbcTemplate.query(getNewQuery,
                 (rs, rowNum) -> new GetFollowers(
                         rs.getString("following_name"),

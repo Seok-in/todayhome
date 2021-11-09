@@ -89,6 +89,40 @@ public class UserController {
         }
     }
 
+    /**
+     * 유저 팔로우
+     * [POST], [PATCH] /users/login
+     */
+    @ResponseBody
+    @PostMapping(value = "/follow"/*, consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE*/)
+    public BaseResponse<String> userFollow(@RequestParam(value="userId", required=false, defaultValue="") int userId ){
+        try{
+            int followerId = jwtService.getUserIdx();
+            userService.userFollow(userId,followerId);
+            String result = "" ;
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 유저 팔로우
+     * [PATCH] /users/login
+     */
+    @ResponseBody
+    @PatchMapping(value = "/unfollow"/*, consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE*/)
+    public BaseResponse<String> userUnfollow(@RequestParam(value="userId", required=false, defaultValue="") int userId ){
+        try{
+            int followerId = jwtService.getUserIdx();
+            userService.userUnfollow(userId,followerId);
+            String result = "" ;
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
 
     /**

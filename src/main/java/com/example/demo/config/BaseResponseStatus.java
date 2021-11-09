@@ -43,6 +43,10 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
 
+    // [POST] /users/follow
+    FAILED_TO_FOLLOW(false, 3015, "팔로우에 실패하였습니다"),
+    FAILED_TO_UNFOLLOW(false, 3016, "팔로우 취소에 실패하였습니다"),
+
 
 
     /**
@@ -58,7 +62,9 @@ public enum BaseResponseStatus {
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
 
-    // 5000 : 필요시 만들어서 쓰세요
+    /**
+     * 4000 : Coupon 오류
+     */
     RECEIVE_FAIL_COUPON(false,5000,"쿠폰 발급받기 실패"),
     ALREADY_RECEIVED_COUPON(false, 5001, "이미 발급된 쿠폰입니다"),
     EMPTY_COUPON_CODE(false, 5002, "쿠폰 코드를 입력해주세요"),

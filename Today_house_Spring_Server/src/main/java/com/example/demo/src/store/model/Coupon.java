@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStoreProductRes {
-    private List<String> productImages;
-    private GetStoreProduct storeProduct;
-    private List<GetAdRes> advertisement;
-    private Rate rateNum;
+public class Coupon {
+    private int couponIdx;
+    private String couponName;
+    private int percent;
+    private int price;
+    private int enabledPrice;
+    private String expiredAt;
 }

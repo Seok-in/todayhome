@@ -5,6 +5,8 @@ import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.store.model.*;
 import com.example.demo.src.store.*;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,33 @@ public class StoreProvider {
         }
     }
 
+    public GetCartInfoRes getCartInfoRes(int userIdx) throws BaseException{
+        try{
+            int cartIdx = storeDao.getCartIdx(userIdx);
+            GetCartInfoRes getCartInfoRes = new GetCartInfoRes();
+            getCartInfoRes.setOrderProducts(storeDao.getCartProducts(cartIdx));
+            int size = getCartInfoRes.getOrderProducts().size();
+            int sumDeliveryFee = 0;
+            int salePrice = 0;
+            int sumPrice = 0;
+            for(int i=0; i< size; i++){
+                OrderProduct orderProduct = getCartInfoRes.getOrderProducts().get(i);
+                sumDeliveryFee += orderProduct.getDeliveryFee();
+                salePrice += (orderProduct.getSalePrice() * orderProduct.getNum());
+                sumPrice += orderProduct.getPrice();
+            }
+            getCartInfoRes.setSumDeliveryFee(sumDeliveryFee);
+            getCartInfoRes.setSumSales(salePrice);
+            getCartInfoRes.setResultPrice(sumPrice);
+            getCartInfoRes.setSumPrice(salePrice + sumPrice);
+
+            return getCartInfoRes;
+        }
+        catch(Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
     public GetStoreFirstCtgRes getStoreFirstCtgRes(int userIdx, String categoryName) throws BaseException{
         try{
             GetStoreFirstCtgRes getStoreFirstCtgRes = new GetStoreFirstCtgRes();
@@ -89,4 +118,62 @@ public class StoreProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetQuestionRes> getQuestionRes(int productIdx) throws BaseException {
+        try{
+            List<GetQuestionRes> getQuestionRes = storeDao.getQuestionRes(productIdx);
+            return getQuestionRes;
+        }
+        catch (Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetDeliveryInfoRes getDeliveryInfoRes(int productIdx) throws BaseException{
+        try{
+            GetDeliveryInfoRes getDeliveryInfoRes = storeDao.getDeliveryInfoRes(productIdx);
+            return getDeliveryInfoRes;
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetProductReviewRes getProductReviewRes(int productIdx, int userIdx) throws BaseException{
+        try{
+            GetProductReviewRes getProductReviewRes = new GetProductReviewRes();
+            getProductReviewRes.setRate(storeDao.getRate(productIdx));
+            int sumRate = (
+                            getProductReviewRes.getRate().getFive() + getProductReviewRes.getRate().getFour() +
+                            getProductReviewRes.getRate().getThree() + getProductReviewRes.getRate().getTwo() +
+                            getProductReviewRes.getRate().getOne());
+            getProductReviewRes.setRateNum(sumRate);
+            float avgRate = (5*getProductReviewRes.getRate().getFive() + 4*getProductReviewRes.getRate().getFour() +
+                    3*getProductReviewRes.getRate().getThree() + 2*getProductReviewRes.getRate().getTwo() +
+                    1*getProductReviewRes.getRate().getOne())/sumRate;
+            getProductReviewRes.setAvgRate(avgRate);
+            getProductReviewRes.setUserReviews(storeDao.getUserReviews(userIdx, productIdx));
+            return getProductReviewRes;
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetStoreProductRes getStoreProductRes(int productIdx) throws BaseException{
+        try{
+            GetStoreProductRes getStoreProductRes = new GetStoreProductRes();
+            getStoreProductRes.setStoreProduct(storeDao.getStoreProduct(productIdx));
+            getStoreProductRes.setProductImages(storeDao.getProductImages(productIdx));
+            getStoreProductRes.setAdvertisement(storeDao.getAdRes());
+            getStoreProductRes.setRateNum(storeDao.getRate(productIdx));
+            return getStoreProductRes;
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

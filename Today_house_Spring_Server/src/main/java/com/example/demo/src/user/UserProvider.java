@@ -2,8 +2,9 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.oAuthLogin.model.KakaoUserInfo;
+import com.example.demo.src.store.model.GetQuestionRes;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -75,4 +76,53 @@ public class UserProvider {
         }
     }
 
+    public List<GetQuestionRes> getQuestionResByUser(int userIdx) throws BaseException{
+        try{
+            List<GetQuestionRes> getQuestionResList = userDao.getQuestionRes(userIdx);
+            return getQuestionResList;
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetUserRecentRes getUserRecentRes(int userIdx) throws BaseException{
+        try{
+            GetUserRecentRes getUserRecentRes = new GetUserRecentRes();
+            getUserRecentRes.setUserRecents(userDao.userRecent(userIdx));
+            getUserRecentRes.setGetRecentCountRes(userDao.getRecentCountRes(userIdx));
+
+            return getUserRecentRes;
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetUserRecentRes getUserRecentRes(int userIdx, String flag) throws BaseException{
+        try{
+            GetUserRecentRes getUserRecentRes = new GetUserRecentRes();
+            getUserRecentRes.setUserRecents(userDao.userRecentByFlag(userIdx, flag));
+            getUserRecentRes.setGetRecentCountRes(userDao.getRecentCountRes(userIdx));
+
+            return getUserRecentRes;
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetUserReviewRes getUserReviewRes(int userIdx) throws BaseException {
+        try {
+            GetUserReviewRes getUserReviewRes = new GetUserReviewRes();
+            getUserReviewRes.setReviewOthers(userDao.getUserReviews(userIdx));
+            getUserReviewRes.setReviewTodays(userDao.getReviewTodays(userIdx));
+            getUserReviewRes.setReviewNum(userDao.getReviewNum(userIdx));
+            return getUserReviewRes;
+        }
+        catch(Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

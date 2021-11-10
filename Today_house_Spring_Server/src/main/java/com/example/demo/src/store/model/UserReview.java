@@ -11,20 +11,20 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Review {
+public class UserReview {
+    private List<String> reviewImages;
+    private String userName;
+    private String firstOptionName;
+    private String secondOptionName;
+    private String thirdOptionName;
+    private String reviewFlag;
+    private String updatedAt;
+    private String helpfulFlag;
+    private int helpfulNum;
+    private String reviewText;
     private float rate;
     private int priceRate;
     private int designRate;
     private int deliveryRate;
     private int healthRate;
-    private int helpfulNum;
-    private String createdAt;
-    private List<String> reviewImage;
-    private String productName;
-    private String userName;
-    private String userImage;
-    private String orderFlag;
-    private String productOption;
-    private String reviewText;
-    private String helpfulStatus;
 }

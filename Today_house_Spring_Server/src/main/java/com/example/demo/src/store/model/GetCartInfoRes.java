@@ -11,9 +11,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStoreProductRes {
-    private List<String> productImages;
-    private GetStoreProduct storeProduct;
-    private List<GetAdRes> advertisement;
-    private Rate rateNum;
+public class GetCartInfoRes {
+    private int sumPrice;
+    private int sumDeliveryFee;
+    private int sumSales;
+    private int resultPrice;
+    private List<OrderProduct> orderProducts;
 }

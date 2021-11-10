@@ -2,11 +2,10 @@ package com.example.demo.src.store;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.store.*;
+import com.example.demo.src.store.model.*;
 import com.example.demo.src.user.UserDao;
-import com.example.demo.src.store.model.PostCreateOrderReq;
-import com.example.demo.src.store.model.PostCreateOrderRes;
-import com.example.demo.src.store.model.ProductOption;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.EMPTY_RESULT_DATA;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class StoreService {
@@ -85,6 +83,8 @@ public class StoreService {
             postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
             postCreateOrderRes.setUserName(userDao.getUserInfo(userIdx).getUserRealName());
             postCreateOrderRes.setUserEmail(userDao.getUserInfo(userIdx).getUserRecentEmail());
+            // postCreateOrderRes.setCoupons();
+            postCreateOrderRes.setUserPoint(userDao.getUserPoint(userIdx));
 
             return postCreateOrderRes;
         }
@@ -165,6 +165,41 @@ public class StoreService {
         try{
             int cartIdx = storeDao.getCartIdx(userIdx);
             storeDao.allNonCheckCartProduct(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderProducts(PostOrderReq postOrderReq, int userIdx) throws BaseException {
+
+        try{
+            int cartIdx = storeDao.getCartIdx(userIdx);
+            storeDao.changeOrderStatus(cartIdx);
+            storeDao.orderProducts(postOrderReq, userIdx, cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderDirectCancel(int userIdx) throws BaseException{
+        try{
+            int cartIdx = storeDao.getDirectCartIdx(userIdx);
+            storeDao.deleteDirect(cartIdx);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void orderCartCancel(int userIdx) throws BaseException{
+        try{
+            int cartIdx= storeDao.getCartIdx(userIdx);
+            storeDao.changeOrderStatus(cartIdx);
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);

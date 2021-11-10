@@ -10,10 +10,16 @@ import org.slf4j.LoggerFactory;
 import com.example.demo.src.store.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.PostUpdate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -39,6 +45,8 @@ public class StoreController {
         this.jwtService = jwtService;
     }
 
+
+    // 46. 스토어 홈 화면 조회 API
     @ResponseBody
     @GetMapping("")
     public BaseResponse<GetStoreHomeRes> getStoreHomeRes() {
@@ -52,6 +60,7 @@ public class StoreController {
             }
     }
 
+    // 47. 스토어 베스트 실시간 베스트 화면 조회 API
     @ResponseBody
     @GetMapping("/ranks")
     public BaseResponse<List<PopularProduct>> getRealTimeBest(){
@@ -65,6 +74,7 @@ public class StoreController {
         }
     }
 
+    // 48. 스토어 카테고리별 역대 베스트 조회 API
     @ResponseBody
     @GetMapping("/categories/ranks")
     public BaseResponse<List<PopularProduct>> getAllTimeBest(@RequestParam(required = true, defaultValue = "%") String categoryName){
@@ -78,6 +88,7 @@ public class StoreController {
         }
     }
 
+    // 50. 스토어 메인 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories")
     public BaseResponse<GetStoreFirstCtgRes> getStoreFirstCtgRes(@RequestParam(required = false) String categoryName){
@@ -95,6 +106,7 @@ public class StoreController {
         }
     }
 
+    // 51. 스토어 세부 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories/subcategories")
     public BaseResponse<GetStoreSecondCtgRes> getSToreSecondCtgRes(@RequestParam(required = false) String categoryName){
@@ -134,6 +146,19 @@ public class StoreController {
             return new BaseResponse<>("장바구니에 담았습니다.");
         }
         catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 57. 유저 장바구니 조회 API
+    @ResponseBody
+    @GetMapping("/cart")
+    public BaseResponse<GetCartInfoRes> getCartInfo() {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetCartInfoRes getCartInfoRes = storeProvider.getCartInfoRes(userIdx);
+            return new BaseResponse<>(getCartInfoRes);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -228,5 +253,104 @@ public class StoreController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+    // 53. 단일 상품 리뷰 조회 API
+    @ResponseBody
+    @GetMapping("/{productIdx}/reviews")
+    public BaseResponse<GetProductReviewRes> getProductReviews(@PathVariable("productIdx") int productIdx){
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetProductReviewRes getProductReviewRes = storeProvider.getProductReviewRes(productIdx, userIdx);
+            return new BaseResponse<>(getProductReviewRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
+    // 54. 단일 상품 문의 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}/questions")
+    public BaseResponse<List<GetQuestionRes>> getQuestionRes(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<GetQuestionRes> result = storeProvider.getQuestionRes(productIdx);
+            return new BaseResponse<>(result);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 55. 단일 상품 배송/교환/환불 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}/delivery-info")
+    public BaseResponse<GetDeliveryInfoRes> getDeliveryInfo(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            GetDeliveryInfoRes getDeliveryInfoRes = storeProvider.getDeliveryInfoRes(productIdx);
+            return new BaseResponse<>(getDeliveryInfoRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/order/completion")
+    public BaseResponse<String> makeOrder(PostOrderReq postOrderReq) {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderProducts(postOrderReq, userIdx);
+            return new BaseResponse<>("주문성공하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //직접구매시의 취소
+    @ResponseBody
+    @PatchMapping("/order/cancel")
+    public BaseResponse<String> cancelOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderDirectCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //장바구니 구매시의 취소
+    @ResponseBody
+    @PatchMapping("/cart/cancel")
+    public BaseResponse<String> cancelCartOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderCartCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+
+
+
+
+    @ResponseBody
+    @GetMapping("/products/{productIdx}")
+    public BaseResponse<GetStoreProductRes> getStoreProductRes(@PathVariable("productIdx") int productIdx){
+        try{
+            GetStoreProductRes getStoreProductRes1 = storeProvider.getStoreProductRes(productIdx);
+            int userIdx = jwtService.getUserIdx();
+            return new BaseResponse<>(getStoreProductRes1);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

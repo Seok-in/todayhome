@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostProductQuestReq {
-    private String QuestionCtgFlag;
+    private String questionCtgFlag;
     private int firstOptionIdx;
     private int secondOptionIdx;
     private int thirdOptionIdx;

@@ -17,7 +17,7 @@ public class GetDeliveryInfoRes {
     private String disabledArea;
     private String numDeliveryFlag;
     private String etc;
-    private int exchageFee;
+    private int exchangeFee;
     private int refundFee;
     private String address;
 }

@@ -343,8 +343,8 @@ public class StoreDao {
                 "      , num\n" +
                 "      , saleValue\n"+
                 "      , (salePrice + firstPrice + secondPrice + thirdPrice) * num as price\n" +
-                "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && status = 'Y' && cartFlag = 'D')\n" +
-                "        as GC left join ((SELECT productIdx, productName, companyName, salePrice FROM (SELECT productName, productIdx, companyIdx, (productPrice * Product.salePercent/100) as saleValue, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
+                "FROM (SELECT productIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx, num FROM GetCart where cartIdx = ? && status = 'Y' && cartFlag = 'D' or cartFlag = 'C')\n" +
+                "        as GC left join ((SELECT productIdx, productName, companyName, salePrice, saleValue FROM (SELECT productName, productIdx, companyIdx, (productPrice * Product.salePercent/100) as saleValue, (productPrice * (1-Product.salePercent/100)) as salePrice FROM Product) as P\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on P.companyIdx = C.companyIdx) as P2\n" +
                 "                                left join (SELECT productIdx, deliveryFee, paymentWay FROM DeliveryFee) as DF on P2.productIdx = DF.productIdx) on P2.productIdx = GC.productIdx\n" +
                 "              left join (SELECT optionIdx as firstOptionIdx, name as firstOptionName, optionPrice as firstPrice FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.firstOptionIdx\n" +
@@ -472,7 +472,7 @@ public class StoreDao {
                 "     , deliveryFee\n" +
                 "     , paymentWay\n" +
                 "     , mountainFee\n" +
-                "     , disabledArea\n" +
+                "     , ifNULL(disabledArea,'없음') as disabledArea\n" +
                 "     , numDeliveryFlag\n" +
                 "     , etcDelivery\n" +
                 "     , exchangeFee\n" +
@@ -542,7 +542,7 @@ public class StoreDao {
     }
     public List<UserReview> getUserReviews(int userIdx,int productIdx){
         String getReviewQuery ="SELECT userName\n" +
-                "\n" +
+                "     , reviewIdx\n" +
                 "     , firstOptionName\n" +
                 "     , secondOptionName\n" +
                 "     , thirdOptionName\n" +
@@ -572,6 +572,7 @@ public class StoreDao {
         int params2 = productIdx;
         return this.jdbcTemplate.query(getReviewQuery,
                 (rs, rowNum) -> new UserReview(
+                        getReviewImages(rs.getInt("reviewIdx")),
                         rs.getString("userName"),
                         rs.getString("firstOptionName"),
                         rs.getString("secondOptionName"),
@@ -607,49 +608,8 @@ public class StoreDao {
                         rs.getInt("oneRate")
                 ), params);
     }
-    public float createRate(int reviewIdx, int priceRate, int designRate, int deliveryRate, int healthRate){
-        String createQuery = "insert into DetailRate VALUES(?, ?, ?, ?, ?);";
-        Object[] params = new Object[]{reviewIdx, priceRate, designRate, deliveryRate, healthRate};
-        this.jdbcTemplate.update(createQuery, params);
-        float rate = (priceRate+designRate+deliveryRate+healthRate)/4;
-        return rate;
-    }
-    public void createReviewByCart(int userIdx, int productIdx, int orderIndex, PostCreateReviewOhouseReq postCreateReviewOhouseReq){
-        String createQuery = "insert into Review(productIdx, userIdx, orderIndex, reviewText, reviewFlag) VALUES(?, ?, ?, ?, 'T');";
-        Object[] params = new Object[]{
-                productIdx,
-                userIdx,
-                orderIndex,
-                postCreateReviewOhouseReq.getReviewText()
-        };
-        this.jdbcTemplate.update(createQuery, params);
 
-        String lastInsertQuery = "select last_insert_id();";
-        int reviewIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
 
-        createReviewImages(reviewIdx, postCreateReviewOhouseReq.getReviewImages());
-        float rate = createRate(reviewIdx, postCreateReviewOhouseReq.getPriceRate(), postCreateReviewOhouseReq.getDesignRate(),
-                postCreateReviewOhouseReq.getDeliveryRate(), postCreateReviewOhouseReq.getHealthRate());
-        String updateRateQuery = "update Review set rate = ? where reviewIdx =?;";
-        this.jdbcTemplate.update(updateRateQuery, rate);
-
-    }
-
-    public void createReviewByOther(int userIdx, PostCreateReviewReq postCreateReviewReq ){
-        String createQuery = "insert into Review(productIdx, userIdx, rate, reviewText, reviewFlag) VALUES(?, ?, ?, ?, 'O');";
-        Object[] params = new Object[]{
-                postCreateReviewReq.getProductIdx(),
-                userIdx,
-                postCreateReviewReq.getRate(),
-                postCreateReviewReq.getReviewText()
-        };
-        this.jdbcTemplate.update(createQuery, params);
-
-        String lastInsertQuery = "select last_insert_id();";
-        int reviewIdx = this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
-
-        createReviewImages(reviewIdx, postCreateReviewReq.getReviewImages());
-    }
 
     public void createReviewImages(int reviewIdx, List<String> reviewImages){
         int size = reviewImages.size();
@@ -666,65 +626,8 @@ public class StoreDao {
         return this.jdbcTemplate.query(getReviewImagesQuery,
                 (rs, rowNum) -> new String(rs.getString("reviewImage")), params);
     }
-    public void modifyReviewImages(int reviewIdx, List<String> reviewImages) {
 
-        List<String> oldReviewImages = getReviewImages(reviewIdx);
-        List<String> deleteReviewImages = new ArrayList<>();
 
-        // 동일한 리뷰이미지 객체에서 삭제
-        for (int i = 0; i < reviewImages.size(); i++) {
-            for (int j = 0; j < oldReviewImages.size(); j++) {
-                if (reviewImages.get(i) == oldReviewImages.get(j)) {
-                    reviewImages.remove(i);
-                    deleteReviewImages.add(oldReviewImages.get(j));
-                }
-            }
-        }
-        // 안쓰는 리뷰이미지 삭제
-        int params1 = reviewIdx;
-        String updateImageQuery = "update ReviewImage set status='N' where reviewImage = ? && reviewIdx = ?;";
-        for (int i = 0; i < deleteReviewImages.size(); i++) {
-
-            String params2 = deleteReviewImages.get(i);
-            this.jdbcTemplate.update(updateImageQuery, params2, params1);
-        }
-        // 추가된 리뷰이미지 추가
-        createReviewImages(reviewIdx, reviewImages);
-    }
-    public void modifyReviewData(int reviewIdx, PatchReviewReq patchReviewReq){
-        String updateReviewQuery = "update Review set rate =? ,reviewText = ? WHERE reviewIdx =?;";
-        Object[] params = new Object[]{
-                patchReviewReq.getRate(),
-                patchReviewReq.getReviewText(),
-                reviewIdx
-        };
-        this.jdbcTemplate.update(updateReviewQuery, params);
-    }
-    public void modifyOHouseReviewData(int reviewIdx, PatchHouseReviewReq patchHouseReviewReq){
-        String updateRateQuery = "udpate DetailRate set priceRate = ?, designRate = ?, deliveryRate = ? , healthRate =? where reviewIdx = ?;";
-        Object[] params1 = new Object[]{
-                patchHouseReviewReq.getPriceRate(),
-                patchHouseReviewReq.getDesignRate(),
-                patchHouseReviewReq.getDeliveryRate(),
-                patchHouseReviewReq.getHealthRate(),
-                reviewIdx
-        };
-        this.jdbcTemplate.update(updateRateQuery, params1);
-
-        String updateReviewQuery = "update Review set rate = ?, reviewText = ? WHERE reviewIdx =?;";
-        float rate =(patchHouseReviewReq.getPriceRate() +
-                patchHouseReviewReq.getDesignRate() +
-                patchHouseReviewReq.getDeliveryRate() +
-                patchHouseReviewReq.getHealthRate())/4;
-        String params2 = patchHouseReviewReq.getReviewText();
-        int params3 = reviewIdx;
-        this.jdbcTemplate.update(updateReviewQuery, rate, params2, params3);
-    }
-    public int getUserIdx(int reviewIdx){
-        String getQuery = "SELECT userIdx FROM Review WHERE reviewIdx =?;";
-        int param = reviewIdx;
-        return this.jdbcTemplate.queryForObject(getQuery, int.class, param);
-    }
 
     public List<String> getProductImages(int productIdx){
         String getProductImagesQuery = "SELECT productImage From ProductImage WHERE productIdx = ?;";

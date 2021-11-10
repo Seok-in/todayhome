@@ -12,8 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserReview {
+    private List<String> reviewImages;
     private String userName;
-    private String firstOptinoName;
+    private String firstOptionName;
     private String secondOptionName;
     private String thirdOptionName;
     private String reviewFlag;

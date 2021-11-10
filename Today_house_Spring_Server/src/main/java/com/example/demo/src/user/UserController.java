@@ -2,8 +2,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.src.oAuthLogin.model.KakaoLoginReq;
 import com.example.demo.src.oAuthLogin.model.KakaoUserNameReq;
-import com.example.demo.src.store.model.GetQuestionRes;
-import com.example.demo.src.store.model.PostProductQuestReq;
+import com.example.demo.src.store.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -105,46 +104,6 @@ public class UserController {
         }
     }
 
-    // 23. 상품 문의 작성
-    @ResponseBody
-    @PostMapping("/{productIdx}/question")
-    public BaseResponse<String> createQuestion(@PathVariable("productIdx") int productIdx, @RequestBody PostProductQuestReq postProductQuestReq){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            userService.createQuestion(postProductQuestReq, userIdx, productIdx);
-            return new BaseResponse<>("문의 작성 완료");
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    @ResponseBody
-    @PatchMapping("/question/{questionIdx}")
-    public BaseResponse<String> deleteQuestion(@PathVariable("questionIdx") int questionIdx){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            userService.deleteQuestion(questionIdx, userIdx);
-            return new BaseResponse<>("문의 삭제 완료");
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    @ResponseBody
-    @GetMapping("/questions")
-    public BaseResponse<List<GetQuestionRes>> getQuestions(){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            List<GetQuestionRes> getQuestionRes = userProvider.getQuestionResByUser(userIdx);
-            return new BaseResponse<>(getQuestionRes);
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
     // 12. 유저 최근 본 목록 조회 API
     @ResponseBody
     @GetMapping("/recency")
@@ -162,6 +121,133 @@ public class UserController {
             }
         }
         catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 18. 유저 리뷰 조회 API
+    @ResponseBody
+    @GetMapping("/reviews")
+    public  BaseResponse<GetUserReviewRes> getUserReviews(){
+        try{
+            int userIdx = jwtService.getUserIdx();;
+            GetUserReviewRes getUserReviewRes = userProvider.getUserReviewRes(userIdx);
+            return new BaseResponse<>(getUserReviewRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 19.1 유저 리뷰 작성 API(오늘의 집)
+    @ResponseBody
+    @PostMapping("/review/{orderIndex}/{productIdx}")
+    public BaseResponse<String> createReviewByToday(@PathVariable("orderIndex") int orderIndex, @PathVariable("productIdx") int productIdx,
+                                                    @RequestBody PostCreateReviewOhouseReq postCreateReviewOhouseReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createReviewByToday(userIdx, productIdx, orderIndex, postCreateReviewOhouseReq);
+            return new BaseResponse<>("리뷰 작성 성공! By TodayHouse");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 19.2 유저 리뷰 작성 API (다른 사이트)
+    @ResponseBody
+    @PostMapping("/review")
+    public BaseResponse<String> createReviewByOhter(@RequestBody PostCreateReviewReq postCreateReviewReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createReviewByOther(userIdx, postCreateReviewReq);
+            return new BaseResponse<>("리뷰 작성 성공! By Others");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 20.1 유저 리뷰 수정 API(오늘의 집)
+    @ResponseBody
+    @PatchMapping("/t-reviews/{reviewIdx}")
+    public BaseResponse<String> modifyReviewByToday(@PathVariable("reviewIdx") int reviewIdx, PatchHouseReviewReq patchHouseReviewReq){
+        try {
+            int userIdx = jwtService.getUserIdx();
+            userService.modifyReviewByToday(reviewIdx, patchHouseReviewReq);
+            return new BaseResponse<>("리뷰 수정 성공! By Today");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 20.2 유저 리뷰 수정 API(다른 사이트)
+    @ResponseBody
+    @PatchMapping("/o-reviews/{reviewIdx}")
+    public BaseResponse<String> modifyReviewByOther(@PathVariable("reviewIdx") int reviewIdx, PatchReviewReq patchReviewReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.modifyReviewByOther(userIdx, reviewIdx, patchReviewReq);
+            return new BaseResponse<>("리뷰 수정 성공! By Others");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 21 유저 리뷰 삭제 API
+    @ResponseBody
+    @PatchMapping("/reviews/{reviewIdx}")
+    public BaseResponse<String> deleteReview(@PathVariable("reviewIdx") int reviewIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.deleteReview(reviewIdx);
+            return new BaseResponse<>("리뷰 삭제 성공!");
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    // 22. 유저 질문과 답변 조회 API
+    @ResponseBody
+    @GetMapping("/questions")
+    public BaseResponse<List<GetQuestionRes>> getQuestions(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<GetQuestionRes> getQuestionRes = userProvider.getQuestionResByUser(userIdx);
+            return new BaseResponse<>(getQuestionRes);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 23. 상품 문의 작성 API
+    @ResponseBody
+    @PostMapping("/{productIdx}/question")
+    public BaseResponse<String> createQuestion(@PathVariable("productIdx") int productIdx, @RequestBody PostProductQuestReq postProductQuestReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            userService.createQuestion(postProductQuestReq, userIdx, productIdx);
+            return new BaseResponse<>("문의 작성 완료");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 24. 상품 문의 삭제 API
+    @ResponseBody
+    @PatchMapping("/question/{questionIdx}")
+    public BaseResponse<String> deleteQuestion(@PathVariable("questionIdx") int questionIdx) {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            userService.deleteQuestion(questionIdx, userIdx);
+            return new BaseResponse<>("문의 삭제 완료");
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

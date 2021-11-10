@@ -46,6 +46,7 @@ public class StoreController {
     }
 
 
+    // 46. 스토어 홈 화면 조회 API
     @ResponseBody
     @GetMapping("")
     public BaseResponse<GetStoreHomeRes> getStoreHomeRes() {
@@ -59,6 +60,7 @@ public class StoreController {
             }
     }
 
+    // 47. 스토어 베스트 실시간 베스트 화면 조회 API
     @ResponseBody
     @GetMapping("/ranks")
     public BaseResponse<List<PopularProduct>> getRealTimeBest(){
@@ -72,6 +74,7 @@ public class StoreController {
         }
     }
 
+    // 48. 스토어 카테고리별 역대 베스트 조회 API
     @ResponseBody
     @GetMapping("/categories/ranks")
     public BaseResponse<List<PopularProduct>> getAllTimeBest(@RequestParam(required = true, defaultValue = "%") String categoryName){
@@ -85,6 +88,7 @@ public class StoreController {
         }
     }
 
+    // 50. 스토어 메인 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories")
     public BaseResponse<GetStoreFirstCtgRes> getStoreFirstCtgRes(@RequestParam(required = false) String categoryName){
@@ -102,6 +106,7 @@ public class StoreController {
         }
     }
 
+    // 51. 스토어 세부 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories/subcategories")
     public BaseResponse<GetStoreSecondCtgRes> getSToreSecondCtgRes(@RequestParam(required = false) String categoryName){
@@ -145,6 +150,7 @@ public class StoreController {
         }
     }
 
+    // 57. 유저 장바구니 조회 API
     @ResponseBody
     @GetMapping("/cart")
     public BaseResponse<GetCartInfoRes> getCartInfo() {
@@ -247,10 +253,23 @@ public class StoreController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
-    // 22. 상품 문의 조회 API
+    // 53. 단일 상품 리뷰 조회 API
     @ResponseBody
-    @GetMapping("/{productIdx}/questions")
+    @GetMapping("/{productIdx}/reviews")
+    public BaseResponse<GetProductReviewRes> getProductReviews(@PathVariable("productIdx") int productIdx){
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetProductReviewRes getProductReviewRes = storeProvider.getProductReviewRes(productIdx, userIdx);
+            return new BaseResponse<>(getProductReviewRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 54. 단일 상품 문의 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}/questions")
     public BaseResponse<List<GetQuestionRes>> getQuestionRes(@PathVariable("productIdx") int productIdx){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -262,8 +281,9 @@ public class StoreController {
         }
     }
 
+    // 55. 단일 상품 배송/교환/환불 조회 API
     @ResponseBody
-    @GetMapping("/{productIdx}/delivery-info")
+    @GetMapping("/products/{productIdx}/delivery-info")
     public BaseResponse<GetDeliveryInfoRes> getDeliveryInfo(@PathVariable("productIdx") int productIdx){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -316,71 +336,10 @@ public class StoreController {
         }
     }
 
-    @ResponseBody
-    @GetMapping("/{productIdx}/reviews")
-    public BaseResponse<GetProductReviewRes> getProductReviews(@PathVariable("productIdx") int productIdx){
-        try {
-            int userIdx = jwtService.getUserIdx();
-            GetProductReviewRes getProductReviewRes = storeProvider.getProductReviewRes(productIdx, userIdx);
-            return new BaseResponse<>(getProductReviewRes);
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
-    @ResponseBody
-    @PostMapping("/reviews/review")
-    public BaseResponse<String> createReviewByOhter(@RequestBody PostCreateReviewReq postCreateReviewReq){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            storeService.createReviewByOther(userIdx, postCreateReviewReq);
-            return new BaseResponse<>("리뷰 작성 성공! By Others");
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
-    @ResponseBody
-    @PostMapping("/{orderIndex}/{productIdx}/review")
-    public BaseResponse<String> createReviewByToday(@PathVariable("orderIndex") int orderIndex, @PathVariable("productIdx") int productIdx,
-                                                    @RequestBody PostCreateReviewOhouseReq postCreateReviewOhouseReq){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            storeService.createReviewByToday(userIdx, productIdx, orderIndex, postCreateReviewOhouseReq);
-            return new BaseResponse<>("리뷰 작성 성공! By TodayHouse");
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
-    @ResponseBody
-    @PatchMapping("/o-reviews/{reviewIdx}/")
-    public BaseResponse<String> modifyReviewByOther(@PathVariable("reviewIdx") int reviewIdx, PatchReviewReq patchReviewReq){
-        try{
-            int userIdx = jwtService.getUserIdx();
-            storeService.modifyReviewByOther(reviewIdx, patchReviewReq);
-            return new BaseResponse<>("리뷰 수정 성공! By Others");
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
-    @ResponseBody
-    @PatchMapping("/t-reviews/{reviewIdx}/")
-    public BaseResponse<String> modifyReviewByToday(@PathVariable("reviewIdx") int reviewIdx, PatchHouseReviewReq patchHouseReviewReq){
-        try {
-            int userIdx = jwtService.getUserIdx();
-            storeService.modifyReviewByToday(reviewIdx, patchHouseReviewReq);
-            return new BaseResponse<>("리뷰 수정 성공! By Today");
-        }
-        catch (BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
     @ResponseBody
     @GetMapping("/products/{productIdx}")

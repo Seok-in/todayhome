@@ -26,5 +26,5 @@ public class GetProductRes {
     private String deliveryFee;
     private String productInfo;
     private Rate rate;
-    private List<Review> review;
+    private List<ReviewToday> review;
 }

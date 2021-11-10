@@ -11,9 +11,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetProductReviewRes {
-    private Rate rate;
-    private float avgRate;
-    private int rateNum;
-    private List<UserReview> userReviews;
+public class ReviewOther {
+    private float rate;
+    private List<String> reviewImage;
+    private String productName;
+    private String updatedAt;
+    private String reviewText;
+    private String reviewFlag;
 }

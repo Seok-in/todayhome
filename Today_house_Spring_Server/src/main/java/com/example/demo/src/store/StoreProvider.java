@@ -6,6 +6,7 @@ import com.example.demo.src.store.model.*;
 import com.example.demo.src.store.*;
 import com.example.demo.utils.JwtService;
 import com.fasterxml.jackson.databind.ser.Serializers;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,7 @@ public class StoreProvider {
             return getCartInfoRes;
         }
         catch(Exception exception){
+            System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -142,6 +144,15 @@ public class StoreProvider {
         try{
             GetProductReviewRes getProductReviewRes = new GetProductReviewRes();
             getProductReviewRes.setRate(storeDao.getRate(productIdx));
+            int sumRate = (
+                            getProductReviewRes.getRate().getFive() + getProductReviewRes.getRate().getFour() +
+                            getProductReviewRes.getRate().getThree() + getProductReviewRes.getRate().getTwo() +
+                            getProductReviewRes.getRate().getOne());
+            getProductReviewRes.setRateNum(sumRate);
+            float avgRate = (5*getProductReviewRes.getRate().getFive() + 4*getProductReviewRes.getRate().getFour() +
+                    3*getProductReviewRes.getRate().getThree() + 2*getProductReviewRes.getRate().getTwo() +
+                    1*getProductReviewRes.getRate().getOne())/sumRate;
+            getProductReviewRes.setAvgRate(avgRate);
             getProductReviewRes.setUserReviews(storeDao.getUserReviews(userIdx, productIdx));
             return getProductReviewRes;
         }
@@ -163,4 +174,6 @@ public class StoreProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
 }

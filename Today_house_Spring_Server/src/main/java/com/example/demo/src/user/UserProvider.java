@@ -111,4 +111,18 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public GetUserReviewRes getUserReviewRes(int userIdx) throws BaseException {
+        try {
+            GetUserReviewRes getUserReviewRes = new GetUserReviewRes();
+            getUserReviewRes.setReviewOthers(userDao.getUserReviews(userIdx));
+            getUserReviewRes.setReviewTodays(userDao.getReviewTodays(userIdx));
+            getUserReviewRes.setReviewNum(userDao.getReviewNum(userIdx));
+            return getUserReviewRes;
+        }
+        catch(Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

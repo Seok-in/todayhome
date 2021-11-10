@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Size;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostSignOutReq {
+
     private String lowUse;
     private String reSignup;
     private String lowResource;
@@ -17,5 +20,6 @@ public class PostSignOutReq {
     private String lowService;
     private String etc;
     private String agreement;
+    @Size(max = 500,message = "ServiceText SIZE")
     private String serviceText;
 }

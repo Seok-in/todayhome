@@ -10,10 +10,16 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
@@ -39,12 +45,18 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public BaseResponse<String> handleValidException (MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldError().getDefaultMessage();
+        return new BaseResponse<>(message);
+    }
+
     // 1. 회원가입 API
     // Body
     @ResponseBody
     @PostMapping("/signup")
-    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
-        // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
+    public BaseResponse<PostUserRes> createUser(@RequestBody @Validated PostUserReq postUserReq) {
         if(postUserReq.getUserEmail() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
         }
@@ -65,11 +77,17 @@ public class UserController {
     // 2. 로그인 API
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> login(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> login(@RequestBody @Validated PostLoginReq postLoginReq){
         try{
-            // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
-            // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
             PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            //휴면계정
+            if(userProvider.checkUserStatus(postLoginReq.getUserEmail())=="N"){
+                return new BaseResponse<>(USER_STATUS_INVALID);
+            }
+            //탈퇴 계정
+            else if(userProvider.checkUserStatus(postLoginReq.getUserEmail())=="D"){
+                return new BaseResponse<>(USER_STATUS_DELETED);
+            }
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());

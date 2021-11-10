@@ -40,6 +40,22 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    public int checkUserName(String name) throws BaseException{
+        try{
+            return userDao.checkUserName(name);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    public String checkUserStatus(String email) throws BaseException{
+        try{
+            return userDao.getUserStatus(email);
+        }
+        catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException{

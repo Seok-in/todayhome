@@ -61,6 +61,11 @@ public class UserDao {
         this.jdbcTemplate.update(logoutQuery, logoutParams);
     }
 
+    public int checkUserName(String name){
+        String checkNameQuery = "select exists(select userName from User where userName = ?);";
+        String checkNameParams = name;
+        return this.jdbcTemplate.queryForObject(checkNameQuery, int.class, checkNameParams);
+    }
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select userEmail from User where userEmail = ?);";
         String checkEmailParams = email;
@@ -293,7 +298,10 @@ public class UserDao {
                             rs.getString("reviewFlag")
                     ), userParmas);
     }
-
+    public String getUserStatus(String userEmail){
+        String query = "SELECT status FROM User WHERE userEmail=?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userEmail);
+    }
     public int getUserIdxByReview(int reviewIdx){
         String getQuery = "SELECT userIdx FROM Review WHERE reviewIdx =?;";
         int param = reviewIdx;

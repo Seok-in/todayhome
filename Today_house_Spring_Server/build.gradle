@@ -25,6 +25,8 @@ repositories {
 dependencies {
     implementation 'org.jetbrains:annotations:19.0.0'
 
+    // validation
+    implementation ('org.springframework.boot:spring-boot-starter-validation')
 
     // Spring Boot Starter
     testImplementation ('org.springframework.boot:spring-boot-starter-test')

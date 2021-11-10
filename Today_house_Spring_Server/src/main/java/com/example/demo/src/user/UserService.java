@@ -48,6 +48,9 @@ public class UserService {
         if(userProvider.checkEmail(postUserReq.getUserEmail()) ==1){
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
+        if(userProvider.checkUserName(postUserReq.getUserName())==1){
+            throw new BaseException(POST_USERS_EXISTS_NAME);
+        }
         String pwd;
         try{
             //암호화
@@ -66,9 +69,14 @@ public class UserService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class})
     public void createSignOut(PostSignOutReq postSignOutReq, int userIdx) throws BaseException{
         if (postSignOutReq.getAgreement() == "N"){
             throw new BaseException(POST_USERS_REQUIRED_AGREE);
+        }
+        if(postSignOutReq.getEtc() == "N" && postSignOutReq.getLowService() == "N" && postSignOutReq.getLowUse() =="N" && postSignOutReq.getReSignup() =="N" &&
+                postSignOutReq.getProtection() == "N" && postSignOutReq.getEtc() == "N"){
+            throw new BaseException(POST_USERS_REQUIRED_CHECK);
         }
         try{
             userDao.signoutUser(postSignOutReq, userIdx);

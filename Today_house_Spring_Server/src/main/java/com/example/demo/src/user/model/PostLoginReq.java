@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -11,5 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostLoginReq {
     private String userEmail;
+    @NotBlank(message = "NULL PASSWORD")
     private String userPw;
 }

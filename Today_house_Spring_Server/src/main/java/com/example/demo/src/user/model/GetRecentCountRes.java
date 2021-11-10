@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private int userIdx;
-    private String userEmail;
-    private String userPw;
-    private String userName;
+public class GetRecentCountRes {
+    private int allNum;
+    private int productNum;
+    private int pictureNum;
+    private int houseNum;
+    private int knowHowNum;
 }

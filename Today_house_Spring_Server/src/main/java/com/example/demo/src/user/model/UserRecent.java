@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private int userIdx;
-    private String userEmail;
-    private String userPw;
-    private String userName;
+public class UserRecent {
+    private String image;
+    private String flag;
+    private int indexNumber;
 }

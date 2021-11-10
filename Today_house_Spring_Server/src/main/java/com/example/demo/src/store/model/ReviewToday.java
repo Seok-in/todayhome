@@ -1,0 +1,28 @@
+package com.example.demo.src.store.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ReviewToday {
+    private float rate;
+    private List<String> reviewImage;
+    private String productName;
+    private String firstOptionName;
+    private String secondOptionName;
+    private String thirdOptionName;
+    private String updatedAt;
+    private String reviewText;
+    private String reviewFlag;
+    private int priceRate;
+    private int designRate;
+    private int deliveryRate;
+    private int healthRate;
+}

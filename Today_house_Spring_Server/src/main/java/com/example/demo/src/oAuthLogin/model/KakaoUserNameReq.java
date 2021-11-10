@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.oAuthLogin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private int userIdx;
-    private String userEmail;
-    private String userPw;
+public class KakaoUserNameReq {
+    private String accessToken;
     private String userName;
 }

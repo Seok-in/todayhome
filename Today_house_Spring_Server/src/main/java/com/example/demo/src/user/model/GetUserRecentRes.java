@@ -5,13 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private int userIdx;
-    private String userEmail;
-    private String userPw;
-    private String userName;
+public class GetUserRecentRes {
+    private List<UserRecent> userRecents;
+    private GetRecentCountRes getRecentCountRes;
 }

@@ -4,18 +4,27 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.store.StoreService;
 import com.example.demo.src.store.StoreProvider;
+import com.example.demo.src.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.src.store.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.PostUpdate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
+import static java.lang.Integer.parseInt;
 
 @RestController
 @RequestMapping("/ohouse/store")
@@ -36,6 +45,8 @@ public class StoreController {
         this.jwtService = jwtService;
     }
 
+
+    // 46. 스토어 홈 화면 조회 API
     @ResponseBody
     @GetMapping("")
     public BaseResponse<GetStoreHomeRes> getStoreHomeRes() {
@@ -49,6 +60,7 @@ public class StoreController {
             }
     }
 
+    // 47. 스토어 베스트 실시간 베스트 화면 조회 API
     @ResponseBody
     @GetMapping("/ranks")
     public BaseResponse<List<PopularProduct>> getRealTimeBest(){
@@ -62,6 +74,7 @@ public class StoreController {
         }
     }
 
+    // 48. 스토어 카테고리별 역대 베스트 조회 API
     @ResponseBody
     @GetMapping("/categories/ranks")
     public BaseResponse<List<PopularProduct>> getAllTimeBest(@RequestParam(required = true, defaultValue = "%") String categoryName){
@@ -75,9 +88,10 @@ public class StoreController {
         }
     }
 
+    // 50. 스토어 메인 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories")
-    public BaseResponse<GetStoreFirstCtgRes> getSToreFirstCtgRes(@RequestParam(required = false) String categoryName){
+    public BaseResponse<GetStoreFirstCtgRes> getStoreFirstCtgRes(@RequestParam(required = false) String categoryName){
         try{
             if (categoryName == null){
                 return new BaseResponse<>(CATEGORYNAME_EMPTY);
@@ -92,6 +106,7 @@ public class StoreController {
         }
     }
 
+    // 51. 스토어 세부 카테고리 상품 조회 API
     @ResponseBody
     @GetMapping("/categories/subcategories")
     public BaseResponse<GetStoreSecondCtgRes> getSToreSecondCtgRes(@RequestParam(required = false) String categoryName){
@@ -103,6 +118,236 @@ public class StoreController {
             GetStoreSecondCtgRes getStoreSecondCtgRes = storeProvider.getStoreSecondCtgRes(userIdx, categoryName);
 
             return new BaseResponse<>(getStoreSecondCtgRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/order") //토의 및 수정필요
+    public BaseResponse<PostCreateOrderRes> createOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            PostCreateOrderRes postCreateOrderRes = storeService.createOrder(postCreateOrderReq, userIdx);
+            return new BaseResponse<>(postCreateOrderRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/cart") //토의 및 수정필요
+    public BaseResponse<String> createCartOrder(@RequestBody PostCreateOrderReq postCreateOrderReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.createGetCart(postCreateOrderReq, userIdx);
+            return new BaseResponse<>("장바구니에 담았습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 57. 유저 장바구니 조회 API
+    @ResponseBody
+    @GetMapping("/cart")
+    public BaseResponse<GetCartInfoRes> getCartInfo() {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetCartInfoRes getCartInfoRes = storeProvider.getCartInfoRes(userIdx);
+            return new BaseResponse<>(getCartInfoRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/cart/orders") //토의 및 수정필요
+    public BaseResponse<PostCreateOrderRes> createOrderByCart(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            PostCreateOrderRes postCreateOrderRes = storeService.createOrderByCart(userIdx);
+            return new BaseResponse<>(postCreateOrderRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/status")
+    public BaseResponse<String> deleteCarts(@RequestBody(required = false) PatchCartStatusReq patchCartStatusReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            if (Objects.isNull(patchCartStatusReq)){
+                storeService.deleteCartByStatus(userIdx);
+                return new BaseResponse<>("선택된 항목만 삭제 완료");
+            }
+            else if (patchCartStatusReq.getProductIdx() != null){
+                    String index = patchCartStatusReq.getProductIdx();
+                    int productIdx = Integer.parseInt(index);
+                    storeService.deleteCartByProductIdx(userIdx, productIdx);
+                    return new BaseResponse<>("ProductIdx 으로 삭제 완료");
+            }
+            else{
+                ProductOption productOption = patchCartStatusReq.getProductOption();
+                storeService.deleteCartByOptionIdx(userIdx, productOption);
+                return new BaseResponse<>("ProductOption 으로 삭제 완료");
+            }
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/check")
+    public BaseResponse<String> checkCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.checkCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            return new BaseResponse<>("품목 체크");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/non-check")
+    public BaseResponse<String> nonCheckCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.nonCheckCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            return new BaseResponse<>("품목 체크 해제");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/all-checks")
+    public BaseResponse<String> allCheckCartProduct(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.allCheckCartProduct(userIdx);
+            return new BaseResponse<>("품목 전체 체크");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/cart/all-non-checks")
+    public BaseResponse<String> allNonCheckCartProduct(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.allNonCheckCartProduct(userIdx);
+            return new BaseResponse<>("품목 전체 체크 해제");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    // 53. 단일 상품 리뷰 조회 API
+    @ResponseBody
+    @GetMapping("/{productIdx}/reviews")
+    public BaseResponse<GetProductReviewRes> getProductReviews(@PathVariable("productIdx") int productIdx){
+        try {
+            int userIdx = jwtService.getUserIdx();
+            GetProductReviewRes getProductReviewRes = storeProvider.getProductReviewRes(productIdx, userIdx);
+            return new BaseResponse<>(getProductReviewRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 54. 단일 상품 문의 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}/questions")
+    public BaseResponse<List<GetQuestionRes>> getQuestionRes(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            List<GetQuestionRes> result = storeProvider.getQuestionRes(productIdx);
+            return new BaseResponse<>(result);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 55. 단일 상품 배송/교환/환불 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}/delivery-info")
+    public BaseResponse<GetDeliveryInfoRes> getDeliveryInfo(@PathVariable("productIdx") int productIdx){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            GetDeliveryInfoRes getDeliveryInfoRes = storeProvider.getDeliveryInfoRes(productIdx);
+            return new BaseResponse<>(getDeliveryInfoRes);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/order/completion")
+    public BaseResponse<String> makeOrder(PostOrderReq postOrderReq) {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderProducts(postOrderReq, userIdx);
+            return new BaseResponse<>("주문성공하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //직접구매시의 취소
+    @ResponseBody
+    @PatchMapping("/order/cancel")
+    public BaseResponse<String> cancelOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderDirectCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //장바구니 구매시의 취소
+    @ResponseBody
+    @PatchMapping("/cart/cancel")
+    public BaseResponse<String> cancelCartOrder(){
+        try{
+            int userIdx = jwtService.getUserIdx();
+            storeService.orderCartCancel(userIdx);
+            return new BaseResponse<>("주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+
+
+
+
+    @ResponseBody
+    @GetMapping("/products/{productIdx}")
+    public BaseResponse<GetStoreProductRes> getStoreProductRes(@PathVariable("productIdx") int productIdx){
+        try{
+            GetStoreProductRes getStoreProductRes1 = storeProvider.getStoreProductRes(productIdx);
+            int userIdx = jwtService.getUserIdx();
+            return new BaseResponse<>(getStoreProductRes1);
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

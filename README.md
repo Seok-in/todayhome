@@ -94,7 +94,7 @@
 ### 2021-11-06
 - API 추가 및 구현
   - 70 ~ 73 번 : 장바구니 체크/체크해제/전체체크/전체체크 해제 (중복되는 기능!)
-  - 56 번 : 스토어 단일상품 조회 API
+  - 56 번 : 스토어 단일상품 구매 API
   - 57 번 : 스토어 단일상품 장바구니 담기 API
   - 59 번 : 장바구니 구매 API
     - 장바구니 구매 시 Res 형식을 만들어줘야할 거 같아서 수정 요망.
@@ -103,6 +103,27 @@
     - OptionIdx 로 삭제
     - ProductIdx 로 삭제
 
+### 2021-11-07
+- API 추가 구현
+  - 6번, 6-1번 : KAKAO 로그인 API 구현
+  - 57번, 59번 : Response시의 구매 물품들의 정보를 담아줘야할 거 같아서 수정하였음.
+  - 70 번 ~ 73번 : 장바구니 품목 체크 및 체크해제 API 구현
+
+- ERD 수정
+  - User 테이블에서 주문할 때 최신의 정보를 받아 올 수 있게 userRealName, userCall 컬럼추가
+  - UserPoint 에서 pointName, pointText 컬럼 제거하고 Point라는 테이블을 만들어줌
+  - Contents idx를 만들어주고 Contents와 Product를 N:M으로 연결해주는 테이블 생성
+    - contents 생성시 안에 있는 Product들을 접근할 수 있는 API를 만들어줘야 함.
+
+### 2021-11-08
+- API 추가 구현
+  - 23, 24번 : 유저 상품 문의 작성/ 삭제 API
+  - 33, 34번 : 유저 주문/배송조회 / 유저 상세주문 조회 API
+  - 55번 : 스토어 단일 상품 배송/교환/환불 정보 조회 API
+  - 58번 : 장바구니 조회 API
+- ERD 수정
+  - QuestionOption Table에 Option을 여러가지 추가(First, Second, Third)
+  - PictureContent Table에 대표사진으로 지정할 수 있는 Flag 추가
 ## 빙수 개발일지
 
 

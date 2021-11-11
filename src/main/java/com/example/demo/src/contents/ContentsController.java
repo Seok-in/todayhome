@@ -43,7 +43,7 @@ public class ContentsController {
     집들이 게시글 조회 API
      */
     @ResponseBody
-    @GetMapping("/house/{contentIdx}")
+    @GetMapping("/houses/{contentIdx}")
     public BaseResponse<GetAllHouseContents> getHouseContents (@PathVariable("contentIdx") int contentIdx) {
         try{
             int userIdx = jwtService.getUserIdx();
@@ -66,7 +66,7 @@ public class ContentsController {
      knowhow 게시글 조회 API
      */
     @ResponseBody
-    @GetMapping("/knowhow/{contentIdx}")
+    @GetMapping("/knowhows/{contentIdx}")
     public BaseResponse<GetAllKnowhowContents> getKnowhowContents (@PathVariable("contentIdx") int contentIdx) {
         try{
             int userIdx = jwtService.getUserIdx();
@@ -92,7 +92,7 @@ public class ContentsController {
     @PostMapping("/{filter}/{contentIdx}/praise")
     public BaseResponse<String> likeContents (@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx) {
         try{
-            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")))
+            if(!(filter.equals("knowhows")||filter.equals("houses")||filter.equals("pictures")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
             int logonIdx = jwtService.getUserIdx();
             contentsService.likeContents(filter, logonIdx,contentIdx);
@@ -110,7 +110,7 @@ public class ContentsController {
     @PatchMapping(value = "/{filter}/{contentIdx}/unpraise")
     public BaseResponse<String> unlikeContents(@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx ){
         try{
-            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")))
+            if(!(filter.equals("knowhows")||filter.equals("houses")||filter.equals("pictures")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
             int logonIdx = jwtService.getUserIdx();
             contentsService.unlikeContents(filter,logonIdx,contentIdx);
@@ -128,7 +128,7 @@ public class ContentsController {
     @PostMapping("/{filter}/{contentIdx}/scrap")
     public BaseResponse<String> scrapContents (@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx) {
         try{
-            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")||filter.equals("product")))
+            if(!(filter.equals("knowhows")||filter.equals("houses")||filter.equals("pictures")||filter.equals("products")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
             int logonIdx = jwtService.getUserIdx();
             contentsService.scrapContents(filter, logonIdx,contentIdx);
@@ -146,7 +146,7 @@ public class ContentsController {
     @PatchMapping(value = "/{filter}/{contentIdx}/unscrap")
     public BaseResponse<String> unscrapContents(@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx ){
         try{
-            if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")||filter.equals("product")))
+            if(!(filter.equals("knowhows")||filter.equals("houses")||filter.equals("pictures")||filter.equals("products")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
             int logonIdx = jwtService.getUserIdx();
             contentsService.unscrapContents(filter,logonIdx,contentIdx);
@@ -161,10 +161,10 @@ public class ContentsController {
      게시글 댓글 작성
      */
     @ResponseBody
-    @PostMapping("/{filter}/{contentIdx}/write-comment")
+    @PostMapping("/{filter}/{contentIdx}/write-comments")
     public BaseResponse<PostCommentRes> writeComment(@PathVariable("filter") String filter, @PathVariable("contentIdx") int contentIdx, @RequestBody PostComment postComment) {
         // 아무것도 작성하지 않았을 경우
-        if(!(filter.equals("knowhow")||filter.equals("house")||filter.equals("picture")))
+        if(!(filter.equals("knowhows")||filter.equals("houses")||filter.equals("pictures")))
             return new BaseResponse<>(INVALID_USER_ACCESS);
         if(postComment.getComment() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_COMMENT);
@@ -182,7 +182,7 @@ public class ContentsController {
      게시글 댓글 삭제
      */
     @ResponseBody
-    @PatchMapping("/remove-comment")
+    @PatchMapping("/remove-comments")
     public BaseResponse<String> removeComment(@RequestParam(value="commentIdx", required=false, defaultValue="0") int commentIdx) {
         if(commentIdx == 0){
             return new BaseResponse<>(REMOVE_USERS_EMPTY_COMMENT);
@@ -200,7 +200,7 @@ public class ContentsController {
      답글 작성
      */
     @ResponseBody
-    @PostMapping("/write-recomment")
+    @PostMapping("/write-recomments")
     public BaseResponse<PostCommentRes> writeRecomment(@RequestBody PostComment postRecomment,@RequestParam(value="commentIdx", required=false, defaultValue="0") int commentIdx) {
         if(postRecomment.getComment() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_COMMENT);
@@ -218,7 +218,7 @@ public class ContentsController {
      답글 삭제
      */
     @ResponseBody
-    @PatchMapping("/remove-recomment")
+    @PatchMapping("/remove-recomments")
     public BaseResponse<String> removeRecomment(@RequestParam(value="recommentIdx", required=false, defaultValue="0") int recommentIdx) {
         if(recommentIdx == 0){
             return new BaseResponse<>(REMOVE_USERS_EMPTY_COMMENT);

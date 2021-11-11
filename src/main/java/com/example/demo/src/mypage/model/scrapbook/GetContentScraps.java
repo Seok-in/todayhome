@@ -15,4 +15,5 @@ public class GetContentScraps {
     private String imagePath;
     private String title;
     private String userName;
+    private int contentIdx;
 }

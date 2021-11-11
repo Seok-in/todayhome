@@ -11,4 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GetPicScraps {
     private String imagePath;
+    private int contentIdx;
 }

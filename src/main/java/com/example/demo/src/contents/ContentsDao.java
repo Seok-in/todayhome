@@ -34,7 +34,7 @@ public class ContentsDao {
         int contentIdxParams = contentIdx;
         Object[] getHouseIntroParams = new Object[]{userIdx, contentIdx};
 
-        String getHouseIntroQuery = "SELECT H.coverImage, H.title, H.house, H.houseSize, H.work, H.worker, H.family, DATE(H.createdAt) createdAt, U.userName, U.userIntro, IFNULL(followers2.status, 'N') AS followedByUser\n" +
+        String getHouseIntroQuery = "SELECT H.coverImage, H.title, H.house, H.houseSize, H.work, H.worker, H.family, DATE(H.createdAt) createdAt, U.userName, U.userIdx, U.userIntro, IFNULL(followers2.status, 'N') AS followedByUser\n" +
                 "FROM House H\n" +
                 "INNER JOIN User U ON H.userIdx = U.userIdx\n" +
                 "LEFT JOIN (SELECT F.status, F.userIdx FROM UserFollow F\n" +
@@ -52,6 +52,7 @@ public class ContentsDao {
                         rs.getString("family"),
                         rs.getString("createdAt"),
                         rs.getString("userName"),
+                        rs.getInt("userIdx"),
                         rs.getString("userIntro"),
                         rs.getString("followedByUser")),
                 getHouseIntroParams
@@ -67,7 +68,7 @@ public class ContentsDao {
         int contentIdxParams = contentIdx;
         Object[] getKnowhowIntroParams = new Object[]{userIdx, contentIdx};
 
-        String getKnowhowIntroQuery = "SELECT K.coverImage, K.title, DATE(K.createdAt) createdAt, U.userName, U.userIntro, KHC.categoryName, IFNULL(followers2.status, 'N') AS followedByUser\n" +
+        String getKnowhowIntroQuery = "SELECT K.coverImage, K.title, DATE(K.createdAt) createdAt, U.userName, U.userIdx, U.userIntro, KHC.categoryName, IFNULL(followers2.status, 'N') AS followedByUser\n" +
                 "FROM Knowhow K\n" +
                 "INNER JOIN User U ON K.userIdx = U.userIdx\n" +
                 "INNER JOIN KnowHowCategory KHC on K.knowhowCategory = KHC.knowHowCtgIdx\n" +
@@ -81,6 +82,7 @@ public class ContentsDao {
                         rs.getString("title"),
                         rs.getString("createdAt"),
                         rs.getString("userName"),
+                        rs.getInt("userIdx"),
                         rs.getString("userIntro"),
                         rs.getString("categoryName"),
                         rs.getString("followedByUser")),
@@ -361,7 +363,7 @@ public class ContentsDao {
         String flag = "";
         Object[] likeContentsParams = new Object[]{logonIdx, contentIdx};
 
-        if(filter.equals("house")){
+        if(filter.equals("houses")){
             flag = "H";
             checkLikeHistoryQuery = "SELECT EXISTS(SELECT UL.status\n" +
                     "FROM UserLike AS UL\n" +
@@ -372,7 +374,7 @@ public class ContentsDao {
                     "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         }
-        else if(filter.equals("knowhow")){
+        else if(filter.equals("knowhows")){
             flag = "K";
             checkLikeHistoryQuery = "SELECT EXISTS(SELECT UL.status\n" +
                     "FROM UserLike AS UL\n" +
@@ -410,11 +412,11 @@ public class ContentsDao {
      */
     public int unlikeContents(String filter, int logonIdx, int contentIdx){
         String unlikeContentsQuery = "";
-        if(filter.equals("house"))
+        if(filter.equals("houses"))
             unlikeContentsQuery = "UPDATE UserLike\n" +
                     "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
-        else if(filter.equals("knowhow"))
+        else if(filter.equals("knowhows"))
             unlikeContentsQuery = "UPDATE UserLike\n" +
                     "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
@@ -437,7 +439,7 @@ public class ContentsDao {
         String flag = "";
         Object[] scrapContentsParams = new Object[]{logonIdx, contentIdx};
 
-        if(filter.equals("house")){
+        if(filter.equals("houses")){
             flag = "H";
             checkScrapHistoryQuery= "SELECT EXISTS(SELECT US.status\n" +
                     "FROM UserScrap AS US\n" +
@@ -448,7 +450,7 @@ public class ContentsDao {
                     "SET status = 'Y', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
         }
-        else if(filter.equals("knowhow")){
+        else if(filter.equals("knowhows")){
             flag = "K";
             checkScrapHistoryQuery = "SELECT EXISTS(SELECT US.status\n" +
                     "FROM UserScrap AS US\n" +
@@ -497,15 +499,15 @@ public class ContentsDao {
      */
     public int unscrapContents(String filter, int logonIdx, int contentIdx){
         String unscrapContentsQuery = "";
-        if(filter.equals("house"))
+        if(filter.equals("houses"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
                     "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND houseIdx = ?";
-        else if(filter.equals("knowhow"))
+        else if(filter.equals("knowhows"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
                     "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND knowhowIdx = ?";
-        else if(filter.equals("picture"))
+        else if(filter.equals("pictures"))
             unscrapContentsQuery = "UPDATE UserScrap\n" +
                     "SET status = 'N', updatedAt = current_timestamp\n" +
                     "WHERE userIdx = ? AND pictureIdx = ?";
@@ -526,12 +528,12 @@ public class ContentsDao {
         String flag = "";
         String commentParam = postComment.getComment();
 
-        if(filter.equals("house")){
+        if(filter.equals("houses")){
             flag = "H";
             writeCommentQuery  = "INSERT INTO Comment(userIdx, houseIdx, cText, flag)\n" +
                     "VALUES (?,?,?,?)";
         }
-        else if(filter.equals("knowhow")){
+        else if(filter.equals("knowhows")){
             flag = "K";
             writeCommentQuery  = "INSERT INTO Comment(userIdx, knowhowIdx, cText, flag)\n" +
                     "VALUES (?,?,?,?)";

@@ -1,7 +1,7 @@
 com/example/demo/config/Constant.java
  com.example.demo.config.Constant
-com/example/demo/src/mypage/MypageController.java
- com.example.demo.src.mypage.MypageController
+com/example/demo/src/mypage/model/scrapbook/GetPicScraps.java
+ com.example.demo.src.mypage.model.scrapbook.GetPicScraps
 com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
 com/example/demo/src/contents/ContentsService.java
@@ -26,8 +26,8 @@ com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
 com/example/demo/src/user/model/PostUserRes.java
  com.example.demo.src.user.model.PostUserRes
-com/example/demo/src/mypage/MypageProvider.java
- com.example.demo.src.mypage.MypageProvider
+com/example/demo/src/contents/ContentsProvider.java
+ com.example.demo.src.contents.ContentsProvider
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
 com/example/demo/src/mypage/model/GetPoints.java
@@ -38,8 +38,6 @@ com/example/demo/src/contents/model/knowhow/GetKnowhowContents.java
  com.example.demo.src.contents.model.knowhow.GetKnowhowContents
 com/example/demo/src/contents/model/house/GetTempHouseContents.java
  com.example.demo.src.contents.model.house.GetTempHouseContents
-com/example/demo/src/mypage/model/PostCodeReq.java
- com.example.demo.src.mypage.model.PostCodeReq
 com/example/demo/src/contents/ContentsDao.java
  com.example.demo.src.contents.ContentsDao
 com/example/demo/src/user/UserService.java
@@ -60,6 +58,8 @@ com/example/demo/src/contents/model/house/GetHouseIntro.java
  com.example.demo.src.contents.model.house.GetHouseIntro
 com/example/demo/src/user/model/PostUserReq.java
  com.example.demo.src.user.model.PostUserReq
+com/example/demo/src/mypage/model/PostCouponReq.java
+ com.example.demo.src.mypage.model.PostCouponReq
 com/example/demo/src/contents/model/SocialInfoFormat.java
  com.example.demo.src.contents.model.SocialInfoFormat
 com/example/demo/src/contents/model/knowhow/GetAllKnowhowContents.java
@@ -92,14 +92,12 @@ com/example/demo/src/user/UserController.java
  com.example.demo.src.user.UserController
 com/example/demo/src/mypage/model/PostVideos.java
  com.example.demo.src.mypage.model.PostVideos
-com/example/demo/src/mypage/MypageService.java
- com.example.demo.src.mypage.MypageService
+com/example/demo/src/user/UserProvider.java
+ com.example.demo.src.user.UserProvider
 com/example/demo/src/user/model/User.java
  com.example.demo.src.user.model.User
-com/example/demo/src/mypage/model/scrapbook/GetPicScraps.java
- com.example.demo.src.mypage.model.scrapbook.GetPicScraps
-com/example/demo/src/mypage/model/PostPcouponsReq.java
- com.example.demo.src.mypage.model.PostPcouponsReq
+com/example/demo/src/contents/ContentsController.java
+ com.example.demo.src.contents.ContentsController
 com/example/demo/src/mypage/model/scrapbook/GetContentScraps.java
  com.example.demo.src.mypage.model.scrapbook.GetContentScraps
 com/example/demo/src/user/model/GetUserRes.java
@@ -108,11 +106,11 @@ com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/utils/JwtService.java
  com.example.demo.utils.JwtService
-com/example/demo/src/user/UserProvider.java
- com.example.demo.src.user.UserProvider
+com/example/demo/src/mypage/MypageController.java
+ com.example.demo.src.mypage.MypageController
+com/example/demo/src/mypage/MypageProvider.java
+ com.example.demo.src.mypage.MypageProvider
 com/example/demo/src/mypage/MypageDao.java
  com.example.demo.src.mypage.MypageDao
-com/example/demo/src/contents/ContentsProvider.java
- com.example.demo.src.contents.ContentsProvider
-com/example/demo/src/contents/ContentsController.java
- com.example.demo.src.contents.ContentsController
+com/example/demo/src/mypage/MypageService.java
+ com.example.demo.src.mypage.MypageService

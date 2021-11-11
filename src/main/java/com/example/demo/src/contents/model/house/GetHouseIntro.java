@@ -18,6 +18,7 @@ public class GetHouseIntro {
     private String family;
     private String createdAt;
     private String userName;
+    private int userIdx;
     private String userIntro;
     private String followedByUser;
 }

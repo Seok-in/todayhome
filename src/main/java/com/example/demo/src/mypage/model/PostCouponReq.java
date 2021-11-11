@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @Setter
 @AllArgsConstructor
 @JsonAutoDetect
-public class PostCodeReq {
+public class PostCouponReq {
     private String couponCode;
+    private int couponId;
 }

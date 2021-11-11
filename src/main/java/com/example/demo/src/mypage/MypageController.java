@@ -58,7 +58,7 @@ public class MypageController {
      * Following 조회 API
      */
     @ResponseBody
-    @GetMapping("/{userIdx}/following") // (GET) 127.0.0.1:9000/app/users/:userIdx
+    @GetMapping("/{userIdx}/followees") // (GET) 127.0.0.1:9000/app/users/:userIdx
     public BaseResponse<List<GetFollowers>> getFollowing (@PathVariable("userIdx") int userIdx/*, @PathVariable("logonIdx") int logonIdx, @RequestHeader("Authorization") String jwtToken*/) {
         try{
             int logonIdx = jwtService.getUserIdx();
@@ -93,7 +93,7 @@ public class MypageController {
      */
     @ResponseBody
     @PostMapping("/my-shopping/coupons")
-    public BaseResponse<String> PostPcouponsReq(@RequestBody PostPcouponsReq postPcouponsReq) {
+    public BaseResponse<String> PostPcouponsReq(@RequestBody PostCouponReq postPcouponsReq) {
         try{
             int myIdx = jwtService.getUserIdx();
             int received = mypageProvider.checkReceived(myIdx,postPcouponsReq);
@@ -113,9 +113,10 @@ public class MypageController {
      */
     @ResponseBody
     @PostMapping("/my-shopping/coupons/new")
-    public BaseResponse<String> postCouponCode(@RequestParam(value="code", required=false, defaultValue="") String code /*@RequestBody PostCodeReq postCodeReq*/) {
+    public BaseResponse<String> postCouponCode(@RequestBody PostCouponReq postCouponReq/*@RequestBody PostCodeReq postCodeReq*/) {
         try{
             int myIdx = jwtService.getUserIdx();
+            String code = postCouponReq.getCouponCode();
             // 아무 값도 입력하지 않은 경우
             if(/*postCodeReq.getCouponCode()*/ code.equals(""))
                 return new BaseResponse<>(EMPTY_COUPON_CODE);
@@ -175,6 +176,8 @@ public class MypageController {
     public BaseResponse<List<GetAllScraps>> getAllScraps (@PathVariable("userIdx") int userIdx,@PathVariable("filter") String filter) {
         try{
             //int myIdx = jwtService.getUserIdx();
+            if(!(filter.equals("scrapbook")||filter.equals("praises")))
+                return new BaseResponse<>(INVALID_USER_ACCESS);
             List<GetAllScraps> getAllScraps = mypageProvider.getAllScraps(userIdx, filter);
             return new BaseResponse<>(getAllScraps);
         } catch(BaseException exception){
@@ -189,7 +192,7 @@ public class MypageController {
      */
 
     @ResponseBody
-    @GetMapping("/{userIdx}/{filter}/picture")
+    @GetMapping("/{userIdx}/{filter}/pictures")
     public BaseResponse<List<GetPicScraps>> getPicScraps (@PathVariable("userIdx") int userIdx,@PathVariable("filter") String filter) {
         try{
             //int myIdx = jwtService.getUserIdx();
@@ -208,7 +211,7 @@ public class MypageController {
      * 상품 스크랩북 조회 API
      */
     @ResponseBody
-    @GetMapping("/{userIdx}/scrapbook/product")
+    @GetMapping("/{userIdx}/scrapbook/products")
     public BaseResponse<List<GetProdScraps>> getProdScraps (@PathVariable("userIdx") int userIdx) {
         try{
             //int myIdx = jwtService.getUserIdx();
@@ -233,7 +236,7 @@ public class MypageController {
             //String filter = "scrapbook";
             if(!(filter.equals("scrapbook")||filter.equals("praises")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
-            if(!(contents.equals("house")||contents.equals("knowhow")))
+            if(!(contents.equals("houses")||contents.equals("knowhows")))
                 return new BaseResponse<>(INVALID_USER_ACCESS);
             List<GetContentScraps> getContentScraps = mypageProvider.getContentScraps(userIdx, filter, contents);
             return new BaseResponse<>(getContentScraps);

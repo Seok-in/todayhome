@@ -60,7 +60,7 @@ public class MypageDao {
                 "    INNER JOIN (SELECT F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
                 "                WHERE F.followuserIdx = ? AND F.status = 'Y')  followers ON U.userIdx = followers.userIdx\n" +
-                "    LEFT OUTER JOIN (SELECT F.status, F.userIxd\n" +
+                "    LEFT OUTER JOIN (SELECT F.status, F.userIdx\n" +
                 "                FROM UserFollow as F\n" +
                 "                WHERE F.followuserIdx = ? AND F.status = 'Y') followers2 ON followers.userIdx = followers2.userIdx";
         return this.jdbcTemplate.query(getNewQuery,
@@ -79,20 +79,20 @@ public class MypageDao {
      */
     public List<GetCoupons> getCoupons(int myIdx){
         int myIdxParams = myIdx;
-        String getNewQuery = "SELECT C.coupon_name, C.discount_percent, C.discount_price, C.enable_price, C.expired_at, C.detailed_explanation, IF(C.couponIdx = UC2.couponIdx, 'Y', 'N') received\n" +
-                "FROM Coupon as C\n" +
-                "    LEFT OUTER JOIN (SELECT UC.couponIdx, UC.updated_at FROM User_coupon UC WHERE UC.userIdx = ?) AS UC2 ON C.couponIdx = UC2.couponIdx\n" +
-                "WHERE C.expired_at > current_timestamp\n" +
-                "ORDER BY received desc,\n" +
-                "         (CASE WHEN SUBSTRING(coupon_name,1,1) RLIKE '[a-zA-Z]' THEN 1\n" +
-                "          WHEN SUBSTRING(coupon_name,1,1) RLIKE '[ㄱ-ㅎ가-힣]' THEN 2 ELSE 3 END), coupon_name;";
+        String getNewQuery = "SELECT C.couponName, C.discountPercent, C.discountPrice, C.enablePrice, C.expiredAt, IF(C.couponIdx = UC2.couponIdx, 'Y', 'N') received\n" +
+                "                FROM Coupon as C\n" +
+                "                    LEFT OUTER JOIN (SELECT UC.couponIdx, UC.updatedAt FROM UserCoupon UC WHERE UC.userIdx = ?) AS UC2 ON C.couponIdx = UC2.couponIdx\n" +
+                "                WHERE C.expiredAt > current_timestamp\n" +
+                "                ORDER BY received desc,\n" +
+                "                         (CASE WHEN SUBSTRING(couponName,1,1) RLIKE '[a-zA-Z]' THEN 1\n" +
+                "                          WHEN SUBSTRING(couponName,1,1) RLIKE '[ㄱ-ㅎ가-힣]' THEN 2 ELSE 3 END), couponName;";
         return this.jdbcTemplate.query(getNewQuery,
                 (rs, rowNum) -> new GetCoupons(
-                        rs.getString("coupon_name"),
-                        rs.getDouble("discount_price"),
-                        rs.getInt("discount_percent"),
-                        rs.getDouble("enable_price"),
-                        rs.getString("detailed_explanation"),
+                        rs.getString("couponName"),
+                        rs.getInt("discountPrice"),
+                        rs.getInt("discountPercent"),
+                        rs.getInt("enablePrice"),
+                        rs.getString("expiredAt"),
                         rs.getString("received")),
                 myIdxParams
         );
@@ -101,13 +101,13 @@ public class MypageDao {
     /**
      Coupons 발급됐는지 확인
      */
-    public int checkReceived(int myIdx, PostPcouponsReq postPcouponsReq){
-        String PcouponsReqParams = postPcouponsReq.getCouponName();
+    public int checkReceived(int myIdx, PostCouponReq postPcouponsReq){
+        int PcouponsReqParams = postPcouponsReq.getCouponId();
         int myIdxParams = myIdx;
         Object[] getPcouponsParams = new Object[]{PcouponsReqParams,myIdx};
-        String checkCouponsQuery = "SELECT EXISTS(SELECT * FROM User_coupon UC\n" +
-                "              inner join Coupon as C on C.coupon_name = ? and C.couponIdx = UC.couponIdx\n" +
-                "              WHERE UC.userIdx = ? and C.expired_at > current_timestamp) received;";
+        String checkCouponsQuery = "SELECT EXISTS(SELECT * FROM UserCoupon UC\n" +
+                "              inner join Coupon as C on C.couponIdx = ? and C.couponIdx = UC.couponIdx\n" +
+                "              WHERE UC.userIdx = ? and C.expiredAt > current_timestamp) received;";
         return this.jdbcTemplate.queryForObject(checkCouponsQuery,
                 int.class,
                 getPcouponsParams);
@@ -116,30 +116,30 @@ public class MypageDao {
    /**
     Coupons 발급 받기
      */
-   public int postPcouponsReq(int myIdx, PostPcouponsReq postPcouponsReq){
+   public int postPcouponsReq(int myIdx, PostCouponReq postPcouponsReq){
        int PcouponsReqParams = postPcouponsReq.getCouponId();
        int myIdxParams = myIdx;
        Object[] getPcouponsParams = new Object[]{myIdx, PcouponsReqParams};
-       String postPcouponsQuery = "INSERT INTO User_coupon(userIdx, couponIdx) VALUES(?,?);";
+       String postPcouponsQuery = "INSERT INTO UserCoupon(userIdx, couponIdx) VALUES(?,?);";
        return this.jdbcTemplate.update(postPcouponsQuery, getPcouponsParams);
    }
 
     /**
-     Coupon 코드 발급됐는지 확인
+     Coupon 코드 존재하는지, 발급됐는지 확인
      */
     public String checkUsed(/*PostCodeReq postCodeReq*/String code){
         String CouponCodeParams = /*postCodeReq.getCouponCode()*/code;
         String checkCouponCodeQuery = "SELECT IFNULL((SELECT C.status FROM Coupon AS C\n" +
                 "WHERE C.couponCode = ? AND C.open = 'N'),'X') AS codeExists;";
-        String checkCouponCodeQuery2 = "SELECT C.status FROM Coupon AS C\n" +
-                "WHERE C.couponCode = ?  AND C.open = 'N';";
+        //String checkCouponCodeQuery2 = "SELECT C.status FROM Coupon AS C\n" +
+        //        "WHERE C.couponCode = ?  AND C.open = 'N';";
         String used = this.jdbcTemplate.queryForObject(checkCouponCodeQuery,
                 String.class,
                 CouponCodeParams);
-        if(!used.equals("X"))
-            return this.jdbcTemplate.queryForObject(checkCouponCodeQuery2,
-                    String.class,
-                    CouponCodeParams);
+        //if(!used.equals("X"))
+        //    return this.jdbcTemplate.queryForObject(checkCouponCodeQuery2,
+        //            String.class,
+        //            CouponCodeParams);
         return used;
     }
 
@@ -158,7 +158,7 @@ public class MypageDao {
         // coupon status 상태 수정
         String postCouponCodeQuery = "UPDATE Coupon C SET C.status = 'N' WHERE C.couponCode = ?;";
         // user_coupon에 새로운 값 update
-        String postCouponCodeQuery2 = "INSERT INTO User_coupon(userIdx, couponIdx) VALUES(?,?);";
+        String postCouponCodeQuery2 = "INSERT INTO UserCoupon(userIdx, couponIdx) VALUES(?,?);";
 
         result = jdbcTemplate.update(postCouponCodeQuery, CouponCodeParams);
         if(result!=0)
@@ -171,7 +171,7 @@ public class MypageDao {
      */
     public List<Point> getPoints(int myIdx){
         int myIdxParams = myIdx;
-        String getPointQuery = "SELECT Point.pointName, Point.pointText, UP.point, UP.expiredAt, UP.createdAt\n" +
+        String getPointQuery = "SELECT Point.pointName, Point.pointText, UP.point, DATE(UP.expiredAt) expiredAt, DATE(UP.createdAt) createdAt\n" +
                 "FROM UserPoint AS UP\n" +
                 "INNER JOIN Point ON UP.pointIdx = Point.pointIdx\n" +
                 "WHERE UP.userIdx = ? and UP.expiredAt > current_timestamp;";
@@ -218,42 +218,37 @@ public class MypageDao {
         Object[] getAllScrapsParams = new Object[]{userIdx, userIdx, userIdx};
         String getAllScrapsQuery = "";
         if (filter.equals("scrapbook"))
-            getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag from House\n" +
+            getAllScrapsQuery = "SELECT House.coverImage, UserScrap.flag, H.houseIdx AS contentIdx from House\n" +
                     "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx\n" +
                     "where UserScrap.userIdx = ?\n" +
                     "union all\n" +
-                    "select Knowhow.coverImage,  UserScrap.flag from Knowhow\n" +
+                    "select Knowhow.coverImage,  UserScrap.flag, Knowhow.knowhowIdx AS contentIdx from Knowhow\n" +
                     "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx\n" +
                     "where UserScrap.userIdx = ?\n" +
                     "union all\n" +
-                    "select PC.pictureImage,  UserScrap.flag FROM PictureContent as PC\n" +
+                    "select PC.pictureImage,  PC.pictureIdx AS contentIdx, UserScrap.flag FROM PictureContent as PC\n" +
                     "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx and PC.Flag = 'Y'\n" +
                     "where UserScrap.userIdx = ?";
-        else if (filter.equals("praises"))
-            getAllScrapsQuery = "SELECT H.coverImage,UL.flag\n" +
+        else
+            getAllScrapsQuery = "SELECT H.coverImage,UL.flag, H.houseIdx AS contentIdx\n" +
                     "FROM House AS H\n" +
                     "INNER JOIN UserLike UL ON H.houseIdx = UL.houseIdx\n" +
                     "WHERE UL.userIdx = ?\n" +
                     "UNION ALL\n" +
-                    "SELECT K.coverImage,UL.flag\n" +
+                    "SELECT K.coverImage,UL.flag, K.knowhowIdx AS contentIdx\n" +
                     "FROM Knowhow AS K\n" +
                     "INNER JOIN UserLike UL ON K.knowhowIdx = UL.knowhowIdx\n" +
                     "WHERE UL.userIdx = ?\n" +
                     "UNION ALL\n" +
-                    "SELECT PC.pictureImage, UL.flag\n" +
+                    "SELECT PC.pictureImage, UL.flag, PC.pictureIdx AS contentIdx\n" +
                     "FROM PictureContent as PC\n" +
                     "INNER JOIN UserLike UL ON UL.pictureIdx = PC.pictureIdx and PC.Flag = 'Y'\n" +
                     "WHERE UL.userIdx = ?";
-        else {
-            List<GetAllScraps> result = new ArrayList<GetAllScraps>();
-            result.add(new GetAllScraps("invalidAccess","N"));
-            return result;
-            //throw new BaseException(INVALID_USER_ACCESS);
-        }
         return this.jdbcTemplate.query(getAllScrapsQuery,
                 (rs, rowNum) -> new GetAllScraps(
                         rs.getString("coverImage"),
-                        rs.getString("flag")),
+                        rs.getString("flag"),
+                        rs.getInt("contentIdx")),
                 getAllScrapsParams
         );
     }
@@ -265,25 +260,25 @@ public class MypageDao {
         int myIdxParams = userIdx;
         String getContentScrapsQuery = "";
         if(filter.equals("scrapbook")) {
-            if (contents.equals("house"))
-                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
+            if (contents.equals("houses"))
+                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName, H.houseIdx AS contentIdx from House\n" +
                         "INNER JOIN UserScrap ON UserScrap.houseIdx = House.houseIdx AND UserScrap.status ='Y'\n" +
                         "INNER JOIN User ON User.userIdx = House.userIdx\n" +
                         "where UserScrap.userIdx = ?";
             else
-                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
+                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName, Knowhow.knowhowIdx AS contentIdx from Knowhow\n" +
                         "INNER JOIN UserScrap ON UserScrap.knowhowIdx = Knowhow.knowhowIdx AND UserScrap.status ='Y'\n" +
                         "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
                         "where UserScrap.userIdx = ?";
         }
         else{
-            if (contents.equals("house"))
-                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName from House\n" +
+            if (contents.equals("houses"))
+                getContentScrapsQuery = "SELECT House.coverImage, House.title, User.userName, H.houseIdx AS contentIdx from House\n" +
                         "INNER JOIN UserLike ON UserLike.houseIdx = House.houseIdx and UserLike.status ='Y'\n" +
                         "INNER JOIN User ON User.userIdx = House.userIdx\n" +
                         "WHERE UserLike.userIdx = ?";
             else
-                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName from Knowhow\n" +
+                getContentScrapsQuery = "SELECT Knowhow.coverImage, Knowhow.title, User.userName, Knowhow.knowhowIdx AS contentIdx from Knowhow\n" +
                         "INNER JOIN UserLike ON UserLike.knowhowIdx = Knowhow.knowhowIdx AND UserLike.status = 'Y'\n" +
                         "INNER JOIN User ON User.userIdx = Knowhow.userIdx\n" +
                         "where UserLike.userIdx = ?";
@@ -292,7 +287,8 @@ public class MypageDao {
                 (rs, rowNum) -> new GetContentScraps(
                         rs.getString("coverImage"),
                         rs.getString("title"),
-                        rs.getString("userName")),
+                        rs.getString("userName"),
+                        rs.getInt("contentIdx")),
                 myIdxParams
         );
     }
@@ -304,19 +300,20 @@ public class MypageDao {
         int myIdxParams = userIdx;
         String getPicScrapsQuery = "";
         if(filter.equals("scrapbook"))
-            getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
+            getPicScrapsQuery = "SELECT PC.pictureImage, PC.pictureIdx FROM PictureContent AS PC\n" +
                     "INNER JOIN UserScrap ON UserScrap.pictureIdx = PC.pictureIdx\n" +
                     "WHERE UserScrap.userIdx = ? AND UserScrap.status = 'Y'\n" +
                     "GROUP BY PC.pictureIdx";
         else
-            getPicScrapsQuery = "SELECT PC.pictureImage FROM PictureContent AS PC\n" +
+            getPicScrapsQuery = "SELECT PC.pictureImage, PC.pictureIdx FROM PictureContent AS PC\n" +
                     "INNER JOIN UserLike ON UserLike.pictureIdx = PC.pictureIdx\n" +
                     "WHERE UserLike.userIdx = ? AND UserLike.status = 'Y'\n" +
                     "GROUP BY PC.pictureIdx";
 
         return this.jdbcTemplate.query(getPicScrapsQuery,
                 (rs, rowNum) -> new GetPicScraps(
-                        rs.getString("pictureImage")),
+                        rs.getString("pictureImage"),
+                        rs.getInt("pictureIdx")),
                 myIdxParams
         );
     }

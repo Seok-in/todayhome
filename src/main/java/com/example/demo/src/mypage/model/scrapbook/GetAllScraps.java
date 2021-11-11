@@ -12,4 +12,5 @@ import java.util.List;
 public class GetAllScraps {
     private String imagePath;
     private String flag;
+    private int contentIdx;
 }

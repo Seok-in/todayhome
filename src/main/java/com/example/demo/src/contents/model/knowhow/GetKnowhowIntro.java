@@ -13,6 +13,7 @@ public class GetKnowhowIntro {
     private String title;
     private String createdAt;
     private String userName;
+    private int userIdx;
     private String userIntro;
     private String knowhowCategory;
     private String followedByUser;

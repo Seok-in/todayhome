@@ -38,7 +38,7 @@ public class MypageService {
     /**
     쿠폰 받기
      */
-    public void postPcouponsReq(int myIdx, PostPcouponsReq postPcouponsReq) throws BaseException {
+    public void postPcouponsReq(int myIdx, PostCouponReq postPcouponsReq) throws BaseException {
         try{
             int result = mypageDao.postPcouponsReq(myIdx, postPcouponsReq);
             if(result == 0){

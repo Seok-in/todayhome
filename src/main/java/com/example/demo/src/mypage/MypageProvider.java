@@ -76,7 +76,7 @@ public class MypageProvider {
     /**
      * 발급한 쿠폰인지 확인
      */
-    public int checkReceived(int myIdx, PostPcouponsReq postPcouponsReq) throws BaseException{
+    public int checkReceived(int myIdx, PostCouponReq postPcouponsReq) throws BaseException{
         try{
             int received = mypageDao.checkReceived(myIdx,postPcouponsReq);
             return received;
@@ -145,14 +145,15 @@ public class MypageProvider {
         List<GetAllScraps> getAllScraps = new ArrayList<GetAllScraps>();
         try {
             getAllScraps = mypageDao.getAllScraps(userIdx, filter);
+            return getAllScraps;
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
-        if (getAllScraps.get(0).getImagePath().equals("invalidAccess"))
+        /*if (getAllScraps.get(0).getImagePath().equals("invalidAccess"))
             throw new BaseException(INVALID_USER_ACCESS);
         else
-            return getAllScraps;
+            return getAllScraps;*/
         //catch (Exception exception) {
         //    throw new BaseException(DATABASE_ERROR);
         //}

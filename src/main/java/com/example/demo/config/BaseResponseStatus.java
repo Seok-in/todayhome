@@ -32,8 +32,9 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
 
     // [POST] comments
-    POST_USERS_EMPTY_COMMENT(false, 2018, "댓글을 입력해주세요."),
+    POST_USERS_EMPTY_COMMENT(false, 2018, "내용을 입력해주세요."),
     REMOVE_USERS_EMPTY_COMMENT(false, 2019, "존재하지 않는 댓글입니다"),
+    REMOVE_USERS_EMPTY_RECOMMENT(false, 2020, "존재하지 않는 답글입니다"),
 
 
     /**
@@ -60,6 +61,8 @@ public enum BaseResponseStatus {
 
     FAILED_TO_WRITE_COMMENT(false, 3021, "댓글 작성을 실패하였습니다"),
     FAILED_TO_REMOVE_COMMENT(false, 3022, "댓글 삭제를 실패하였습니다"),
+    FAILED_TO_WRITE_RECOMMENT(false, 3023, "답글 작성을 실패하였습니다"),
+    FAILED_TO_REMOVE_RECOMMENT(false, 3024, "답글 삭제를 실패하였습니다"),
 
 
 
@@ -77,9 +80,9 @@ public enum BaseResponseStatus {
 
 
     /**
-     * 4000 : Coupon 오류
+     * 5000 : Coupon 오류
      */
-    RECEIVE_FAIL_COUPON(false,5000,"쿠폰 발급받기 실패"),
+    RECEIVE_FAIL_COUPON(false,5000,"쿠폰을 발급 받는 데에 실패하였습니다"),
     ALREADY_RECEIVED_COUPON(false, 5001, "이미 발급된 쿠폰입니다"),
     EMPTY_COUPON_CODE(false, 5002, "쿠폰 코드를 입력해주세요"),
     INVALID_COUPON_CODE(false, 5003, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),

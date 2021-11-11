@@ -63,6 +63,9 @@ public class StoreService {
     @Transactional(rollbackFor = {Exception.class})
     public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException{
         try {
+            if(storeDao.getCartExist(postCreateOrderReq)!=1){
+                throw new BaseException(POST_GETCART_EXIST);
+            }
             if(storeDao.checkUserCart(userIdx)==1){
                 int cartIdx = storeDao.getCartIdx(userIdx);
                 storeDao.createGetCart(postCreateOrderReq, cartIdx);
@@ -72,11 +75,15 @@ public class StoreService {
                 storeDao.createGetCart(postCreateOrderReq, cartIdx);
             }
         }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
+        }
         catch(Exception exception){
             System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
     @Transactional(rollbackFor = {Exception.class})
     public PostCreateOrderRes createOrderByCart(int userIdx) throws BaseException{

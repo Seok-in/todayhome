@@ -47,7 +47,7 @@ public enum BaseResponseStatus {
     POST_RATE_NULL(false,2031,"별점을 입력해주세요"),
     POST_REVIEWS_ZERO(false,2032,"1 이상의 값을 입력하세요"),
     INVALID_FLAG(false,2040,"올바른 FLAG 값을 입력해주세요."),
-
+    POST_GETCART_EXIST(false,2033,"이미 담겨있는 품목입니다."),
     //comments, recomments
     POST_USERS_EMPTY_COMMENT(false, 2042, "내용을 입력해주세요."),
     REMOVE_USERS_EMPTY_COMMENT(false, 2043, "존재하지 않는 댓글입니다"),

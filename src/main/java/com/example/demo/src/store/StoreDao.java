@@ -58,6 +58,18 @@ public class StoreDao {
                 checkScrapParams);
     }
 
+    public int getCartExist(PostCreateOrderReq postCreateOrderReq){
+        String existQuery = "SELECT EXIST(SELECT cartIdx FROM GetCart" +
+                " WHERE productIdx =? && firstOptionIdx = ? && secondOptionIdx = ? && thirdOptionIdx = ? && status = 'Y' or status = 'N');";
+        Object[] checkParmas = new Object[]{
+                postCreateOrderReq.getProductIdx(),
+                postCreateOrderReq.getFirstOptionIdx(),
+                postCreateOrderReq.getSecondOptionIdx(),
+                postCreateOrderReq.getThirdOptionIdx()
+        };
+        return this.jdbcTemplate.queryForObject(existQuery, int.class, checkParmas);
+    }
+
     public List<Product> getRecentProduct(int userIdx){
         String getProductQuery =
                 "SELECT productImage\n" +

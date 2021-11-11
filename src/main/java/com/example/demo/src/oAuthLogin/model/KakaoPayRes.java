@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class KakaoPayRes {
     private String tid;
+    private String tms_result;
     private String next_redirect_app_url;
     private String next_redirect_mobile_url;
     private String next_redirect_pc_url;

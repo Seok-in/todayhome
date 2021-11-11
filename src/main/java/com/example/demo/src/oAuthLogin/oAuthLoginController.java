@@ -92,6 +92,7 @@ public class oAuthLoginController {
         return new BaseResponse<>(accessToken);
     }
 
+    // 73. 카카오페이 결제시스템 구현
     @ResponseBody
     @PostMapping("/{orderIndex}/payment")
     public BaseResponse<String> kakaoPay(@PathVariable ("orderIndex") int orderIndex){

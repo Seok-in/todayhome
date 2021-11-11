@@ -192,10 +192,10 @@ public class UserController {
     // 20.1 유저 리뷰 수정 API(오늘의 집)
     @ResponseBody
     @PatchMapping("/t-reviews/{reviewIdx}")
-    public BaseResponse<String> modifyReviewByToday(@PathVariable("reviewIdx") int reviewIdx, @Validated PatchHouseReviewReq patchHouseReviewReq){
+    public BaseResponse<String> modifyReviewByToday(@PathVariable("reviewIdx") int reviewIdx, @Validated @RequestBody PatchHouseReviewReq patchHouseReviewReq){
         try {
             int userIdx = jwtService.getUserIdx();
-            userService.modifyReviewByToday(reviewIdx, patchHouseReviewReq);
+            userService.modifyReviewByToday(userIdx, reviewIdx, patchHouseReviewReq);
             return new BaseResponse<>("리뷰 수정 성공! By Today");
         }
         catch (BaseException exception){
@@ -206,7 +206,7 @@ public class UserController {
     // 20.2 유저 리뷰 수정 API(다른 사이트)
     @ResponseBody
     @PatchMapping("/o-reviews/{reviewIdx}")
-    public BaseResponse<String> modifyReviewByOther(@PathVariable("reviewIdx") int reviewIdx, @Validated PatchReviewReq patchReviewReq){
+    public BaseResponse<String> modifyReviewByOther(@PathVariable("reviewIdx") int reviewIdx, @Validated @RequestBody PatchReviewReq patchReviewReq){
         try{
             int userIdx = jwtService.getUserIdx();
             userService.modifyReviewByOther(userIdx, reviewIdx, patchReviewReq);

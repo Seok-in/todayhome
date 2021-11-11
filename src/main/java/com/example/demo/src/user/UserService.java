@@ -147,13 +147,17 @@ public class UserService {
     @Transactional(rollbackFor = {Exception.class})
     public void modifyReviewByOther(int userIdx, int reviewIdx, PatchReviewReq patchReviewReq) throws BaseException{
         try{
-            if(userIdx == userDao.getUserIdxByReview(reviewIdx)){
-                //userDao.modifyReviewImages(reviewIdx, patchReviewReq.getReviewImages());
+            if(userIdx != userDao.getUserIdxByReview(reviewIdx)){
+                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
+
+            }
+            else {
+                userDao.modifyReviewImages(reviewIdx, patchReviewReq.getReviewImages());
                 userDao.modifyReviewData(reviewIdx, patchReviewReq);
             }
-            else{
-                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
-            }
+        }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -161,15 +165,19 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void modifyReviewByToday(int reviewIdx, PatchHouseReviewReq patchHouseReviewReq) throws BaseException{
+    public void modifyReviewByToday(int userIdx,int reviewIdx, PatchHouseReviewReq patchHouseReviewReq) throws BaseException{
         try{
-            if(reviewIdx == userDao.getUserIdxByReview(reviewIdx)){
-                //userDao.modifyReviewImages(reviewIdx, patchHouseReviewReq.getReviewImages());
+            if(userIdx != userDao.getUserIdxByReview(reviewIdx)){
+                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
+
+            }
+            else {
+                userDao.modifyReviewImages(reviewIdx, patchHouseReviewReq.getReviewImages());
                 userDao.modifyOHouseReviewData(reviewIdx, patchHouseReviewReq);
             }
-            else{
-                throw new BaseException(MODIFY_ONLY_MY_REVIEW);
-            }
+        }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
         }
         catch(Exception exception){
             System.err.println(exception.toString());

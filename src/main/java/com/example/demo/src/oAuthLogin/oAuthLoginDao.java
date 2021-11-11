@@ -42,9 +42,9 @@ public class oAuthLoginDao {
                         rs.getInt("num"),
                         rs.getInt("sumPrice"),
                         0,
-                        "https://prod.seokin-test.shop",
-                        "https://prod.seokin-test.shop",
-                        "https://prod.seokin-test.shop"
+                        "https://popoimages.s3.ap-northeast-2.amazonaws.com/kakaoPay/success.jpg",
+                        "https://popoimages.s3.ap-northeast-2.amazonaws.com/kakaoPay/cancel.jpg",
+                        "https://popoimages.s3.ap-northeast-2.amazonaws.com/kakaoPay/fail.jpg"
                 ), params);
     }
 }

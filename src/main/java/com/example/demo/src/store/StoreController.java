@@ -134,6 +134,20 @@ public class StoreController {
         }
     }
 
+    // 52.단일 상품 조회 API
+    @ResponseBody
+    @GetMapping("/products/{productIdx}")
+    public BaseResponse<GetStoreProductRes> getStoreProductRes(@PathVariable("productIdx") int productIdx){
+        try{
+            GetStoreProductRes getStoreProductRes1 = storeProvider.getStoreProductRes(productIdx);
+            int userIdx = jwtService.getUserIdx();
+            return new BaseResponse<>(getStoreProductRes1);
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
     // 53. 단일 상품 리뷰 조회 API
     @ResponseBody
     @GetMapping("/products/{productIdx}/reviews")
@@ -351,20 +365,6 @@ public class StoreController {
             int userIdx = jwtService.getUserIdx();
             storeService.orderCartCancel(userIdx);
             return new BaseResponse<>("장바구니에 담긴 품목을 주문 취소 하였습니다.");
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    // 56.단일 상품 조회 API
-    @ResponseBody
-    @GetMapping("/products/{productIdx}")
-    public BaseResponse<GetStoreProductRes> getStoreProductRes(@PathVariable("productIdx") int productIdx){
-        try{
-            GetStoreProductRes getStoreProductRes1 = storeProvider.getStoreProductRes(productIdx);
-            int userIdx = jwtService.getUserIdx();
-            return new BaseResponse<>(getStoreProductRes1);
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

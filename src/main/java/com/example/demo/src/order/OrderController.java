@@ -86,7 +86,7 @@ public class OrderController {
 
     // 59. 스토어 장바구니 구매 API
     @ResponseBody
-    @PostMapping("/orders/carts") //토의 및 수정필요
+    @PostMapping("/carts/orders")
     public BaseResponse<PostCreateOrderRes> createOrderByCart(){
         try{
             int userIdx = jwtService.getUserIdx();

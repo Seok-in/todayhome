@@ -7,6 +7,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.contents.model.*;
 import com.example.demo.src.contents.model.house.*;
 import com.example.demo.src.contents.model.knowhow.*;
+import com.example.demo.src.contents.model.picture.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +78,34 @@ public class ContentsController {
 
             GetAllKnowhowContents getAllKnowhowContents = new GetAllKnowhowContents(getKnowhowIntro, getKnowhowContents, getSocialInfo, getComments);
             return new BaseResponse<>(getAllKnowhowContents);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     사진 게시글 작성 API
+     */
+    @ResponseBody
+    @PostMapping("/pictures/new")
+    public BaseResponse<PostPicRes> postPicContent (@RequestBody PostPicReq postPicReq) {
+        try{
+            List<PicContentFormat> picList = postPicReq.getPicContent();
+            // 공간정보를 입력하지 않았을 때
+            for(int i = 0 ; i < picList.size() ; i++ ){
+                PicContentFormat content = picList.get(i);
+                String pictureCtg = content.getPictureCategory();
+                String pictureImg = content.getImagePath();
+                if(pictureCtg == null || pictureCtg.equals("공간정보"))
+                    return new BaseResponse<>(EMPTY_PIC_CATEGORY);
+                if(pictureImg == null)
+                    return new BaseResponse<>(EMPTY_PIC_IMAGE);
+            }
+            int userIdx = jwtService.getUserIdx();
+            PostPicRes postPicRes = contentsService.postPicContent(userIdx, postPicReq);
+            return new BaseResponse<>(postPicRes);
         } catch(BaseException exception){
             System.out.println(exception.getMessage());
             exception.printStackTrace();

@@ -5,6 +5,7 @@ package com.example.demo.src.contents;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.contents.model.*;
+import com.example.demo.src.contents.model.picture.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -35,6 +36,20 @@ public class ContentsService {
 
     }
     // 존재하지 않거나 status 'N'인 컨텐츠는 처음부터 좋아요, 스크랩 불가능 -> validation 처리 필요 x
+    /**
+     게시글 작성 API
+     */
+    public PostPicRes postPicContent(int userIdx, PostPicReq postPicReq) throws BaseException{
+        try {
+            PostPicRes contentIndices = contentsDao.postPicContent(userIdx, postPicReq);
+            if(contentIndices.getContentIndices().size() != postPicReq.getPicContent().size())
+                throw new BaseException(DATABASE_ERROR);
+            return contentIndices;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /**
      게시글 Like API
      */
@@ -73,6 +88,8 @@ public class ContentsService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
 
     /**
      게시글 Scrap 취소 API

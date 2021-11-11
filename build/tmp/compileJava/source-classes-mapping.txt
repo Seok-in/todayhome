@@ -12,6 +12,8 @@ com/example/demo/src/mypage/model/User.java
  com.example.demo.src.mypage.model.User
 com/example/demo/src/store/model/Coupon.java
  com.example.demo.src.store.model.Coupon
+com/example/demo/src/contents/model/picture/PicContentFormat.java
+ com.example.demo.src.contents.model.picture.PicContentFormat
 com/example/demo/src/user/model/UserRecent.java
  com.example.demo.src.user.model.UserRecent
 com/example/demo/src/mypage/model/GetCoupons.java
@@ -40,6 +42,8 @@ com/example/demo/src/user/model/PostUserRes.java
  com.example.demo.src.user.model.PostUserRes
 com/example/demo/src/mypage/MypageProvider.java
  com.example.demo.src.mypage.MypageProvider
+com/example/demo/src/mypage/model/GetActivityParams.java
+ com.example.demo.src.mypage.model.GetActivityParams
 com/example/demo/src/user/model/PostSignOutReq.java
  com.example.demo.src.user.model.PostSignOutReq
 com/example/demo/src/mypage/model/GetPoints.java
@@ -92,6 +96,8 @@ com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
 com/example/demo/src/contents/model/knowhow/GetTempKnowhowContents.java
  com.example.demo.src.contents.model.knowhow.GetTempKnowhowContents
+com/example/demo/src/mypage/model/GetActivities.java
+ com.example.demo.src.mypage.model.GetActivities
 com/example/demo/src/store/model/GetAdRes.java
  com.example.demo.src.store.model.GetAdRes
 com/example/demo/src/user/UserController.java
@@ -142,6 +148,8 @@ com/example/demo/src/user/model/GetRecentCountRes.java
  com.example.demo.src.user.model.GetRecentCountRes
 com/example/demo/src/contents/model/PostComment.java
  com.example.demo.src.contents.model.PostComment
+com/example/demo/src/contents/model/picture/PostPicReq.java
+ com.example.demo.src.contents.model.picture.PostPicReq
 com/example/demo/src/oAuthLogin/model/KakaoUserInfo.java
  com.example.demo.src.oAuthLogin.model.KakaoUserInfo
  com.example.demo.src.oAuthLogin.model.KakaoUserInfo$KakaoAccount
@@ -155,6 +163,8 @@ com/example/demo/src/contents/model/GetAllComments.java
  com.example.demo.src.contents.model.GetAllComments
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
+com/example/demo/src/contents/model/picture/PostPicRes.java
+ com.example.demo.src.contents.model.picture.PostPicRes
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
 com/example/demo/src/oAuthLogin/oAuthLoginController.java
@@ -173,6 +183,8 @@ com/example/demo/src/contents/model/GetSocialInfo.java
  com.example.demo.src.contents.model.GetSocialInfo
 com/example/demo/src/store/model/PostProductQuestReq.java
  com.example.demo.src.store.model.PostProductQuestReq
+com/example/demo/src/contents/model/picture/Products.java
+ com.example.demo.src.contents.model.picture.Products
 com/example/demo/src/contents/model/house/GetHouseIntro.java
  com.example.demo.src.contents.model.house.GetHouseIntro
 com/example/demo/src/user/model/PostUserReq.java

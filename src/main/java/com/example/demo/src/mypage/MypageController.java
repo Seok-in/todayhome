@@ -71,6 +71,27 @@ public class MypageController {
     }
 
     /**
+     * 내 활동 조회 API
+     */
+    /*
+    @ResponseBody
+    @GetMapping("/my-activities") // (GET) 127.0.0.1:9000/app/users/:userIdx
+    public BaseResponse<List<GetActivities>> getMyActivities () {
+        try{
+            int logonIdx = jwtService.getUserIdx();
+            List<GetActivities> getActivities = mypageProvider.getActivities(logonIdx);
+            return new BaseResponse<>(getActivities);
+        } catch(BaseException exception){
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    
+     */
+
+
+    /**
      * Coupon 조회 API
      */
     @ResponseBody

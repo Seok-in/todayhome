@@ -56,9 +56,12 @@ public enum BaseResponseStatus {
     NO_CHOICE_FOR_CART(false,2050,"체크된 상품이 없습니다."),
     INVALID_PRODUCT_NUM(false, 2051, "상품의 개수는 100이하의 양의 정수 값을 입력해주세요."),
     // coupons
-    ALREADY_RECEIVED_COUPON(false, 2025, "이미 발급된 쿠폰입니다"),
-    EMPTY_COUPON_CODE(false, 2026, "쿠폰 코드를 입력해주세요"),
-    INVALID_COUPON_CODE(false, 2027, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),
+    ALREADY_RECEIVED_COUPON(false, 2052, "이미 발급된 쿠폰입니다"),
+    EMPTY_COUPON_CODE(false, 2053, "쿠폰 코드를 입력해주세요"),
+    INVALID_COUPON_CODE(false, 2054, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),
+
+    EMPTY_PIC_CATEGORY(false, 2055, "사진의 공간을 입력해주세요"),
+    EMPTY_PIC_IMAGE(false, 2056, "사진을 선택해주세요"),
 
     /**
      * 3000 : Response 오류

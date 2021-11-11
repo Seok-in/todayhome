@@ -61,6 +61,22 @@ public class MypageProvider {
     }
 
     /**
+     * 활동 조회
+     */
+    /*
+    public List<GetActivities> getActivities(int logonIdx) throws BaseException{
+        try{
+            List<GetActivities> getActivities = mypageDao.getActivities(logonIdx);
+            return getActivities;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    
+     */
+
+    /**
      * 쿠폰 조회
      */
     public List<GetCoupons> getCoupons(int myIdx) throws BaseException{

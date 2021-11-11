@@ -4,6 +4,7 @@ package com.example.demo.src.contents;
 import com.example.demo.src.contents.model.*;
 import com.example.demo.src.contents.model.house.*;
 import com.example.demo.src.contents.model.knowhow.*;
+import com.example.demo.src.contents.model.picture.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -351,6 +352,58 @@ public class ContentsDao {
                         rs.getString("pastTime")),
                 getCommentsParams
         );
+    }
+
+    /**
+     사진 게시글 작성 API
+     */
+    public PostPicRes postPicContent (int logonIdx, PostPicReq postPicReq){
+        String postPicContentQuery = "INSERT INTO Picture (userIdx) VALUES (?)";
+        this.jdbcTemplate.update(postPicContentQuery, logonIdx);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        int pictureIdxParams = this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+
+        String getCtgIdxQuery = "SELECT PC.pictureCtgIdx FROM PictureCategory PC WHERE PC.ctgName = ?";
+        String postContentQuery = "INSERT INTO PictureContent (pictureIdx, pictureImage, pictureText, pictureCtgIdx) VALUES (?,?,?,?)";
+        String postContentQuery2 = "INSERT INTO PictureContent (pictureIdx, pictureImage, pictureText, pictureCtgIdx, flag) VALUES (?,?,?,?,'Y')";
+
+        List<PicContentFormat> picList = postPicReq.getPicContent();
+        List<Integer> contentIndices = new ArrayList<Integer>();
+
+        for(int i = 0 ; i < picList.size() ; i++ ) {
+            PicContentFormat content = picList.get(i);
+            String pictureCtg = content.getPictureCategory();
+            int ctgIdxParams = this.jdbcTemplate.queryForObject(getCtgIdxQuery, int.class, pictureCtg);
+
+            String imagePathParams = content.getImagePath();
+            String picTextParams = content.getPictureText();
+
+            Object[] postContentParams = new Object[]{pictureIdxParams, imagePathParams, picTextParams, ctgIdxParams};
+
+            if(i==0)
+                this.jdbcTemplate.update(postContentQuery2, postContentParams);
+            else
+                this.jdbcTemplate.update(postContentQuery, postContentParams);
+
+            int contentIdxParam = this.jdbcTemplate.queryForObject(lastInserIdQuery, int.class);
+
+            contentIndices.add(contentIdxParam);
+
+            // 상품
+            //List<Products> products = new ArrayList<Products>();
+            //products = (ArrayList<Products>)(content.getProductIndices()).clone();
+            for(int j=0 ; j < content.getProductIndices().size(); j++){
+                int productIdxParams = content.getProductIndices().get(j).getProductId();
+                String postPicProductQuery = "INSERT INTO PictureProduct (contentIdx, productIdx) VALUES (?,?)";
+                Object[] postProductParams = new Object[]{pictureIdxParams, productIdxParams};
+                this.jdbcTemplate.update(postPicProductQuery,postProductParams);
+            }
+
+        }
+
+        PostPicRes result = new PostPicRes(contentIndices);
+        return result;
     }
 
     /**

@@ -75,6 +75,77 @@ public class MypageDao {
     }
 
     /**
+     Activities 조회
+     */
+    /*
+    public List<GetActivities> getActivities(int logonIdx){
+        int logonIdxParams = logonIdx;
+        Object[] getActivitiesParams = new Object[]{logonIdxParams, logonIdxParams, logonIdxParams};
+        String getActivitiesQuery = "SELECT U.createdAt, U.flag, IFNULL(U.houseIdx,0) houseIdx, IFNULL(U.pictureIdx,0) pictureIdx, IFNULL(U.knowHowIdx,0) knowhowIdx, IFNULL(U.productIdx,0) productIdx, 'Scrap' AS activity\n" +
+                "FROM UserScrap U\n" +
+                "WHERE U.userIdx = ?\n" +
+                "UNION ALL\n" +
+                "SELECT UL.createdAt, UL.flag, IFNULL(U.houseIdx,0) houseIdx, IFNULL(U.pictureIdx,0) pictureIdx, IFNULL(U.knowHowIdx,0) knowhowIdx, 0 AS productIdx, 'Like' AS activity\n" +
+                "FROM UserLike UL\n" +
+                "WHERE UL.userIdx = ?\n" +
+                "UNION ALL\n" +
+                "SELECT C.createdAt, C.flag,IFNULL(U.houseIdx,0) houseIdx, IFNULL(U.pictureIdx,0) pictureIdx, IFNULL(U.knowHowIdx,0) knowhowIdx, 0 AS productIdx, 'Comment' AS activity\n" +
+                "FROM Comment C\n" +
+                "WHERE C.userIdx = ?\n" +
+                "ORDER BY createdAt desc";
+        List<GetActivityParams> getActivityParams = this.jdbcTemplate.query(getActivitiesQuery ,
+                (rs, rowNum) -> new GetActivityParams(
+                        rs.getString("createdAt"),
+                        rs.getString("flag"),
+                        rs.getString("activity"),
+                        rs.getInt("houseIdx"),
+                        rs.getInt("pictureIdx"),
+                        rs.getInt("knowhowIdx"),
+                        rs.getInt("productIdx")),
+                getActivitiesParams
+        );
+
+        String coverImage = "";
+        String getImageQuery = "";
+        List<GetActivities> result = new ArrayList<GetActivities>() ;
+        GetActivities getActivities = new GetActivities("","","","");
+
+        for(int i = 0 ; i<getActivityParams.size() ; i++){
+            GetActivityParams activity = getActivityParams.get(i);
+            String flag = activity.getFlag();
+            if(flag.equals("H")){
+                getImageQuery = "SELECT H.coverImage\n" +
+                        "FROM House H\n" +
+                        "WHERE H.houseIdx = ?";
+                coverImage = this.jdbcTemplate.queryForObject(ImageQuery, activity.getHouseIdx());
+                flag = "H";
+            }
+            else if(flag.equals("K")){
+                getImageQuery = "SELECT K.coverImage\n" +
+                        "FROM KnowHow K\n" +
+                        "WHERE K.knowHowIdx = ?";
+                coverImage = this.jdbcTemplate.queryForObject(ImageQuery, activity.getKnowhowIdx());
+                flag = "K";
+            }
+            else if(flag.equals("P")){
+                getImageQuery = "SELECT PC.pictureImage\n" +
+                        "FROM PictureContent PC\n" +
+                        "WHERE PC.pictureIdx = ? AND PC.flag = 'Y'";
+                coverImage = this.jdbcTemplate.queryForObject(ImageQuery, activity.getPictureIdx());
+            }
+            else{
+                getImageQuery = "SELECT PI.productimage\n" +
+                        "FROM ProductImage PI\n" +
+                        "WHERE PI.productIdx = ? AND PI.imageFlag = 'Y'\n";
+                coverImage = this.jdbcTemplate.queryForObject(ImageQuery, activity.getProductIdx());
+            }
+            getActivities = GetActivities(coverImage,activity.getCreatedAt(),activity.getActivityName(),flag);
+            result.add(getActivities);
+        }
+        return result;
+    }
+*/
+    /**
      Coupons 조회
      */
     public List<GetCoupons> getCoupons(int myIdx){

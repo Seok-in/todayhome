@@ -24,6 +24,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.example.demo.src.user.*;
 
+import java.security.SecureRandom;
+import java.util.Random;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -158,12 +161,17 @@ public class oAuthLoginService {
     }
 
     public String makeTempPw(){
-        char[] ch = new char[11];
-        for(int i =0; i <=10; i++){
-            ch[i] = (char) ((Math.random()*26) + 97);
+
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 15; i++)
+        {
+            int randomIndex = random.nextInt(chars.length());
+            sb.append(chars.charAt(randomIndex));
         }
-        String password = ch.toString();
-        return password;
+        return sb.toString();
     }
 
     public PostLoginRes createKakaoUser(KakaoUserNameReq kakaoUserNameReq) throws BaseException {

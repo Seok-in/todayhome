@@ -56,7 +56,6 @@ public class OrderProvider {
             throw new BaseException(NO_RESULT_FOR_CART);
         }
         catch(Exception exception){
-            System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }

@@ -163,6 +163,14 @@
 - DEV서버 연동완료(90%)
   - 연동간 GRADLE이 build가 안되는 상황이 있었다.
     - GRADLE WRAPPER를 이용하여 build하여 해결하였고, 이 때도 gradle 버전이 최신이 아니어서 wget으로 받은 후 환경변수 설정 후에 할 수 있었다.
+
+### 2021-11-12
+- API 추가 구현
+  - 72번 주문 API 구축
+  - 피드백 보완사항
+    - MATH.RANDOM 함수 대신에 SECURE RANDOM 함수 사용하여 작성하여 보안성에 더 강점을 두는 Password generator 구축
+- 기획서 수정 및 보완
+- Prod 서버 서브 도메인으로 구축.
 -`--
    ## 빙수 개발일지
 

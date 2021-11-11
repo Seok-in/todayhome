@@ -76,37 +76,7 @@ public class StoreProvider {
         }
     }
 
-    public GetCartInfoRes getCartInfoRes(int userIdx) throws BaseException{
 
-        try{
-            int cartIdx = storeDao.getCartIdx(userIdx);
-            GetCartInfoRes getCartInfoRes = new GetCartInfoRes();
-            getCartInfoRes.setOrderProducts(storeDao.getCartProducts(cartIdx));
-            int size = getCartInfoRes.getOrderProducts().size();
-            int sumDeliveryFee = 0;
-            int salePrice = 0;
-            int sumPrice = 0;
-            for(int i=0; i< size; i++){
-                OrderProduct orderProduct = getCartInfoRes.getOrderProducts().get(i);
-                sumDeliveryFee += orderProduct.getDeliveryFee();
-                salePrice += (orderProduct.getSalePrice() * orderProduct.getNum());
-                sumPrice += orderProduct.getPrice();
-            }
-            getCartInfoRes.setSumDeliveryFee(sumDeliveryFee);
-            getCartInfoRes.setSumSales(salePrice);
-            getCartInfoRes.setResultPrice(sumPrice);
-            getCartInfoRes.setSumPrice(salePrice + sumPrice);
-
-            return getCartInfoRes;
-        }
-        catch(EmptyResultDataAccessException e){
-            throw new BaseException(NO_RESULT_FOR_CART);
-        }
-        catch(Exception exception){
-            System.err.println(exception.toString());
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
     public GetStoreFirstCtgRes getStoreFirstCtgRes(int userIdx, String categoryName) throws BaseException{
         if(storeDao.getAllTimeBest(userIdx, categoryName).isEmpty()){
             throw new BaseException(NO_RESULT_DATA);

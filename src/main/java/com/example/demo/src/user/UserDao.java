@@ -214,7 +214,7 @@ public class UserDao {
                 "      , flag\n" +
                 "      , (IFNULL(UR.productIdx, 0) + IFNULL(UR.pictureIdx, 0) + IFNULL(UR.houseIdx, 0) + IFNULL(UR.knowHowIdx, 0)) as indexNumber\n" +
                 "FROM UserRecent UR left join (SELECT productIdx, productImage FROM ProductImage WHERE imageFlag = 'Y') as PI on UR.productIdx = PI.productIdx\n" +
-                "                   left join (SELECT pictureIdx, pictureImage FROM PictureContent WHERE flag = 'Y') as PC on UR.productIdx = PC.pictureIdx\n" +
+                "                   left join (SELECT pictureIdx, pictureImage FROM PictureContent WHERE flag = 'Y') as PC on UR.pictureIdx = PC.pictureIdx\n" +
                 "                   left join (SELECT houseIdx, coverImage FROM House) as H on H.houseIdx = UR.houseIdx\n" +
                 "                   left join (SELECT knowhowIdx, coverImage as knowHowImage FROM KnowHow) as K on K.knowHowIdx = UR.knowHowIdx\n" +
                 "WHERE userIdx = ? && date(updatedAt) >= date(subdate(now(), INTERVAL 7 DAY));\n";

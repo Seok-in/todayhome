@@ -1,5 +1,7 @@
-package com.example.demo.src.store.model;
+package com.example.demo.src.order.model;
 
+import com.example.demo.src.store.model.Coupon;
+import com.example.demo.src.store.model.OrderProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

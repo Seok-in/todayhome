@@ -45,11 +45,11 @@ public class OrderController {
 
     // 56. 스토어 단일상품 구매 API
     @ResponseBody
-    @PostMapping("")
-    public BaseResponse<PostCreateOrderRes> createOrder(@RequestBody @Validated PostCreateOrderReq postCreateOrderReq){
+    @PostMapping("/{productIdx}")
+    public BaseResponse<PostCreateOrderRes> createOrder(@PathVariable ("productIdx") int productIdx, @RequestBody @Validated PostCreateOrderReq postCreateOrderReq){
         try{
             int userIdx = jwtService.getUserIdx();
-            PostCreateOrderRes postCreateOrderRes = orderService.createOrder(postCreateOrderReq, userIdx);
+            PostCreateOrderRes postCreateOrderRes = orderService.createOrder(postCreateOrderReq, userIdx, productIdx);
             return new BaseResponse<>(postCreateOrderRes);
         }
         catch(BaseException exception){
@@ -59,11 +59,11 @@ public class OrderController {
 
     // 57. 스토어 장바구니 담기 API
     @ResponseBody
-    @PostMapping("/carts") //토의 및 수정필요
-    public BaseResponse<String> createCartOrder(@RequestBody @Validated PostCreateOrderReq postCreateOrderReq){
+    @PostMapping("/carts/{productIdx}") //토의 및 수정필요
+    public BaseResponse<String> createCartOrder(@PathVariable ("productIdx") int productIdx, @RequestBody @Validated PostCreateOrderReq postCreateOrderReq){
         try{
             int userIdx = jwtService.getUserIdx();
-            orderService.createGetCart(postCreateOrderReq, userIdx);
+            orderService.createGetCart(postCreateOrderReq, userIdx, productIdx);
             return new BaseResponse<>("장바구니에 담았습니다.");
         }
         catch(BaseException exception){
@@ -181,21 +181,6 @@ public class OrderController {
         }
     }
 
-
-    // 주문 API
-    @ResponseBody
-    @PostMapping("/completion")
-    public BaseResponse<String> makeOrder(PostOrderReq postOrderReq) {
-        try {
-            int userIdx = jwtService.getUserIdx();
-            orderService.orderProducts(postOrderReq, userIdx);
-            return new BaseResponse<>("주문성공하였습니다.");
-        }
-        catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
     //71.1 주문 취소 API (직접구매)
     @ResponseBody
     @PatchMapping("/cancel")
@@ -218,6 +203,20 @@ public class OrderController {
             int userIdx = jwtService.getUserIdx();
             orderService.orderCartCancel(userIdx);
             return new BaseResponse<>("장바구니에 담긴 품목을 주문 취소 하였습니다.");
+        }
+        catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 72. 주문 API
+    @ResponseBody
+    @PostMapping("/completion")
+    public BaseResponse<String> makeOrder(@RequestBody @Validated PostOrderReq postOrderReq) {
+        try {
+            int userIdx = jwtService.getUserIdx();
+            orderService.orderProducts(postOrderReq, userIdx);
+            return new BaseResponse<>("주문성공하였습니다.");
         }
         catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

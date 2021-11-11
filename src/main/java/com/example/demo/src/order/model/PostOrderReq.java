@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -14,17 +17,25 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostOrderReq {
-    private UserInfo userInfo;
+    @NotBlank(message = "BLANK USER")
+    private String userRealName;
+    @NotBlank(message = "BLANK USER")
+    private String userCall;
+    @NotBlank(message = "BLANK USER")
+    @Email(message = "EMAIL")
+    private String userRecentEmail;
+    @NotBlank(message = "BLANK RECEIVER")
     private String receiverName;
+    @NotBlank(message = "BLANK RECEIVER")
     private String receiverCall;
+    @NotBlank(message = "BLANK ADDR")
     private String address;
+    @NotBlank(message = "BLANK ADDR")
     private String detailAddress;
     private String request;
-    private List<OrderProduct> orderProducts;
     private int point;
     private int couponIdx;
     private String couponCode;
     private String payment;
-    private int price;
-    private int deliveryPrice;
+    private String agreeStatus;
 }

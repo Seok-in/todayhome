@@ -60,6 +60,13 @@ public enum BaseResponseStatus {
     EMPTY_COUPON_CODE(false, 2026, "쿠폰 코드를 입력해주세요"),
     INVALID_COUPON_CODE(false, 2027, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),
 
+    // order
+    NOT_BLANK_USER(false,2070,"주문자 정보를 입력하세요"),
+    NOT_BLANK_RECEIVER(false,2071, "받는 사람 정보를 입력하세요"),
+    NOT_BLANK_ADDRESS(false,2073,"주소를 입력하세요"),
+    EXCEED_POINT(false,2074, "사용가능한 포인트를 초과하였습니다."),
+    INVALID_DELIVERY_AREA(false, 2078,"배송 불가지역 입니다."),
+    FAILED_TO_PAYMENT(false,2080,"결제 실패입니다."),
     /**
      * 3000 : Response 오류
      */

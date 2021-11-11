@@ -29,12 +29,12 @@ public class OrderDao {
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
     }
 
-    public void createOrder(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+    public void createOrder(PostCreateOrderReq postCreateOrderReq, int cartIdx, int productIdx){
         String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'D', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getProductNum(),
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
@@ -77,11 +77,11 @@ public class OrderDao {
                 , params);
     }
 
-    public int getCartExist(PostCreateOrderReq postCreateOrderReq){
+    public int getCartExist(PostCreateOrderReq postCreateOrderReq, int productIdx){
         String existQuery = "SELECT EXIST(SELECT cartIdx FROM GetCart" +
                 " WHERE productIdx =? && firstOptionIdx = ? && secondOptionIdx = ? && thirdOptionIdx = ? && status = 'Y' or status = 'N');";
         Object[] checkParmas = new Object[]{
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
                 postCreateOrderReq.getThirdOptionIdx()
@@ -104,12 +104,12 @@ public class OrderDao {
         return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
     }
 
-    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int cartIdx, int productIdx){
         String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'C', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getProductNum(),
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
@@ -229,7 +229,7 @@ public class OrderDao {
         Object[] params = new Object[]{
                 userIdx,
                 cartIdx,
-                postOrderReq.getUserInfo().getUserCall(),
+                postOrderReq.getUserCall(),
                 postOrderReq.getReceiverName(),
                 postOrderReq.getReceiverCall(),
                 postOrderReq.getAddress(),
@@ -238,10 +238,39 @@ public class OrderDao {
                 postOrderReq.getCouponIdx(),
                 postOrderReq.getPoint(),
                 postOrderReq.getPayment(),
-                postOrderReq.getPrice(),
-                postOrderReq.getDeliveryPrice()
+                getPrice(cartIdx),
+                getDeliveryPrice(cartIdx)
         };
         this.jdbcTemplate.update(makeOrderQuery, params);
+    }
+
+    public int getPrice(int cartIdx){
+        String getQuery = "SELECT SUM((productPrice + first +second + third) * num )as sumPrice" +
+                "FROM GetCart GC left join (SELECT productIdx, productPrice * (100-salePercent)/100 as productprice FROM Product) as P on P.productIdx = GC.productIdx\n" +
+                "                left join (SELECT optionIdx, optionPrice as first FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.optionIdx\n" +
+                "                left join (SELECT secondOptionIdx, optionPrice as second FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
+                "                left join (SELECT thirdOptionIdx, optionPrice as third FROM ProductThirdOption) as PTO on GC.thirdOptionIdx = PTO.thirdOptionIdx\n" +
+                "WHERE cartIdx = ? && status ='Y';";
+        int params= cartIdx;
+        return this.jdbcTemplate.queryForObject(getQuery, int.class, params);
+    }
+
+    public int getDeliveryPrice(int cartIdx){
+        String getQuery="SELECT SUM(deliveryFee) as deliveryPrice FROM GetCart GC\n" +
+                "    left join (SELECT deliveryFee, productIdx FROM DeliveryFee) as D on GC.productIdx = D.productIdx\n" +
+                "WHERE cartIdx = ? && status ='Y';";
+        int params = cartIdx;
+        return this.jdbcTemplate.queryForObject(getQuery, int.class, params);
+    }
+
+    public int checkArea(String Address, int cartIdx){
+        String checkQuery = "SELECT EXISTS(SELECT productIdx  FROM DeliveryFee where disabledArea like '% ?' && productIdx =\n" +
+                "                                                                                  (SELECT productIdx FROM GetCart where cartIdx =45));";
+        Object[] params = new Object[]{
+                Address,
+                cartIdx
+        };
+        return this.jdbcTemplate.queryForObject(checkQuery,int.class,params);
     }
 
     public void orderCancel(int cartIdx){
@@ -260,5 +289,23 @@ public class OrderDao {
         String changeQuery = "update GetCart set status ='D' where status ='Y' && cartIdx =?;";
         int params = cartIdx;
         this.jdbcTemplate.update(changeQuery, params);
+    }
+
+    public int getUserPoint(int userIdx){
+        String getQuery = "SELECT SUM(point) as point FROM UserPoint WHERE userIdx =? && expiredAt >= date(NOW());";
+        int param = userIdx;
+        return this.jdbcTemplate.queryForObject(getQuery, int.class, param);
+    }
+
+    public void createUserPoint(int userIdx, int point){
+        String createQuery = "insert into UserPoint(userIdx, point, pointIdx) VALUES (?, -?, 3);";
+        Object[] params = new Object[]{ userIdx, point };
+        this.jdbcTemplate.update(createQuery, params);
+    }
+
+    public void createUserCoupon(int userIdx, int couponIdx){
+        String createQuery = "update UserCoupon set status='C' where userIdx =? && couponIdx=?;";
+        Object[] params = new Object[]{ userIdx, couponIdx };
+        this.jdbcTemplate.update(createQuery, params);
     }
 }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
 import static com.example.demo.config.BaseResponseStatus.NO_RESULT_FOR_CART;
@@ -29,8 +30,8 @@ public class OrderProvider {
         this.jwtService = jwtService;
     }
 
+    @Transactional(rollbackFor = {Exception.class})
     public GetCartInfoRes getCartInfoRes(int userIdx) throws BaseException {
-
         try{
             int cartIdx = orderDao.getCartIdx(userIdx);
             GetCartInfoRes getCartInfoRes = new GetCartInfoRes();

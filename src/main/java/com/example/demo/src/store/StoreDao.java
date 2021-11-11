@@ -73,8 +73,8 @@ public class StoreDao {
                 "                                                            as PI on p.productIdx = PI.productIdx\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
                 "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
-                "                                right join (SELECT productIdx FROM UserRecent where flag='P' and status='Y' and userIdx =?) as ur on p.productIdx = ur.productIdx\n" +
-                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as us on p.productIdx = us.productIdx;";
+                "                                right join (SELECT productIdx FROM UserRecent where flag='C' and status='Y' and userIdx =?) as ur on p.productIdx = ur.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'C' and userIdx = ?) as us on p.productIdx = us.productIdx;";
         int getProductParams = userIdx;
         return this.jdbcTemplate.query(getProductQuery,
                 (rs, rowNum) -> new Product(
@@ -110,7 +110,7 @@ public class StoreDao {
                 "                                                            as PI on p.productIdx = PI.productIdx\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
                 "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
-                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'C' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
                 "                                left join (SELECT productIdx, COUNT(userIdx) as visitNum\n" +
                 "                                            FROM UserRecent\n" +
                 "                                            WHERE date(updatedAt) >= date(subdate(now(), INTERVAL 7 DAY))\n" +
@@ -148,7 +148,7 @@ public class StoreDao {
                 "                                                            as PI on p.productIdx = PI.productIdx\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
                 "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
-                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'C' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
                 "                                left join (SELECT productIdx, COUNT(userIdx) as visitNum\n" +
                 "                                            FROM UserRecent\n" +
                 "                                            WHERE date(updatedAt) >= date(subdate(now(), INTERVAL 1 DAY))\n" +
@@ -189,7 +189,7 @@ public class StoreDao {
                 "                                right join (SELECT categoryIdx FROM ProductCategory where categoryName like ?) as pc on p.categoryIdx = pc.categoryIdx\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
                 "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
-                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'C' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
                 "                                left join (SELECT productIdx, COUNT(userIdx) as visitNum\n" +
                 "                                            FROM UserRecent\n" +
                 "                                            WHERE date(updatedAt) >= date(subdate(now(), INTERVAL 30 DAY))\n" +
@@ -230,7 +230,7 @@ public class StoreDao {
                 "                                right join (SELECT categoryIdx FROM DetailCategory where categoryName like ?) as pc on p.categoryIdx = pc.categoryIdx\n" +
                 "                                left join (SELECT companyIdx, companyName FROM Company) as C on p.companyIdx = C.companyIdx\n" +
                 "                                left join (SELECT productIdx, Avg(rate) as rate,COUNT(reviewIdx) as reviewNum FROM Review GROUP BY productIdx) as R on p.productIdx = R.productIdx\n" +
-                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'P' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
+                "                                left join (SELECT productIdx, status FROM UserScrap where flag = 'C' and userIdx = ?) as z on p.productIdx = z.productIdx\n" +
                 "                                left join (SELECT productIdx, COUNT(userIdx) as visitNum\n" +
                 "                                            FROM UserRecent\n" +
                 "                                            WHERE date(updatedAt) >= date(subdate(now(), INTERVAL 30 DAY))\n" +

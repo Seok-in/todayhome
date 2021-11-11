@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6f2cd1ca-d87a-4156-b8eb-83e056c24206" name="seokinServer" url="https://seokin-test.shop">
+        <fileTransfer rootFolder="/var/www/Today_house_test_Server_Bingsu-Popo" accessType="SFTP" host="13.125.107.42" port="22" sshConfigId="2138c08b-063d-42ec-b80d-6512d02bfdf5" sshConfig="ubuntu@13.125.107.42:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

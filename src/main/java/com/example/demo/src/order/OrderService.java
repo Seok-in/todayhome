@@ -195,9 +195,23 @@ public class OrderService {
     public void orderProducts(PostOrderReq postOrderReq, int userIdx) throws BaseException {
 
         try{
+            if(postOrderReq.getAgreeStatus() == "N"){
+                throw new BaseException(POST_USERS_REQUIRED_AGREE);
+            }
             int cartIdx = orderDao.getCartIdx(userIdx);
+            if(orderDao.checkArea(postOrderReq.getAddress(), cartIdx)==1){
+                throw new BaseException(INVALID_DELIVERY_AREA);
+            }
+            if(orderDao.getUserPoint(userIdx) > postOrderReq.getPoint()){
+                throw new BaseException(EXCEED_POINT);
+            }
             orderDao.changeOrderStatus(cartIdx);
             orderDao.orderProducts(postOrderReq, userIdx, cartIdx);
+            orderDao.createUserPoint(userIdx, postOrderReq.getPoint());
+            orderDao.createUserCoupon(userIdx, postOrderReq.getCouponIdx());
+        }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);

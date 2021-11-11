@@ -118,6 +118,21 @@ public class BaseResponse<T> {
                 this.code = BaseResponseStatus.INVALID_PRODUCT_NUM.getCode();
                 this.message =BaseResponseStatus.INVALID_PRODUCT_NUM.getMessage();
                 break;
+
+            case "BLANK USER":
+                this.isSuccess = Boolean.FALSE;
+                this.code = BaseResponseStatus.NOT_BLANK_USER.getCode();
+                this.message =BaseResponseStatus.NOT_BLANK_USER.getMessage();
+
+            case "BLANK RECEIVER":
+                this.isSuccess = Boolean.FALSE;
+                this.code = BaseResponseStatus.NOT_BLANK_RECEIVER.getCode();
+                this.message =BaseResponseStatus.NOT_BLANK_RECEIVER.getMessage();
+
+            case "BLANK ADDR":
+                this.isSuccess = Boolean.FALSE;
+                this.code = BaseResponseStatus.NOT_BLANK_ADDRESS.getCode();
+                this.message =BaseResponseStatus.NOT_BLANK_ADDRESS.getMessage();
         }
 
     }

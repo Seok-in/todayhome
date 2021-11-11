@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -46,6 +47,7 @@ public class oAuthLoginService {
     }
 
     // 카카오 액세스토큰 받기위해 구현
+    @Transactional(rollbackFor = {Exception.class})
     public String getKakaoToken(String code){
         RestTemplate rt = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -77,6 +79,7 @@ public class oAuthLoginService {
         }
         return oauthToken.getAccess_token();
     }
+    @Transactional(rollbackFor = {Exception.class})
     public KakaoPayReq kakaoPayReq(int orderIndex, int userIdx) throws BaseException {
         try {
             if (oAuthLoginDao.checkUserIdxByOrder(orderIndex) != userIdx) {
@@ -88,7 +91,8 @@ public class oAuthLoginService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    public String payReady(int orderIndex, int userIdx) throws BaseException{
+    @Transactional(rollbackFor = {Exception.class})
+    public KakaoPayRes payReady(int orderIndex, int userIdx) throws BaseException{
         try
         {
             if(oAuthLoginDao.checkUserIdxByOrder(orderIndex)!= userIdx){
@@ -132,7 +136,7 @@ public class oAuthLoginService {
         } catch (JsonProcessingException exception) {
             exception.printStackTrace();
         }
-        return kakaoPayRes.getNext_redirect_pc_url();
+        return kakaoPayRes;
         }
         catch(BaseException e){
             throw new BaseException(e.getStatus());
@@ -143,6 +147,55 @@ public class oAuthLoginService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public KakaoPayApproveRes kakaoApprove(KakaoPayApproveReq kakaoPayApproveReq, int orderIndex, int userIdx, String pg_token) throws BaseException{
+        try {
+            if (oAuthLoginDao.checkUserIdxByOrder(orderIndex) != userIdx) {
+                throw new BaseException(INVALID_USER_JWT);
+            }
+            RestTemplate rt = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "KakaoAK 3c4dd8f4914bbcd64a8a47865ccf307b");
+            headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("cid", "TC0ONETIME");
+            params.add("tid", kakaoPayApproveReq.getTid());
+            params.add("partner_order_id", Integer.toString(orderIndex));
+            params.add("partner_user_id", Integer.toString(userIdx));
+            params.add("pg_token", pg_token);
+
+            HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+                    new HttpEntity<>(params, headers);
+            ResponseEntity<String> response = rt.exchange(
+                    "https://kapi.kakao.com/v1/payment/approve",
+                    HttpMethod.POST,
+                    kakaoTokenRequest,
+                    String.class
+            );
+
+            KakaoPayApproveRes kakaoPayApproveRes = new KakaoPayApproveRes();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try{
+                kakaoPayApproveRes = objectMapper.readValue(response.getBody(), KakaoPayApproveRes.class);
+            } catch (JsonMappingException exception) {
+                exception.printStackTrace();
+            } catch (JsonProcessingException exception) {
+                exception.printStackTrace();
+            }
+            oAuthLoginDao.completePayment(orderIndex);
+            return kakaoPayApproveRes;
+        }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
+        }
+        catch(Exception exception){
+            System.err.println(exception.toString());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
     public KakaoUserInfo getKakaoUserInfo(String accessToken){
         RestTemplate rt2 = new RestTemplate();
         HttpHeaders headers2 = new HttpHeaders();
@@ -160,6 +213,7 @@ public class oAuthLoginService {
         return response2.getBody();
     }
 
+    @Transactional(rollbackFor = {Exception.class})
     public String makeTempPw(){
 
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

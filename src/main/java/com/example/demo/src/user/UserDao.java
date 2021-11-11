@@ -358,11 +358,6 @@ public class UserDao {
                         rs.getInt("knowHowNum")
                 ), params);
     }
-    /*public int getUserPoint(int userIdx){
-        String getQuery = "SELECT SUM(point) as point FROM UserPoint WHERE userIdx =? && expiredAt >= date(NOW());";
-        int param = userIdx;
-        return this.jdbcTemplate.queryForObject(getQuery, int.class, param);
-    }*/
 
     public double createRate(int reviewIdx, int priceRate, int designRate, int deliveryRate, int healthRate){
         String createQuery = "insert into DetailRate VALUES(?, ?, ?, ?, ?);";

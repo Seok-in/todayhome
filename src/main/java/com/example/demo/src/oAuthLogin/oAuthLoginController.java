@@ -2,11 +2,9 @@ package com.example.demo.src.oAuthLogin;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.oAuthLogin.*;
-import com.example.demo.src.oAuthLogin.model.KakaoLoginReq;
-import com.example.demo.src.oAuthLogin.model.KakaoPayReq;
-import com.example.demo.src.oAuthLogin.model.KakaoPayRes;
-import com.example.demo.src.oAuthLogin.model.KakaoUserNameReq;
+import com.example.demo.src.oAuthLogin.model.*;
 import com.example.demo.src.user.model.PostLoginRes;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -92,17 +90,35 @@ public class oAuthLoginController {
         return new BaseResponse<>(accessToken);
     }
 
-    // 73. 카카오페이 결제시스템 구현
+    // 73.1 카카오페이 결제시스템 결제준비
     @ResponseBody
-    @PostMapping("/{orderIndex}/payment")
-    public BaseResponse<String> kakaoPay(@PathVariable ("orderIndex") int orderIndex){
+    @PostMapping("/{orderIndex}/payment/ready")
+    public BaseResponse<KakaoPayRes> kakaoPay(@PathVariable ("orderIndex") int orderIndex){
             try{
                 int userIdx = jwtService.getUserIdx();
-                String redirectUrl = oAuthLoginService.payReady(orderIndex, userIdx);
-                return new BaseResponse<>(redirectUrl);
+                KakaoPayRes kakaoPayRes = oAuthLoginService.payReady(orderIndex, userIdx);
+
+                return new BaseResponse<>(kakaoPayRes);
             }
             catch(BaseException exception){
                 return new BaseResponse<>((exception.getStatus()));
             }
+    }
+    // 73.2 카카오페이 결제시스템 결과 승인 정보
+    @ResponseBody
+    @PostMapping("/{orderIndex}/payment/approval")
+    public BaseResponse<KakaoPayApproveRes> kakaoApprove(@PathVariable("orderIndex") int orderIndex,
+                                                        @RequestParam(required = false) String pg_token,
+                                                         @RequestBody KakaoPayApproveReq kakaoPayApproveReq) {
+        try {
+            if(pg_token == null){
+                return new BaseResponse<>(BaseResponseStatus.FAILED_TO_PAYMENT);
+            }
+            int userIdx = jwtService.getUserIdx();
+            KakaoPayApproveRes kakaoPayApproveRes = oAuthLoginService.kakaoApprove(kakaoPayApproveReq, orderIndex, userIdx, pg_token);
+            return new BaseResponse<>(kakaoPayApproveRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 }

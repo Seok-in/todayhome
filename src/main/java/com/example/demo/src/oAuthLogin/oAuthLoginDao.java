@@ -47,4 +47,10 @@ public class oAuthLoginDao {
                         "https://popoimages.s3.ap-northeast-2.amazonaws.com/kakaoPay/fail.jpg"
                 ), params);
     }
+
+    public void completePayment(int orderIndex){
+        String completeQuery = "update OrderNow set orderFlag ='B' where orderIndex=?;";
+        int params = orderIndex;
+        this.jdbcTemplate.update(completeQuery, params);
+    }
 }

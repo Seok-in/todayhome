@@ -36,12 +36,12 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public PostCreateOrderRes createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException {
+    public PostCreateOrderRes createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx, int productIdx) throws BaseException {
         try {
             PostCreateOrderRes postCreateOrderRes = new PostCreateOrderRes();
 
             int cartIdx = orderDao.createCart(userIdx);
-            orderDao.createOrder(postCreateOrderReq, cartIdx);
+            orderDao.createOrder(postCreateOrderReq, cartIdx, productIdx);
 
             postCreateOrderRes.setOrderProduct(orderDao.getOrderProducts(cartIdx));
             postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
@@ -62,18 +62,18 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException{
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx, int productIdx) throws BaseException{
         try {
-            if(orderDao.getCartExist(postCreateOrderReq)!=1){
+            if(orderDao.getCartExist(postCreateOrderReq, productIdx)!=1){
                 throw new BaseException(POST_GETCART_EXIST);
             }
             if(orderDao.checkUserCart(userIdx)==1){
                 int cartIdx = orderDao.getCartIdx(userIdx);
-                orderDao.createGetCart(postCreateOrderReq, cartIdx);
+                orderDao.createGetCart(postCreateOrderReq, cartIdx, productIdx);
             }
             else{
                 int cartIdx = orderDao.createCart(userIdx);
-                orderDao.createGetCart(postCreateOrderReq, cartIdx);
+                orderDao.createGetCart(postCreateOrderReq, cartIdx, productIdx);
             }
         }
         catch(BaseException e){
@@ -195,9 +195,23 @@ public class OrderService {
     public void orderProducts(PostOrderReq postOrderReq, int userIdx) throws BaseException {
 
         try{
+            if(postOrderReq.getAgreeStatus() == "N"){
+                throw new BaseException(POST_USERS_REQUIRED_AGREE);
+            }
             int cartIdx = orderDao.getCartIdx(userIdx);
+            if(orderDao.checkArea(postOrderReq.getAddress(), cartIdx)==1){
+                throw new BaseException(INVALID_DELIVERY_AREA);
+            }
+            if(orderDao.getUserPoint(userIdx) > postOrderReq.getPoint()){
+                throw new BaseException(EXCEED_POINT);
+            }
             orderDao.changeOrderStatus(cartIdx);
             orderDao.orderProducts(postOrderReq, userIdx, cartIdx);
+            orderDao.createUserPoint(userIdx, postOrderReq.getPoint());
+            orderDao.createUserCoupon(userIdx, postOrderReq.getCouponIdx());
+        }
+        catch(BaseException e){
+            throw new BaseException(e.getStatus());
         }
         catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);

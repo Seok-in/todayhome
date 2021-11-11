@@ -473,6 +473,39 @@ public class UserDao {
         this.jdbcTemplate.update(updateReviewQuery, params4);
     }
 
+    /**
+     Follow API
+     */
+    public int userFollow(int userIdx, int followerIdx){
+        String checkFollowHistoryQuery = "SELECT EXISTS(SELECT UF.status\n" +
+                "FROM UserFollow AS UF\n" +
+                "WHERE UF.userIdx = ? AND UF.followuserIdx = ?) followHistory;";
+        String newUserFollowQuery = "INSERT INTO UserFollow (userIdx, followuserIdx)\n" +
+                "VALUES (?,?)";
+        String updateUserFollowQuery = "UPDATE UserFollow\n" +
+                "SET status = 'Y'\n" +
+                "WHERE userIdx = ? AND followuserIdx = ?";
+        Object[] userFollowParams = new Object[]{userIdx, followerIdx};
+
+        int followHistory = this.jdbcTemplate.queryForObject(checkFollowHistoryQuery,int.class,userFollowParams);
+
+        if(followHistory == 0)
+            return this.jdbcTemplate.update(newUserFollowQuery, userFollowParams);
+        else
+            return this.jdbcTemplate.update(updateUserFollowQuery, userFollowParams);
+    }
+
+    /**
+     Unfollow API
+     */
+    public int userUnfollow(int userIdx, int followerIdx){
+        String userUnfollowQuery = "UPDATE UserFollow\n" +
+                "SET status = 'N'\n" +
+                "WHERE userIdx = ? AND followuserIdx = ?";
+        Object[] userUnfollowParams = new Object[]{userIdx, followerIdx};
+        return this.jdbcTemplate.update(userUnfollowQuery, userUnfollowParams);
+    }
+
     /*public List<UserOrder> userOrders(int userIdx, int months, String flag){
         String getQuery =""
     }*/

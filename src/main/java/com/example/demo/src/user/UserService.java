@@ -176,4 +176,32 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     Follow API
+     */
+    @Transactional(rollbackFor = {Exception.class})
+    public void userFollow(int userId, int followerId) throws BaseException{
+        try {
+            int result = userDao.userFollow(userId, followerId);
+            if (result == 0)
+                throw new BaseException(DATABASE_ERROR);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     Unfollow API
+     */
+    @Transactional(rollbackFor = {Exception.class})
+    public void userUnfollow(int userId, int followerId) throws BaseException{
+        try {
+            int result = userDao.userUnfollow(userId, followerId);
+            if (result == 0)
+                throw new BaseException(DATABASE_ERROR);
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

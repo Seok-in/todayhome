@@ -29,12 +29,12 @@ public class OrderDao {
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
     }
 
-    public void createOrder(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+    public void createOrder(PostCreateOrderReq postCreateOrderReq, int cartIdx, int productIdx){
         String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'D', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getProductNum(),
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
@@ -77,11 +77,11 @@ public class OrderDao {
                 , params);
     }
 
-    public int getCartExist(PostCreateOrderReq postCreateOrderReq){
+    public int getCartExist(PostCreateOrderReq postCreateOrderReq, int productIdx){
         String existQuery = "SELECT EXIST(SELECT cartIdx FROM GetCart" +
                 " WHERE productIdx =? && firstOptionIdx = ? && secondOptionIdx = ? && thirdOptionIdx = ? && status = 'Y' or status = 'N');";
         Object[] checkParmas = new Object[]{
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),
                 postCreateOrderReq.getThirdOptionIdx()
@@ -104,12 +104,12 @@ public class OrderDao {
         return this.jdbcTemplate.queryForObject(getCartIdxQuery, int.class, params);
     }
 
-    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int cartIdx){
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int cartIdx, int productIdx){
         String createOrderQuery ="insert into GetCart(cartIdx, productIdx, cartFlag, num, firstOptionIdx, secondOptionIdx, thirdOptionIdx)" +
                 " VALUES (?, ?, 'C', ?, ?, ?, ?);";
         Object[] createOrderParams = {
                 cartIdx,
-                postCreateOrderReq.getProductIdx(),
+                productIdx,
                 postCreateOrderReq.getProductNum(),
                 postCreateOrderReq.getFirstOptionIdx(),
                 postCreateOrderReq.getSecondOptionIdx(),

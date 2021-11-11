@@ -36,12 +36,12 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public PostCreateOrderRes createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException {
+    public PostCreateOrderRes createOrder(PostCreateOrderReq postCreateOrderReq, int userIdx, int productIdx) throws BaseException {
         try {
             PostCreateOrderRes postCreateOrderRes = new PostCreateOrderRes();
 
             int cartIdx = orderDao.createCart(userIdx);
-            orderDao.createOrder(postCreateOrderReq, cartIdx);
+            orderDao.createOrder(postCreateOrderReq, cartIdx, productIdx);
 
             postCreateOrderRes.setOrderProduct(orderDao.getOrderProducts(cartIdx));
             postCreateOrderRes.setUserCall(userDao.getUserInfo(userIdx).getUserCall());
@@ -62,18 +62,18 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx) throws BaseException{
+    public void createGetCart(PostCreateOrderReq postCreateOrderReq, int userIdx, int productIdx) throws BaseException{
         try {
-            if(orderDao.getCartExist(postCreateOrderReq)!=1){
+            if(orderDao.getCartExist(postCreateOrderReq, productIdx)!=1){
                 throw new BaseException(POST_GETCART_EXIST);
             }
             if(orderDao.checkUserCart(userIdx)==1){
                 int cartIdx = orderDao.getCartIdx(userIdx);
-                orderDao.createGetCart(postCreateOrderReq, cartIdx);
+                orderDao.createGetCart(postCreateOrderReq, cartIdx, productIdx);
             }
             else{
                 int cartIdx = orderDao.createCart(userIdx);
-                orderDao.createGetCart(postCreateOrderReq, cartIdx);
+                orderDao.createGetCart(postCreateOrderReq, cartIdx, productIdx);
             }
         }
         catch(BaseException e){

@@ -14,7 +14,6 @@ import javax.validation.constraints.Min;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostCreateOrderReq {
-    private int productIdx;
     private int firstOptionIdx;
     private int secondOptionIdx;
     private int thirdOptionIdx;

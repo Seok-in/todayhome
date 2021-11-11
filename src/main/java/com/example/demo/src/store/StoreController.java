@@ -357,7 +357,7 @@ public class StoreController {
         }
     }
 
-    //
+    // 56.단일 상품 조회 API
     @ResponseBody
     @GetMapping("/products/{productIdx}")
     public BaseResponse<GetStoreProductRes> getStoreProductRes(@PathVariable("productIdx") int productIdx){

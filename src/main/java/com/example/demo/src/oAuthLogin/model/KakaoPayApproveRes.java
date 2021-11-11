@@ -55,7 +55,7 @@ public class KakaoPayApproveRes {
         private String card_type;
         private String install_month;
         private String approved_id;
-        private String card_min;
+        private String card_mid;
         private String interest_free_install;
         private String card_item_code;
     }

@@ -49,7 +49,7 @@ public class oAuthLoginDao {
     }
 
     public void completePayment(int orderIndex){
-        String completeQuery = "update into OrderNow set orderFlag ='B' where orderIndex=?;";
+        String completeQuery = "update OrderNow set orderFlag ='B' where orderIndex=?;";
         int params = orderIndex;
         this.jdbcTemplate.update(completeQuery, params);
     }

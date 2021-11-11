@@ -48,8 +48,18 @@ public enum BaseResponseStatus {
     POST_REVIEWS_ZERO(false,2032,"1 이상의 값을 입력하세요"),
     INVALID_FLAG(false,2040,"올바른 FLAG 값을 입력해주세요."),
 
+    //comments, recomments
+    POST_USERS_EMPTY_COMMENT(false, 2042, "내용을 입력해주세요."),
+    REMOVE_USERS_EMPTY_COMMENT(false, 2043, "존재하지 않는 댓글입니다"),
+    REMOVE_USERS_EMPTY_RECOMMENT(false, 2044, "존재하지 않는 답글입니다"),
+
     NO_CHOICE_FOR_CART(false,2050,"체크된 상품이 없습니다."),
-    INVALID_PRODUCT_NUM(false, 2041, "상품의 개수는 100이하의 양의 정수 값을 입력해주세요."),
+    INVALID_PRODUCT_NUM(false, 2051, "상품의 개수는 100이하의 양의 정수 값을 입력해주세요."),
+    // coupons
+    ALREADY_RECEIVED_COUPON(false, 2025, "이미 발급된 쿠폰입니다"),
+    EMPTY_COUPON_CODE(false, 2026, "쿠폰 코드를 입력해주세요"),
+    INVALID_COUPON_CODE(false, 2027, "올바르지 않은 쿠폰코드입니다. 다시 확인해주세요"),
+
     /**
      * 3000 : Response 오류
      */
@@ -61,7 +71,6 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
     USER_STATUS_DELETED(false,3015,"탈퇴한 회원입니다."),
     USER_STATUS_INVALID(false, 3016, "휴면이거나 정지된 계정입니다."),
-
 
 
 
@@ -81,10 +90,20 @@ public enum BaseResponseStatus {
 
     MODIFY_ONLY_MY_REVIEW(false,4020,"본인이 작성한 리뷰가 아닙니다."),
     NO_RESULT_FOR_CART(false,4021,"장바구니에 담긴 품목이 없습니다."),
-    // 5000 : 필요시 만들어서 쓰세요
-    NEED_TO_SIGNUP(true, 5000, "회원가입을 진행합니다.");
-    // 6000 : 필요시 만들어서 쓰세요
+    // comment, recomment
+    FAILED_TO_WRITE_COMMENT(false, 4022, "댓글 작성에 실패하였습니다"),
+    FAILED_TO_REMOVE_COMMENT(false, 4023, "댓글 삭제에 실패하였습니다"),
+    FAILED_TO_WRITE_RECOMMENT(false, 4024, "답글 작성에 실패하였습니다"),
+    FAILED_TO_REMOVE_RECOMMENT(false, 4025, "답글 삭제에 실패하였습니다"),
 
+    //coupons
+    RECEIVE_FAIL_COUPON(false,5000,"쿠폰을 발급 받는 데에 실패하였습니다"),
+
+    // 5000 : 필요시 만들어서 쓰세요
+    NEED_TO_SIGNUP(true, 5000, "회원가입을 진행합니다."),
+
+    // 6000 : 필요시 만들어서 쓰세요
+    INVALID_USER_ACCESS(false,6000,"유효하지 않은 접근입니다");
 
     private final boolean isSuccess;
     private final int code;

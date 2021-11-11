@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="13.125.107.42" id="2138c08b-063d-42ec-b80d-6512d02bfdf5" keyPath="C:\Users\hrpt7\Downloads\Seokin_Server.ppk" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+    </configs>
+  </component>
+</project>

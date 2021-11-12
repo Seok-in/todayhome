@@ -56,7 +56,7 @@ public class oAuthLoginService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", "7f5bb71f045567209d1beb4e84d91b0c");
-        params.add("redirect_uri", "http://localhost:8080/ohouse/kakao/auth/kakao/callback");
+        params.add("redirect_uri", "https://prod.seokin-test.shop/ohouse/kakao/auth/kakao/callback");
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
@@ -79,6 +79,7 @@ public class oAuthLoginService {
         }
         return oauthToken.getAccess_token();
     }
+
     @Transactional(rollbackFor = {Exception.class})
     public KakaoPayReq kakaoPayReq(int orderIndex, int userIdx) throws BaseException {
         try {

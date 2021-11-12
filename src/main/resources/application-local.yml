@@ -20,4 +20,4 @@ server:
     #    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
   # driver-class-name: com.mysql.jdbc.Driver # mysql 5버전
 #server:
-#  port: 900
+#  port: 9000

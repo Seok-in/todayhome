@@ -127,11 +127,11 @@ public class OrderController {
 
     // 70.1 카트 품목 체크 API
     @ResponseBody
-    @PatchMapping("/carts/check")
-    public BaseResponse<String> checkCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+    @PatchMapping("/carts/check/{productIdx}")
+    public BaseResponse<String> checkCartProduct(@PathVariable ("productIdx") int productIdx){
         try{
             int userIdx = jwtService.getUserIdx();
-            orderService.checkCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            orderService.checkCartProduct(userIdx, productIdx);
             return new BaseResponse<>("품목 체크");
         }
         catch(BaseException exception){
@@ -141,11 +141,11 @@ public class OrderController {
 
     // 70.2 체크해제
     @ResponseBody
-    @PatchMapping("/carts/non-check")
-    public BaseResponse<String> nonCheckCartProduct(@RequestBody PatchCheckCartReq patchCheckCartReq){
+    @PatchMapping("/carts/non-check/:productIdx")
+    public BaseResponse<String> nonCheckCartProduct(@PathVariable ("productIdx") int productIdx){
         try{
             int userIdx = jwtService.getUserIdx();
-            orderService.nonCheckCartProduct(userIdx, patchCheckCartReq.getProductIdx());
+            orderService.nonCheckCartProduct(userIdx, productIdx);
             return new BaseResponse<>("품목 체크 해제");
         }
         catch(BaseException exception){

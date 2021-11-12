@@ -99,7 +99,7 @@ public class UserController {
 
     // 3. 로그아웃 API
     @ResponseBody
-    @PostMapping("/logout")
+    @PatchMapping("/logout")
     public BaseResponse<String> logout(){
         try{
             int userIdx = jwtService.getUserIdx();
@@ -113,7 +113,7 @@ public class UserController {
 
     // 4. 회원탈퇴 API
     @ResponseBody
-    @PostMapping("/signout")
+    @PatchMapping("/signout")
     public BaseResponse<String> signout(@RequestBody @Validated PostSignOutReq postSignOutReq){
         try{
             int userIdx = jwtService.getUserIdx();

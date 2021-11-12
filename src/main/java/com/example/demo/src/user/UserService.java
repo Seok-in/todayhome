@@ -112,7 +112,7 @@ public class UserService {
 
     @Transactional(rollbackFor = {Exception.class})
     public void deleteReview(int reviewIdx, int userIdx) throws BaseException{
-        if(userDao.getUserIdxByReview(reviewIdx) == userIdx){
+        if(userDao.getUserIdxByReview(reviewIdx) != userIdx){
             throw new BaseException(INVALID_USER_JWT);
         }
         try{

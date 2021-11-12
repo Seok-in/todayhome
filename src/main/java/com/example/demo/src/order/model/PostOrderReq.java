@@ -35,6 +35,7 @@ public class PostOrderReq {
     private String request;
     private int point;
     private int couponIdx;
+    private int price;
     private String couponCode;
     private String payment;
     private String agreeStatus;

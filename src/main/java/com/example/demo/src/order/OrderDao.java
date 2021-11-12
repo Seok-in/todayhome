@@ -238,21 +238,10 @@ public class OrderDao {
                 postOrderReq.getCouponIdx(),
                 postOrderReq.getPoint(),
                 postOrderReq.getPayment(),
-                getPrice(cartIdx),
+                postOrderReq.getPrice(),
                 getDeliveryPrice(cartIdx)
         };
         this.jdbcTemplate.update(makeOrderQuery, params);
-    }
-
-    public int getPrice(int cartIdx){
-        String getQuery = "SELECT ifNULL(SUM((productPrice + first +second + third) * num,0)as sumPrice\n" +
-                "                FROM GetCart GC left join (SELECT productIdx, (productPrice * (100-salePercent)/100) as productprice FROM Product) as P on P.productIdx = GC.productIdx\n" +
-                "                                left join (SELECT optionIdx, IFNULL(optionPrice,0) as first FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.optionIdx\n" +
-                "                                left join (SELECT secondOptionIdx, IFNULL(optionPrice,0) as second FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
-                "                                left join (SELECT thirdOptionIdx, IFNULL(optionPrice,0) as third FROM ProductThirdOption) as PTO on GC.thirdOptionIdx = PTO.thirdOptionIdx\n" +
-                "                WHERE cartIdx = ? && status ='Y';";
-        int params= cartIdx;
-        return this.jdbcTemplate.queryForObject(getQuery, int.class, params);
     }
 
     public int getDeliveryPrice(int cartIdx){

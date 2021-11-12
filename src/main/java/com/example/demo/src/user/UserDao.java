@@ -127,15 +127,15 @@ public class UserDao {
         String getQuestionQuery ="SELECT questionCtgFlag\n" +
                 "     , questionText\n" +
                 "     , userName\n" +
-                "     , firstOptionName\n" +
-                "     , secondOptionName\n" +
-                "     , thirdOptionName\n" +
+                "     , ifNULL(firstOptionName, '없음') as firstOptionName\n" +
+                "     , ifNULL(secondOptionName, '없음') as secondOptionName\n" +
+                "     , ifNULL(thirdOptionName, '없음') as thirdOptionName\n" +
                 "     , createdAt\n" +
                 "     , secretFlag\n" +
                 "     , status\n" +
-                "     , answerText\n" +
-                "     , name\n" +
-                "     , answerCreatedAt\n" +
+                "     , ifNULL(answerText, '미답변') as answerText\n" +
+                "     , ifNULL(name, '미답변') as name\n" +
+                "     , ifNULL(answerCreatedAt, '미답변') as answerCreatedAt\n" +
                 "FROM Question q left join (SELECT userName, userIdx FROM User) as u on q.userIdx = u.userIdx\n" +
                 "                left join (\n" +
                 "                    (SELECT questionIdx, firstOptionIdx, secondOptionIdx, thirdOptionIdx FROM QuestionOption) as a\n" +

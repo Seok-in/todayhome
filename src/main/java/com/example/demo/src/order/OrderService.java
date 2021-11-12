@@ -202,11 +202,12 @@ public class OrderService {
             if(orderDao.checkArea(postOrderReq.getAddress(), cartIdx)==1){
                 throw new BaseException(INVALID_DELIVERY_AREA);
             }
-            if(orderDao.getUserPoint(userIdx) > postOrderReq.getPoint()){
+            if(orderDao.getUserPoint(userIdx) < postOrderReq.getPoint()){
                 throw new BaseException(EXCEED_POINT);
             }
+
             orderDao.changeOrderStatus(cartIdx);
-            orderDao.orderProducts(postOrderReq, userIdx, cartIdx);
+            //orderDao.orderProduct(postOrderReq, userIdx, cartIdx);
             orderDao.createUserPoint(userIdx, postOrderReq.getPoint());
             orderDao.createUserCoupon(userIdx, postOrderReq.getCouponIdx());
         }
@@ -214,6 +215,7 @@ public class OrderService {
             throw new BaseException(e.getStatus());
         }
         catch(Exception exception){
+            System.err.println(exception.toString());
             throw new BaseException(DATABASE_ERROR);
         }
     }

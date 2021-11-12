@@ -2,7 +2,7 @@ spring:
 
   datasource:
     platform: mysql
-    url: jdbc:mysql://seokindb.cyw9yafkgtjp.ap-northeast-2.rds.amazonaws.com/TodayHouse?autoReconnect=true
+    url: jdbc:mysql://seokindb.cyw9yafkgtjp.ap-northeast-2.rds.amazonaws.com/TodayHouse_Test?autoReconnect=true
     username:  seokin
     password:  applemints77!
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전

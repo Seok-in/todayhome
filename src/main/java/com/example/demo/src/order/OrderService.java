@@ -207,7 +207,7 @@ public class OrderService {
             }
 
             orderDao.changeOrderStatus(cartIdx);
-            //orderDao.orderProduct(postOrderReq, userIdx, cartIdx);
+            orderDao.orderProduct(postOrderReq, userIdx, cartIdx);
             orderDao.createUserPoint(userIdx, postOrderReq.getPoint());
             orderDao.createUserCoupon(userIdx, postOrderReq.getCouponIdx());
         }

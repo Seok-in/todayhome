@@ -245,7 +245,7 @@ public class OrderDao {
     }
 
     public int getPrice(int cartIdx){
-        String getQuery = "SELECT SUM((productPrice + first +second + third) * num )as sumPrice\n" +
+        String getQuery = "SELECT ifNULL(SUM((productPrice + first +second + third) * num,0)as sumPrice\n" +
                 "                FROM GetCart GC left join (SELECT productIdx, (productPrice * (100-salePercent)/100) as productprice FROM Product) as P on P.productIdx = GC.productIdx\n" +
                 "                                left join (SELECT optionIdx, IFNULL(optionPrice,0) as first FROM ProductFirstOption) as PFO on GC.firstOptionIdx = PFO.optionIdx\n" +
                 "                                left join (SELECT secondOptionIdx, IFNULL(optionPrice,0) as second FROM ProductSecondOption) as PSO on GC.secondOptionIdx = PSO.secondOptionIdx\n" +
@@ -256,7 +256,7 @@ public class OrderDao {
     }
 
     public int getDeliveryPrice(int cartIdx){
-        String getQuery="SELECT SUM(deliveryFee) as deliveryPrice FROM GetCart GC\n" +
+        String getQuery="SELECT ifNULL(SUM(deliveryFee),0) as deliveryPrice FROM GetCart GC\n" +
                 "    left join (SELECT deliveryFee, productIdx FROM DeliveryFee) as D on GC.productIdx = D.productIdx\n" +
                 "WHERE cartIdx = ? && status ='Y';";
         int params = cartIdx;
